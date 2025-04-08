@@ -28,21 +28,21 @@ public class Java_Envs_Test {
   @Test
   @SetEnvironmentVariable(key = "JAVA_HOME", value = "test-java-home")
   void test_java_get_envs() {
-    var envs = new JavaMavenProvider().getMvnExecEnvs();
+    var envs = new JavaMavenProvider(null).getMvnExecEnvs();
     assertEquals(Collections.singletonMap("JAVA_HOME", "test-java-home"), envs);
   }
 
   @Test
   @SetEnvironmentVariable(key = "JAVA_HOME", value = "")
   void test_java_get_envs_empty_java_home() {
-    var envs = new JavaMavenProvider().getMvnExecEnvs();
+    var envs = new JavaMavenProvider(null).getMvnExecEnvs();
     assertNull(envs);
   }
 
   @Test
   @ClearEnvironmentVariable(key = "JAVA_HOME")
   void test_java_get_envs_no_java_home() {
-    var envs = new JavaMavenProvider().getMvnExecEnvs();
+    var envs = new JavaMavenProvider(null).getMvnExecEnvs();
     assertNull(envs);
   }
 }

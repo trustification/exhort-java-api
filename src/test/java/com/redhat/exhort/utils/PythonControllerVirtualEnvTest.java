@@ -15,6 +15,8 @@
  */
 package com.redhat.exhort.utils;
 
+import static com.redhat.exhort.Provider.PROP_MATCH_MANIFEST_VERSIONS;
+import static com.redhat.exhort.utils.PythonControllerBase.PROP_EXHORT_PYTHON_INSTALL_BEST_EFFORTS;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -28,6 +30,8 @@ import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junitpioneer.jupiter.RestoreSystemProperties;
+import org.junitpioneer.jupiter.SetSystemProperty;
 import org.mockito.Mockito;
 
 class PythonControllerVirtualEnvTest extends ExhortTest {
@@ -45,22 +49,22 @@ class PythonControllerVirtualEnvTest extends ExhortTest {
   }
 
   @Test
+  @RestoreSystemProperties
   void test_Virtual_Environment_Install_Best_Efforts() throws JsonProcessingException {
-    System.setProperty("EXHORT_PYTHON_INSTALL_BEST_EFFORTS", "true");
-    System.setProperty("MATCH_MANIFEST_VERSIONS", "false");
+    System.setProperty(PROP_EXHORT_PYTHON_INSTALL_BEST_EFFORTS, "true");
+    System.setProperty(PROP_MATCH_MANIFEST_VERSIONS, "false");
     String requirementsTxt =
         getFileFromString("requirements.txt", "flask==9.9.9\ndeprecated==15.15.99\n");
     List<Map<String, Object>> dependencies =
         spiedPythonControllerVirtualEnv.getDependencies(requirementsTxt, true);
 
     System.out.println(om.writerWithDefaultPrettyPrinter().writeValueAsString(dependencies));
-    System.clearProperty("EXHORT_PYTHON_INSTALL_BEST_EFFORTS");
-    System.clearProperty("MATCH_MANIFEST_VERSIONS");
   }
 
   @Test
+  @RestoreSystemProperties
+  @SetSystemProperty(key = PROP_EXHORT_PYTHON_INSTALL_BEST_EFFORTS, value = "true")
   void test_Virtual_Environment_Install_Best_Efforts_Conflict_MMV_Should_Throw_Runtime_Exception() {
-    System.setProperty("EXHORT_PYTHON_INSTALL_BEST_EFFORTS", "true");
     String requirementsTxt =
         getFileFromString("requirements.txt", "flask==9.9.9\ndeprecated==15.15.99\n");
     RuntimeException runtimeException =
@@ -68,7 +72,6 @@ class PythonControllerVirtualEnvTest extends ExhortTest {
             RuntimeException.class,
             () -> spiedPythonControllerVirtualEnv.getDependencies(requirementsTxt, true));
     assertTrue(runtimeException.getMessage().contains("Conflicting settings"));
-    System.clearProperty("EXHORT_PYTHON_INSTALL_BEST_EFFORTS");
   }
 
   @Test
@@ -78,10 +81,8 @@ class PythonControllerVirtualEnvTest extends ExhortTest {
     Path requirementsFilePath =
         Path.of(System.getProperty("user.dir").toString(), "requirements.txt");
     Files.write(requirementsFilePath, requirementsTxt.getBytes());
-    //    MockedStatic<Operations> operationsMockedStatic = mockStatic(Operations.class);
-    //    when(spiedPythonControllerVirtualEnv.)
-    List<Map<String, Object>> dependencies =
-        spiedPythonControllerVirtualEnv.getDependencies(requirementsFilePath.toString(), true);
+
+    spiedPythonControllerVirtualEnv.getDependencies(requirementsFilePath.toString(), true);
     verify(spiedPythonControllerVirtualEnv).prepareEnvironment(anyString());
     verify(spiedPythonControllerVirtualEnv).installPackages(anyString());
     verify(spiedPythonControllerVirtualEnv).cleanEnvironment(anyBoolean());
@@ -89,16 +90,16 @@ class PythonControllerVirtualEnvTest extends ExhortTest {
     verify(spiedPythonControllerVirtualEnv).automaticallyInstallPackageOnEnvironment();
     verify(spiedPythonControllerVirtualEnv, never()).isRealEnv();
     verify(spiedPythonControllerVirtualEnv, times(2)).isVirtualEnv();
+    Files.delete(requirementsFilePath);
   }
 
   @Test
   void isRealEnv() {
-
-    assertFalse(this.spiedPythonControllerVirtualEnv.isRealEnv());
+    assertFalse(spiedPythonControllerVirtualEnv.isRealEnv());
   }
 
   @Test
   void isVirtualEnv() {
-    assertTrue(this.spiedPythonControllerVirtualEnv.isVirtualEnv());
+    assertTrue(spiedPythonControllerVirtualEnv.isVirtualEnv());
   }
 }

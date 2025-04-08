@@ -124,9 +124,7 @@ class ImageUtilsTest extends ExhortTest {
   @ClearEnvironmentVariable(key = EXHORT_SYFT_IMAGE_SOURCE)
   void test_generate_image_sbom() throws IOException, MalformedPackageURLException {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
-        var is =
-            getResourceAsStreamDecision(
-                this.getClass(), new String[] {"msc", "image", "image_sbom.json"})) {
+        var is = getResourceAsStreamDecision(this.getClass(), "msc/image/image_sbom.json")) {
       var json =
           new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
               .lines()
@@ -171,10 +169,9 @@ class ImageUtilsTest extends ExhortTest {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
         var isRaw =
             getResourceAsStreamDecision(
-                this.getClass(), new String[] {"msc", "image", "skopeo_inspect_single_raw.json"});
+                this.getClass(), "msc/image/skopeo_inspect_single_raw.json");
         var is =
-            getResourceAsStreamDecision(
-                this.getClass(), new String[] {"msc", "image", "skopeo_inspect_single.json"})) {
+            getResourceAsStreamDecision(this.getClass(), "msc/image/skopeo_inspect_single.json")) {
       var jsonRaw =
           new BufferedReader(new InputStreamReader(isRaw, StandardCharsets.UTF_8))
               .lines()
@@ -236,7 +233,7 @@ class ImageUtilsTest extends ExhortTest {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
         var is =
             getResourceAsStreamDecision(
-                this.getClass(), new String[] {"msc", "image", "skopeo_inspect_multi_raw.json"})) {
+                this.getClass(), "msc/image/skopeo_inspect_multi_raw.json")) {
       var json =
           new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
               .lines()
@@ -894,8 +891,7 @@ class ImageUtilsTest extends ExhortTest {
   @Test
   void test_get_multi_image_digests() throws IOException {
     try (var is =
-        getResourceAsStreamDecision(
-            this.getClass(), new String[] {"msc", "image", "skopeo_inspect_multi_raw.json"})) {
+        getResourceAsStreamDecision(this.getClass(), "msc/image/skopeo_inspect_multi_raw.json")) {
       var mapper = new ObjectMapper();
       var node = mapper.readTree(is);
 
@@ -931,8 +927,7 @@ class ImageUtilsTest extends ExhortTest {
   @Test
   void test_filter_mediaType() throws IOException {
     try (var is =
-        getResourceAsStreamDecision(
-            this.getClass(), new String[] {"msc", "image", "skopeo_inspect_multi_raw.json"})) {
+        getResourceAsStreamDecision(this.getClass(), "msc/image/skopeo_inspect_multi_raw.json")) {
       var mapper = new ObjectMapper();
       var node = mapper.readTree(is);
 
@@ -943,8 +938,7 @@ class ImageUtilsTest extends ExhortTest {
   @Test
   void test_filter_digest() throws IOException {
     try (var is =
-        getResourceAsStreamDecision(
-            this.getClass(), new String[] {"msc", "image", "skopeo_inspect_multi_raw.json"})) {
+        getResourceAsStreamDecision(this.getClass(), "msc/image/skopeo_inspect_multi_raw.json")) {
       var mapper = new ObjectMapper();
       var node = mapper.readTree(is);
 
@@ -955,8 +949,7 @@ class ImageUtilsTest extends ExhortTest {
   @Test
   void test_filter_platform() throws IOException {
     try (var is =
-        getResourceAsStreamDecision(
-            this.getClass(), new String[] {"msc", "image", "skopeo_inspect_multi_raw.json"})) {
+        getResourceAsStreamDecision(this.getClass(), "msc/image/skopeo_inspect_multi_raw.json")) {
       var mapper = new ObjectMapper();
       var node = mapper.readTree(is);
 
@@ -968,8 +961,7 @@ class ImageUtilsTest extends ExhortTest {
   void test_get_single_image_digest() throws IOException {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
         var is =
-            getResourceAsStreamDecision(
-                this.getClass(), new String[] {"msc", "image", "skopeo_inspect_single.json"})) {
+            getResourceAsStreamDecision(this.getClass(), "msc/image/skopeo_inspect_single.json")) {
       var json =
           new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
               .lines()

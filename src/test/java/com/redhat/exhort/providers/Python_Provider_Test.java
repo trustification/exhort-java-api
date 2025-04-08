@@ -15,6 +15,10 @@
  */
 package com.redhat.exhort.providers;
 
+import static com.redhat.exhort.utils.PythonControllerBase.PROP_EXHORT_PIP_FREEZE;
+import static com.redhat.exhort.utils.PythonControllerBase.PROP_EXHORT_PIP_PIPDEPTREE;
+import static com.redhat.exhort.utils.PythonControllerBase.PROP_EXHORT_PIP_SHOW;
+import static com.redhat.exhort.utils.PythonControllerBase.PROP_EXHORT_PIP_USE_DEP_TREE;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
@@ -31,6 +35,8 @@ import org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junitpioneer.jupiter.RestoreSystemProperties;
+import org.junitpioneer.jupiter.SetSystemProperty;
 
 @ExtendWith(PythonEnvironmentExtension.class)
 class Python_Provider_Test extends ExhortTest {
@@ -39,18 +45,11 @@ class Python_Provider_Test extends ExhortTest {
     return Stream.of("pip_requirements_txt_no_ignore", "pip_requirements_txt_ignore");
   }
 
-  //  @RegisterExtension
-  //  private PythonEnvironmentExtension pythonEnvironmentExtension = new
-  // PythonEnvironmentExtension();
-
   public Python_Provider_Test(PythonControllerBase pythonController) {
     this.pythonController = pythonController;
-    this.pythonPipProvider = new PythonPipProvider();
-    this.pythonPipProvider.setPythonController(pythonController);
   }
 
   private PythonControllerBase pythonController;
-  private PythonPipProvider pythonPipProvider;
 
   @EnabledIfEnvironmentVariable(named = "RUN_PYTHON_BIN", matches = "true")
   @ParameterizedTest
@@ -59,10 +58,11 @@ class Python_Provider_Test extends ExhortTest {
     // create temp file hosting our sut package.json
     var tmpPythonModuleDir = Files.createTempDirectory("exhort_test_");
     var tmpPythonFile = Files.createFile(tmpPythonModuleDir.resolve("requirements.txt"));
+    var provider = new PythonPipProvider(tmpPythonFile);
+    provider.setPythonController(pythonController);
     try (var is =
         getResourceAsStreamDecision(
-            this.getClass(),
-            new String[] {"tst_manifests", "pip", testFolder, "requirements.txt"})) {
+            this.getClass(), String.format("tst_manifests/pip/%s/requirements.txt", testFolder))) {
       Files.write(tmpPythonFile, is.readAllBytes());
     }
     // load expected SBOM
@@ -70,11 +70,11 @@ class Python_Provider_Test extends ExhortTest {
     try (var is =
         getResourceAsStreamDecision(
             this.getClass(),
-            new String[] {"tst_manifests", "pip", testFolder, "expected_stack_sbom.json"})) {
+            String.format("tst_manifests/pip/%s/expected_stack_sbom.json", testFolder))) {
       expectedSbom = new String(is.readAllBytes());
     }
     // when providing stack content for our pom
-    var content = this.pythonPipProvider.provideStack(tmpPythonFile);
+    var content = provider.provideStack();
     // cleanup
     Files.deleteIfExists(tmpPythonFile);
     Files.deleteIfExists(tmpPythonModuleDir);
@@ -88,23 +88,20 @@ class Python_Provider_Test extends ExhortTest {
   @MethodSource("testFolders")
   void test_the_provideComponent(String testFolder) throws IOException, InterruptedException {
     // load the pom target pom file
-    byte[] targetRequirementsTxt;
-    try (var is =
-        getResourceAsStreamDecision(
-            this.getClass(),
-            new String[] {"tst_manifests", "pip", testFolder, "requirements.txt"})) {
-      targetRequirementsTxt = is.readAllBytes();
-    }
+    var requirementsFile =
+        Path.of(
+            String.format("src/test/resources/tst_manifests/pip/%s/requirements.txt", testFolder));
+
     // load expected SBOM
     String expectedSbom = "";
     try (var is =
         getResourceAsStreamDecision(
             this.getClass(),
-            new String[] {"tst_manifests", "pip", testFolder, "expected_component_sbom.json"})) {
+            String.format("tst_manifests/pip/%s/expected_component_sbom.json", testFolder))) {
       expectedSbom = new String(is.readAllBytes());
     }
     // when providing component content for our pom
-    var content = this.pythonPipProvider.provideComponent(targetRequirementsTxt);
+    var content = new PythonPipProvider(requirementsFile).provideComponent();
     // verify expected SBOM is returned
     assertThat(content.type).isEqualTo(Api.CYCLONEDX_MEDIA_TYPE);
     assertThat(dropIgnored(new String(content.buffer))).isEqualTo(dropIgnored(expectedSbom));
@@ -112,6 +109,8 @@ class Python_Provider_Test extends ExhortTest {
 
   @ParameterizedTest
   @MethodSource("testFolders")
+  @SetSystemProperty(key = PythonControllerBase.PROP_EXHORT_PYTHON_VIRTUAL_ENV, value = "true")
+  @RestoreSystemProperties
   void test_the_provideStack_with_properties(String testFolder)
       throws IOException, InterruptedException {
     // create temp file hosting our sut package.json
@@ -119,8 +118,7 @@ class Python_Provider_Test extends ExhortTest {
     var tmpPythonFile = Files.createFile(tmpPythonModuleDir.resolve("requirements.txt"));
     try (var is =
         getResourceAsStreamDecision(
-            this.getClass(),
-            new String[] {"tst_manifests", "pip", testFolder, "requirements.txt"})) {
+            this.getClass(), String.format("tst_manifests/pip/%s/requirements.txt", testFolder))) {
       Files.write(tmpPythonFile, is.readAllBytes());
     }
     // load expected SBOM
@@ -128,22 +126,20 @@ class Python_Provider_Test extends ExhortTest {
     try (var is =
         getResourceAsStreamDecision(
             this.getClass(),
-            new String[] {"tst_manifests", "pip", testFolder, "expected_stack_sbom.json"})) {
+            String.format("tst_manifests/pip/%s/expected_stack_sbom.json", testFolder))) {
       expectedSbom = new String(is.readAllBytes());
     }
     // when providing stack content for our pom
-    var content = this.pythonPipProvider.provideStack(tmpPythonFile);
-    String pipShowContent = this.getStringFromFile("tst_manifests", "pip", "pip-show.txt");
-    String pipFreezeContent = this.getStringFromFile("tst_manifests", "pip", "pip-freeze-all.txt");
+    var content = new PythonPipProvider(tmpPythonFile).provideStack();
+    String pipShowContent = this.getStringFromFile("tst_manifests/pip/pip-show.txt");
+    String pipFreezeContent = this.getStringFromFile("tst_manifests/pip/pip-freeze-all.txt");
     String base64PipShow = new String(Base64.getEncoder().encode(pipShowContent.getBytes()));
     String base64PipFreeze = new String(Base64.getEncoder().encode(pipFreezeContent.getBytes()));
-    System.setProperty("EXHORT_PIP_SHOW", base64PipShow);
-    System.setProperty("EXHORT_PIP_FREEZE", base64PipFreeze);
+    System.setProperty(PROP_EXHORT_PIP_SHOW, base64PipShow);
+    System.setProperty(PROP_EXHORT_PIP_FREEZE, base64PipFreeze);
     // cleanup
     Files.deleteIfExists(tmpPythonFile);
     Files.deleteIfExists(tmpPythonModuleDir);
-    System.clearProperty("EXHORT_PIP_SHOW");
-    System.clearProperty("EXHORT_PIP_FREEZE");
     // verify expected SBOM is returned
     assertThat(content.type).isEqualTo(Api.CYCLONEDX_MEDIA_TYPE);
     assertThat(dropIgnored(new String(content.buffer))).isEqualTo(dropIgnored(expectedSbom));
@@ -151,16 +147,17 @@ class Python_Provider_Test extends ExhortTest {
 
   @ParameterizedTest
   @MethodSource("testFolders")
+  @SetSystemProperty(key = PythonControllerBase.PROP_EXHORT_PYTHON_VIRTUAL_ENV, value = "true")
+  @SetSystemProperty(key = PROP_EXHORT_PIP_USE_DEP_TREE, value = "true")
+  @RestoreSystemProperties
   void test_the_provideStack_with_pipdeptree(String testFolder)
       throws IOException, InterruptedException {
     // create temp file hosting our sut package.json
-    System.setProperty("EXHORT_PIP_USE_DEP_TREE", "true");
     var tmpPythonModuleDir = Files.createTempDirectory("exhort_test_");
     var tmpPythonFile = Files.createFile(tmpPythonModuleDir.resolve("requirements.txt"));
     try (var is =
         getResourceAsStreamDecision(
-            this.getClass(),
-            new String[] {"tst_manifests", "pip", testFolder, "requirements.txt"})) {
+            this.getClass(), String.format("tst_manifests/pip/%s/requirements.txt", testFolder))) {
       Files.write(tmpPythonFile, is.readAllBytes());
     }
     // load expected SBOM
@@ -168,18 +165,17 @@ class Python_Provider_Test extends ExhortTest {
     try (var is =
         getResourceAsStreamDecision(
             this.getClass(),
-            new String[] {"tst_manifests", "pip", testFolder, "expected_stack_sbom.json"})) {
+            String.format("tst_manifests/pip/%s/expected_stack_sbom.json", testFolder))) {
       expectedSbom = new String(is.readAllBytes());
     }
     // when providing stack content for our pom
-    var content = this.pythonPipProvider.provideStack(tmpPythonFile);
-    String pipdeptreeContent = this.getStringFromFile("tst_manifests", "pip", "pipdeptree.json");
+    var content = new PythonPipProvider(tmpPythonFile).provideStack();
+    String pipdeptreeContent = this.getStringFromFile("tst_manifests/pip/pipdeptree.json");
     String base64Pipdeptree = new String(Base64.getEncoder().encode(pipdeptreeContent.getBytes()));
-    System.setProperty("EXHORT_PIP_PIPDEPTREE", base64Pipdeptree);
+    System.setProperty(PROP_EXHORT_PIP_PIPDEPTREE, base64Pipdeptree);
     // cleanup
     Files.deleteIfExists(tmpPythonFile);
     Files.deleteIfExists(tmpPythonModuleDir);
-    System.clearProperty("EXHORT_PIP_USE_DEP_TREE");
     // verify expected SBOM is returned
     assertThat(content.type).isEqualTo(Api.CYCLONEDX_MEDIA_TYPE);
     assertThat(dropIgnored(new String(content.buffer))).isEqualTo(dropIgnored(expectedSbom));
@@ -187,37 +183,32 @@ class Python_Provider_Test extends ExhortTest {
 
   @ParameterizedTest
   @MethodSource("testFolders")
+  @RestoreSystemProperties
   void test_the_provideComponent_with_properties(String testFolder)
       throws IOException, InterruptedException {
     // load the pom target pom file
-    byte[] targetRequirementsTxt;
-    try (var is =
-        getResourceAsStreamDecision(
-            this.getClass(),
-            new String[] {"tst_manifests", "pip", testFolder, "requirements.txt"})) {
-      targetRequirementsTxt = is.readAllBytes();
-    }
+    var targetRequirements =
+        String.format("src/test/resources/tst_manifests/pip/%s/requirements.txt", testFolder);
+
     // load expected SBOM
     String expectedSbom = "";
     try (var is =
         getResourceAsStreamDecision(
             this.getClass(),
-            new String[] {"tst_manifests", "pip", testFolder, "expected_component_sbom.json"})) {
+            String.format("tst_manifests/pip/%s/expected_component_sbom.json", testFolder))) {
       expectedSbom = new String(is.readAllBytes());
     }
-    String pipShowContent = this.getStringFromFile("tst_manifests", "pip", "pip-show.txt");
-    String pipFreezeContent = this.getStringFromFile("tst_manifests", "pip", "pip-freeze-all.txt");
+    String pipShowContent = this.getStringFromFile("tst_manifests/pip/pip-show.txt");
+    String pipFreezeContent = this.getStringFromFile("tst_manifests/pip/pip-freeze-all.txt");
     String base64PipShow = new String(Base64.getEncoder().encode(pipShowContent.getBytes()));
     String base64PipFreeze = new String(Base64.getEncoder().encode(pipFreezeContent.getBytes()));
-    System.setProperty("EXHORT_PIP_SHOW", base64PipShow);
-    System.setProperty("EXHORT_PIP_FREEZE", base64PipFreeze);
+    System.setProperty(PROP_EXHORT_PIP_SHOW, base64PipShow);
+    System.setProperty(PROP_EXHORT_PIP_FREEZE, base64PipFreeze);
     // when providing component content for our pom
-    var content = this.pythonPipProvider.provideComponent(targetRequirementsTxt);
+    var content = new PythonPipProvider(Path.of(targetRequirements)).provideComponent();
     // verify expected SBOM is returned
     assertThat(content.type).isEqualTo(Api.CYCLONEDX_MEDIA_TYPE);
     assertThat(dropIgnored(new String(content.buffer))).isEqualTo(dropIgnored(expectedSbom));
-    System.clearProperty("EXHORT_PIP_SHOW");
-    System.clearProperty("EXHORT_PIP_FREEZE");
   }
 
   @Test
@@ -225,11 +216,8 @@ class Python_Provider_Test extends ExhortTest {
     assertThatIllegalArgumentException()
         .isThrownBy(
             () -> {
-              this.pythonPipProvider.provideComponent(Path.of("."));
-            })
-        .withMessage(
-            "provideComponent with file system path for Python pip package manager is not"
-                + " supported");
+              new PythonPipProvider(Path.of(".")).provideComponent();
+            });
   }
 
   private String dropIgnored(String s) {

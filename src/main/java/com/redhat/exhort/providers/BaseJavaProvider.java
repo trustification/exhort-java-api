@@ -20,6 +20,7 @@ import com.github.packageurl.PackageURL;
 import com.redhat.exhort.Provider;
 import com.redhat.exhort.sbom.Sbom;
 import com.redhat.exhort.tools.Ecosystem;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
@@ -27,8 +28,8 @@ import java.util.TreeMap;
 
 public abstract class BaseJavaProvider extends Provider {
 
-  protected BaseJavaProvider(Ecosystem.Type ecosystem) {
-    super(ecosystem);
+  protected BaseJavaProvider(Ecosystem.Type ecosystem, Path manifest) {
+    super(ecosystem, manifest);
   }
 
   void parseDependencyTree(String src, int srcDepth, String[] lines, Sbom sbom) {

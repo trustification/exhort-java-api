@@ -1,0 +1,5 @@
+[user]
+	email = default@example.com
+	name = Exhort API Tests
+[init]
+	defaultBranch = main

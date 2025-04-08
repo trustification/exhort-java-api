@@ -40,7 +40,6 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.AbstractMap;
@@ -53,7 +52,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
@@ -62,8 +60,6 @@ import java.util.stream.Stream;
 
 /** Concrete implementation of the Exhort {@link Api} Service. */
 public final class ExhortApi implements Api {
-
-  //  private static final System.Logger LOG = System.getLogger(ExhortApi.class.getName());
 
   private static final Logger LOG = LoggersFactory.getLogger(ExhortApi.class.getName());
 
@@ -78,27 +74,6 @@ public final class ExhortApi implements Api {
 
   public String getEndpoint() {
     return endpoint;
-  }
-
-  public static final void main(String[] args)
-      throws IOException, InterruptedException, ExecutionException {
-    System.setProperty("EXHORT_DEV_MODE", "true");
-    AnalysisReport analysisReport =
-        new ExhortApi()
-            .stackAnalysisMixed("/tmp/exhort_test_10582748308498949664/pom.xml")
-            .get()
-            .json;
-    //    ObjectMapper om = new
-    // ObjectMapper().configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
-    //
-    // System.out.println(om.writerWithDefaultPrettyPrinter().writeValueAsString(analysisReport));
-    //    AnalysisReport analysisReport = new ExhortApi()
-    //    byte[] analysisReport = new ExhortApi().
-    //
-    // stackAnalysisHtml("/home/zgrinber/git/exhort-java-api/src/test/resources/tst_manifests/golang/go_mod_with_one_ignored_prefix_go/go.mod").get();
-    //    Path html = Files.createFile(Path.of("/","tmp", "golang0210.html"));
-    //    Files.write(html,analysisReport);
-
   }
 
   /** Enum for identifying token environment variables and their corresponding request headers. */
@@ -195,7 +170,6 @@ public final class ExhortApi implements Api {
 
   private String commonHookBeginning(boolean startOfApi) {
     if (startOfApi) {
-      //      generateClientRequestId();
       if (debugLoggingIsNeeded()) {
         LOG.info("Start of exhort-java-api client");
         LOG.info(String.format("Starting time of API: %s", LocalDateTime.now()));
@@ -403,7 +377,7 @@ public final class ExhortApi implements Api {
     }
   }
 
-  private static void logExhortRequestId(HttpResponse response) {
+  private static void logExhortRequestId(HttpResponse<?> response) {
     Optional<String> headerExRequestId =
         response.headers().allValues(EXHORT_REQUEST_ID_HEADER_NAME).stream().findFirst();
     headerExRequestId.ifPresent(
@@ -421,12 +395,12 @@ public final class ExhortApi implements Api {
 
   @Override
   public CompletableFuture<AnalysisReport> componentAnalysis(
-      final String manifestType, final byte[] manifestContent, final Path manifestPath)
-      throws IOException {
+      final String manifest, final byte[] manifestContent) throws IOException {
     String exClientTraceId = commonHookBeginning(false);
-    var provider = Ecosystem.getProvider(manifestType, manifestPath);
+    var manifestPath = Path.of(manifest);
+    var provider = Ecosystem.getProvider(manifestPath);
     var uri = URI.create(String.format("%s/api/v4/analysis", this.endpoint));
-    var content = provider.provideComponent(manifestContent);
+    var content = provider.provideComponent();
     commonHookAfterProviderCreatedSbomAndBeforeExhort();
     return getAnalysisReportForComponent(uri, content, exClientTraceId);
   }
@@ -467,10 +441,10 @@ public final class ExhortApi implements Api {
   public CompletableFuture<AnalysisReport> componentAnalysis(String manifestFile)
       throws IOException {
     String exClientTraceId = commonHookBeginning(false);
-    var manifestPath = Paths.get(manifestFile);
+    var manifestPath = Path.of(manifestFile);
     var provider = Ecosystem.getProvider(manifestPath);
     var uri = URI.create(String.format("%s/api/v4/analysis", this.endpoint));
-    var content = provider.provideComponent(manifestPath);
+    var content = provider.provideComponent();
     commonHookAfterProviderCreatedSbomAndBeforeExhort();
     return getAnalysisReportForComponent(uri, content, exClientTraceId);
   }
@@ -508,10 +482,10 @@ public final class ExhortApi implements Api {
    */
   private HttpRequest buildStackRequest(final String manifestFile, final MediaType acceptType)
       throws IOException {
-    var manifestPath = Paths.get(manifestFile);
+    var manifestPath = Path.of(manifestFile);
     var provider = Ecosystem.getProvider(manifestPath);
     var uri = URI.create(String.format("%s/api/v4/analysis", this.endpoint));
-    var content = provider.provideStack(manifestPath);
+    var content = provider.provideStack();
     commonHookAfterProviderCreatedSbomAndBeforeExhort();
 
     return buildRequest(content, uri, acceptType, "Stack Analysis");

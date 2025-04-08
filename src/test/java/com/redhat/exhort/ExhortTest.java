@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.function.Supplier;
@@ -29,10 +28,10 @@ import org.apache.commons.io.FileUtils;
 
 public class ExhortTest {
 
-  protected String getStringFromFile(String... list) {
+  protected String getStringFromFile(String path) {
     byte[] bytes = new byte[0];
     try {
-      InputStream resourceAsStream = getResourceAsStreamDecision(this.getClass(), list);
+      InputStream resourceAsStream = getResourceAsStreamDecision(this.getClass(), path);
       bytes = resourceAsStream.readAllBytes();
       resourceAsStream.close();
     } catch (IOException e) {
@@ -42,27 +41,29 @@ public class ExhortTest {
     return new String(bytes);
   }
 
-  public static InputStream getResourceAsStreamDecision(Class theClass, String[] list)
+  public static InputStream getResourceAsStreamDecision(Class<?> theClass, String path)
       throws IOException {
-    InputStream resourceAsStreamFromModule =
-        theClass.getModule().getResourceAsStream(String.join("/", list));
+    InputStream resourceAsStreamFromModule = theClass.getModule().getResourceAsStream(path);
     if (Objects.isNull(resourceAsStreamFromModule)) {
-      return theClass.getClassLoader().getResourceAsStream(String.join("/", list));
+      return theClass.getClassLoader().getResourceAsStream(path);
     }
     return resourceAsStreamFromModule;
   }
 
-  protected String getFileFromResource(String fileName, String... pathList) {
+  public static Path resolveFile(String path) {
+    return Path.of("src/test/resources", path);
+  }
+
+  protected String getFileFromResource(String fileName, String path) {
     Path tmpFile;
     try {
       var tmpDir = Files.createTempDirectory("exhort_test_");
       tmpFile = Files.createFile(tmpDir.resolve(fileName));
-      try (var is = getResourceAsStreamDecision(this.getClass(), pathList)) {
+      try (var is = getResourceAsStreamDecision(this.getClass(), path)) {
         if (Objects.nonNull(is)) {
           Files.write(tmpFile, is.readAllBytes());
         } else {
-          InputStream resourceIs =
-              getClass().getClassLoader().getResourceAsStream(String.join("/", pathList));
+          InputStream resourceIs = getClass().getClassLoader().getResourceAsStream(path);
           Files.write(tmpFile, resourceIs.readAllBytes());
           resourceIs.close();
         }
@@ -89,16 +90,15 @@ public class ExhortTest {
         this.fileName = fileName;
       }
 
-      public TempDirFromResources fromResources(String... pathList) {
+      public TempDirFromResources fromResources(String path) {
         Path tmpFile;
         try {
           tmpFile = Files.createFile(tmpDir.resolve(this.fileName));
-          try (var is = getResourceAsStreamDecision(super.getClass(), pathList)) {
+          try (var is = getResourceAsStreamDecision(super.getClass(), path)) {
             if (Objects.nonNull(is)) {
               Files.write(tmpFile, is.readAllBytes());
             } else {
-              InputStream resourceIs =
-                  getClass().getClassLoader().getResourceAsStream(String.join("/", pathList));
+              InputStream resourceIs = getClass().getClassLoader().getResourceAsStream(path);
               Files.write(tmpFile, resourceIs.readAllBytes());
               resourceIs.close();
             }
@@ -116,10 +116,9 @@ public class ExhortTest {
       return new AddPath(fileName);
     }
 
-    public TempDirFromResources addDirectory(String dirName, String... pathList) {
+    public TempDirFromResources addDirectory(String dirName, String path) {
       File target = this.tmpDir.resolve(dirName).toFile();
-      String join = String.join("/", pathList);
-      URL resource = this.getClass().getClassLoader().getResource(join);
+      URL resource = this.getClass().getClassLoader().getResource(path);
       File source = new File(Objects.requireNonNull(resource).getFile());
       try {
         FileUtils.copyDirectory(source, target);
@@ -129,13 +128,12 @@ public class ExhortTest {
       return this;
     }
 
-    public TempDirFromResources addFile(
-        Optional<String> fileName, Supplier<List<String>> pathList) {
+    public TempDirFromResources addFile(Optional<String> fileName, Supplier<String> path) {
       if (fileName.isEmpty()) {
         return this;
       }
 
-      return new AddPath(fileName.get()).fromResources(pathList.get().toArray(new String[0]));
+      return new AddPath(fileName.get()).fromResources(path.get());
     }
 
     public Path getTempDir() {

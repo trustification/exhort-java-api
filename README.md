@@ -157,8 +157,8 @@ public class ExhortExample {
         CompletableFuture<MixedReport> mixedStackReport = exhortApi.stackAnalysisMixed("/path/to/pom.xml");
         
         // get a AnalysisReport future holding a deserialized Component Analysis report
-        var manifestContent = Files.readAllBytes(Paths.get("/path/to/pom.xml"));
-        CompletableFuture<AnalysisReport> componentReport = exhortApi.componentAnalysis("pom.xml", manifestContent, Paths.get("/path/to/pom.xml"));
+        var manifestContent = Files.readAllBytes(Path.of("/path/to/pom.xml"));
+        CompletableFuture<AnalysisReport> componentReport = exhortApi.componentAnalysis("/path/to/pom.xml", manifestContent);
     }
 }
 ```

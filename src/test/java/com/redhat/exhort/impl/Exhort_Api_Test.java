@@ -101,13 +101,12 @@ class Exhort_Api_Test extends ExhortTest {
     // create a temporary pom.xml file
     var tmpFile = Files.createTempFile("exhort_test_pom_", ".xml");
     try (var is =
-        getResourceAsStreamDecision(
-            this.getClass(), new String[] {"tst_manifests", "maven", "empty", "pom.xml"})) {
+        getResourceAsStreamDecision(this.getClass(), "tst_manifests/maven/empty/pom.xml")) {
       Files.write(tmpFile, is.readAllBytes());
     }
 
     // stub the mocked provider with a fake content object
-    given(mockProvider.provideStack(tmpFile))
+    given(mockProvider.provideStack())
         .willReturn(new Provider.Content("fake-body-content".getBytes(), "fake-content-type"));
 
     // create an argument matcher to make sure we mock the response to for right request
@@ -127,7 +126,7 @@ class Exhort_Api_Test extends ExhortTest {
     byte[] expectedHtml;
     try (var is =
         getResourceAsStreamDecision(
-            this.getClass(), new String[] {"dummy_responses", "maven", "analysis-report.html"})) {
+            this.getClass(), "dummy_responses/maven/analysis-report.html")) {
       expectedHtml = is.readAllBytes();
     }
 
@@ -165,13 +164,12 @@ class Exhort_Api_Test extends ExhortTest {
     // create a temporary pom.xml file
     var tmpFile = Files.createTempFile("exhort_test_pom_", ".xml");
     try (var is =
-        getResourceAsStreamDecision(
-            this.getClass(), new String[] {"tst_manifests", "maven", "empty", "pom.xml"})) {
+        getResourceAsStreamDecision(this.getClass(), "tst_manifests/maven/empty/pom.xml")) {
       Files.write(tmpFile, is.readAllBytes());
     }
 
     // stub the mocked provider with a fake content object
-    given(mockProvider.provideStack(tmpFile))
+    given(mockProvider.provideStack())
         .willReturn(new Provider.Content("fake-body-content".getBytes(), "fake-content-type"));
 
     // we expect this to be ignored because tokens from env vars takes precedence
@@ -197,7 +195,7 @@ class Exhort_Api_Test extends ExhortTest {
     AnalysisReport expectedAnalysis;
     try (var is =
         getResourceAsStreamDecision(
-            this.getClass(), new String[] {"dummy_responses", "maven", "analysis-report.json"})) {
+            this.getClass(), "dummy_responses/maven/analysis-report.json")) {
       expectedAnalysis = mapper.readValue(is, AnalysisReport.class);
     }
 
@@ -231,12 +229,12 @@ class Exhort_Api_Test extends ExhortTest {
     Path tempDir =
         new TempDirFromResources()
             .addFile("pom.xml")
-            .fromResources(new String[] {"tst_manifests", "maven", "empty", "pom.xml"})
+            .fromResources("tst_manifests/maven/empty/pom.xml")
             .getTempDir();
     byte[] targetPom = Files.readAllBytes(tempDir.resolve("pom.xml"));
 
     // stub the mocked provider with a fake content object
-    given(mockProvider.provideComponent(targetPom))
+    given(mockProvider.provideComponent())
         .willReturn(new Provider.Content("fake-body-content".getBytes(), "fake-content-type"));
 
     // we expect this to picked up because no env var to take precedence
@@ -263,7 +261,7 @@ class Exhort_Api_Test extends ExhortTest {
     AnalysisReport expectedReport;
     try (var is =
         getResourceAsStreamDecision(
-            this.getClass(), new String[] {"dummy_responses", "maven", "analysis-report.json"})) {
+            this.getClass(), "dummy_responses/maven/analysis-report.json")) {
       expectedReport = mapper.readValue(is, AnalysisReport.class);
     }
 
@@ -275,14 +273,14 @@ class Exhort_Api_Test extends ExhortTest {
     // mock static getProvider utility function
     try (var ecosystemTool = mockStatic(Ecosystem.class)) {
       // stub static getProvider utility function to return our mock provider
-      ecosystemTool.when(() -> Ecosystem.getProvider("pom.xml", tempDir)).thenReturn(mockProvider);
+      ecosystemTool.when(() -> Ecosystem.getProvider(tempDir)).thenReturn(mockProvider);
 
       // stub the http client to return our mocked response when request matches our arg matcher
       given(mockHttpClient.sendAsync(argThat(matchesRequest), any()))
           .willReturn(CompletableFuture.completedFuture(mockHttpResponse));
 
       // when invoking the api for a json stack analysis report
-      var responseAnalysis = exhortApiSut.componentAnalysis("pom.xml", targetPom, tempDir);
+      var responseAnalysis = exhortApiSut.componentAnalysis(tempDir.toString(), targetPom);
       // verify we got the correct analysis report
       then(responseAnalysis.get()).isEqualTo(expectedReport);
     }
@@ -297,7 +295,7 @@ class Exhort_Api_Test extends ExhortTest {
     AnalysisReport expectedJson;
     try (var is =
         getResourceAsStreamDecision(
-            this.getClass(), new String[] {"dummy_responses", "maven", "analysis-report.json"})) {
+            this.getClass(), "dummy_responses/maven/analysis-report.json")) {
       expectedJson = mapper.readValue(is, AnalysisReport.class);
     }
 
@@ -305,20 +303,19 @@ class Exhort_Api_Test extends ExhortTest {
     byte[] expectedHtml;
     try (var is =
         getResourceAsStreamDecision(
-            this.getClass(), new String[] {"dummy_responses", "maven", "analysis-report.html"})) {
+            this.getClass(), "dummy_responses/maven/analysis-report.html")) {
       expectedHtml = is.readAllBytes();
     }
 
     // create a temporary pom.xml file
     var tmpFile = Files.createTempFile("exhort_test_pom_", ".xml");
     try (var is =
-        getResourceAsStreamDecision(
-            this.getClass(), new String[] {"tst_manifests", "maven", "empty", "pom.xml"})) {
+        getResourceAsStreamDecision(this.getClass(), "tst_manifests/maven/empty/pom.xml")) {
       Files.write(tmpFile, is.readAllBytes());
     }
 
     // stub the mocked provider with a fake content object
-    given(mockProvider.provideStack(tmpFile))
+    given(mockProvider.provideStack())
         .willReturn(new Provider.Content("fake-body-content".getBytes(), "fake-content-type"));
 
     // create an argument matcher to make sure we mock the response for the right request
@@ -332,7 +329,7 @@ class Exhort_Api_Test extends ExhortTest {
     byte[] mixedResponse;
     try (var is =
         getResourceAsStreamDecision(
-            this.getClass(), new String[] {"dummy_responses", "maven", "analysis-report.mixed"})) {
+            this.getClass(), "dummy_responses/maven/analysis-report.mixed")) {
       mixedResponse = is.readAllBytes();
     }
 
@@ -366,13 +363,12 @@ class Exhort_Api_Test extends ExhortTest {
     // load pom.xml
     var tmpFile = Files.createTempFile("exhort_test_pom_", ".xml");
     try (var is =
-        getResourceAsStreamDecision(
-            this.getClass(), new String[] {"tst_manifests", "maven", "empty", "pom.xml"})) {
+        getResourceAsStreamDecision(this.getClass(), "tst_manifests/maven/empty/pom.xml")) {
       Files.write(tmpFile, is.readAllBytes());
     }
 
     // stub the mocked provider with a fake content object
-    given(mockProvider.provideComponent(tmpFile))
+    given(mockProvider.provideComponent())
         .willReturn(new Provider.Content("fake-body-content".getBytes(), "fake-content-type"));
 
     // we expect this to picked up because no env var to take precedence
@@ -394,7 +390,7 @@ class Exhort_Api_Test extends ExhortTest {
     AnalysisReport expectedReport;
     try (var is =
         getResourceAsStreamDecision(
-            this.getClass(), new String[] {"dummy_responses", "maven", "analysis-report.json"})) {
+            this.getClass(), "dummy_responses/maven/analysis-report.json")) {
       expectedReport = mapper.readValue(is, AnalysisReport.class);
     }
 
@@ -539,12 +535,9 @@ class Exhort_Api_Test extends ExhortTest {
   void test_image_analysis()
       throws IOException, ExecutionException, InterruptedException, MalformedPackageURLException {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
-        var sbomIS =
-            getResourceAsStreamDecision(
-                this.getClass(), new String[] {"msc", "image", "image_sbom.json"});
+        var sbomIS = getResourceAsStreamDecision(this.getClass(), "msc/image/image_sbom.json");
         var reportIS =
-            getResourceAsStreamDecision(
-                this.getClass(), new String[] {"msc", "image", "image_reports.json"})) {
+            getResourceAsStreamDecision(this.getClass(), "msc/image/image_reports.json")) {
 
       var imageRef =
           new ImageRef(
@@ -639,12 +632,9 @@ class Exhort_Api_Test extends ExhortTest {
   void imageAnalysisHtml()
       throws IOException, ExecutionException, InterruptedException, MalformedPackageURLException {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
-        var sbomIS =
-            getResourceAsStreamDecision(
-                this.getClass(), new String[] {"msc", "image", "image_sbom.json"});
+        var sbomIS = getResourceAsStreamDecision(this.getClass(), "msc/image/image_sbom.json");
         var reportIS =
-            getResourceAsStreamDecision(
-                this.getClass(), new String[] {"msc", "image", "image_reports.json"})) {
+            getResourceAsStreamDecision(this.getClass(), "msc/image/image_reports.json")) {
 
       var imageRef =
           new ImageRef(
@@ -717,9 +707,7 @@ class Exhort_Api_Test extends ExhortTest {
   @SetEnvironmentVariable(key = "RHDA_SOURCE", value = "rhda-source-from-env-var")
   void test_perform_batch_analysis()
       throws IOException, MalformedPackageURLException, ExecutionException, InterruptedException {
-    try (var is =
-        getResourceAsStreamDecision(
-            this.getClass(), new String[] {"msc", "image", "image_sbom.json"})) {
+    try (var is = getResourceAsStreamDecision(this.getClass(), "msc/image/image_sbom.json")) {
       var sbomsGenerator = mock(Supplier.class);
       var responseBodyHandler = mock(HttpResponse.BodyHandler.class);
       var responseGenerator = mock(Function.class);
@@ -777,9 +765,7 @@ class Exhort_Api_Test extends ExhortTest {
   @Test
   void test_get_batch_image_sboms() throws IOException, MalformedPackageURLException {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
-        var is =
-            getResourceAsStreamDecision(
-                this.getClass(), new String[] {"msc", "image", "image_sbom.json"})) {
+        var is = getResourceAsStreamDecision(this.getClass(), "msc/image/image_sbom.json")) {
       var imageRef =
           new ImageRef(
               "test.io/test/test-app:test-version@sha256:1fafb0905264413501df60d90a92ca32df8a2011cbfb4876ddff5ceb20c8f165",
@@ -826,9 +812,7 @@ class Exhort_Api_Test extends ExhortTest {
 
   @Test
   void test_get_batch_image_analysis_reports() throws IOException, MalformedPackageURLException {
-    try (var is =
-        getResourceAsStreamDecision(
-            this.getClass(), new String[] {"msc", "image", "image_reports.json"})) {
+    try (var is = getResourceAsStreamDecision(this.getClass(), "msc/image/image_reports.json")) {
       var json =
           new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
               .lines()

@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.packageurl.MalformedPackageURLException;
-import com.redhat.exhort.logging.LoggersFactory;
 import com.redhat.exhort.tools.Operations;
 import java.io.File;
 import java.io.IOException;
@@ -36,7 +35,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -58,8 +56,6 @@ public class ImageUtils {
       "application/vnd.oci.image.manifest.v1+json";
   private static final String MEDIA_TYPE_OCI1_MANIFEST_LIST =
       "application/vnd.oci.image.index.v1+json";
-
-  private static final Logger logger = LoggersFactory.getLogger(ImageUtils.class.getName());
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 

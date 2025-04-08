@@ -62,10 +62,9 @@ public class Java_Maven_Provider_Test extends ExhortTest {
   void test_the_provideStack(String testFolder) throws IOException, InterruptedException {
     // create temp file hosting our sut pom.xml
     var tmpPomFile = Files.createTempFile("exhort_test_", ".xml");
-    //    log.log(System.Logger.Level.INFO,"the test folder is : " + testFolder);
     try (var is =
         getResourceAsStreamDecision(
-            getClass(), new String[] {"tst_manifests", "maven", testFolder, "pom.xml"})) {
+            getClass(), String.format("tst_manifests/maven/%s/pom.xml", testFolder))) {
       Files.write(tmpPomFile, is.readAllBytes());
     }
     // load expected SBOM
@@ -73,32 +72,32 @@ public class Java_Maven_Provider_Test extends ExhortTest {
     try (var is =
         getResourceAsStreamDecision(
             getClass(),
-            new String[] {"tst_manifests", "maven", testFolder, "expected_stack_sbom.json"})) {
+            String.format("tst_manifests/maven/%s/expected_stack_sbom.json", testFolder))) {
       expectedSbom = new String(is.readAllBytes());
     }
     String depTree;
     try (var is =
         getResourceAsStreamDecision(
-            getClass(), new String[] {"tst_manifests", "maven", testFolder, "depTree.txt"})) {
+            getClass(), String.format("tst_manifests/maven/%s/depTree.txt", testFolder))) {
       depTree = new String(is.readAllBytes());
     }
+    try (MockedStatic<Operations> mockedOperations = mockStatic(Operations.class)) {
+      mockedOperations
+          .when(() -> Operations.runProcess(any(), any()))
+          .thenAnswer(
+              invocationOnMock -> {
+                return getOutputFileAndOverwriteItWithMock(
+                    depTree, invocationOnMock, "-DoutputFile");
+              });
 
-    MockedStatic<Operations> mockedOperations = mockStatic(Operations.class);
-    mockedOperations
-        .when(() -> Operations.runProcess(any(), any()))
-        .thenAnswer(
-            invocationOnMock -> {
-              return getOutputFileAndOverwriteItWithMock(depTree, invocationOnMock, "-DoutputFile");
-            });
-
-    // when providing stack content for our pom
-    var content = new JavaMavenProvider().provideStack(tmpPomFile);
-    // cleanup
-    Files.deleteIfExists(tmpPomFile);
-    // verify expected SBOM is returned
-    mockedOperations.close();
-    assertThat(content.type).isEqualTo(Api.CYCLONEDX_MEDIA_TYPE);
-    assertThat(dropIgnored(new String(content.buffer))).isEqualTo(dropIgnored(expectedSbom));
+      // when providing stack content for our pom
+      var content = new JavaMavenProvider(tmpPomFile).provideStack();
+      // cleanup
+      Files.deleteIfExists(tmpPomFile);
+      // verify expected SBOM is returned
+      assertThat(content.type).isEqualTo(Api.CYCLONEDX_MEDIA_TYPE);
+      assertThat(dropIgnored(new String(content.buffer))).isEqualTo(dropIgnored(expectedSbom));
+    }
   }
 
   public static String getOutputFileAndOverwriteItWithMock(
@@ -122,43 +121,38 @@ public class Java_Maven_Provider_Test extends ExhortTest {
   @MethodSource("testFolders")
   void test_the_provideComponent(String testFolder) throws IOException, InterruptedException {
     // load the pom target pom file
-    byte[] targetPom;
-    try (var is =
-        getResourceAsStreamDecision(
-            getClass(), new String[] {"tst_manifests", "maven", testFolder, "pom.xml"})) {
-      targetPom = is.readAllBytes();
-    }
+    var targetPom = resolveFile(String.format("tst_manifests/maven/%s/pom.xml", testFolder));
+
     // load expected SBOM
     String expectedSbom = "";
     try (var is =
         getResourceAsStreamDecision(
             getClass(),
-            new String[] {"tst_manifests", "maven", testFolder, "expected_component_sbom.json"})) {
+            String.format("tst_manifests/maven/%s/expected_component_sbom.json", testFolder))) {
       expectedSbom = new String(is.readAllBytes());
     }
 
     String effectivePom;
     try (var is =
         getResourceAsStreamDecision(
-            getClass(), new String[] {"tst_manifests", "maven", testFolder, "effectivePom.xml"})) {
+            getClass(), String.format("tst_manifests/maven/%s/effectivePom.xml", testFolder))) {
       effectivePom = new String(is.readAllBytes());
     }
+    try (MockedStatic<Operations> mockedOperations = mockStatic(Operations.class)) {
+      mockedOperations
+          .when(() -> Operations.runProcess(any(), any()))
+          .thenAnswer(
+              invocationOnMock -> {
+                return getOutputFileAndOverwriteItWithMock(
+                    effectivePom, invocationOnMock, "-Doutput");
+              });
 
-    MockedStatic<Operations> mockedOperations = mockStatic(Operations.class);
-    mockedOperations
-        .when(() -> Operations.runProcess(any(), any()))
-        .thenAnswer(
-            invocationOnMock -> {
-              return getOutputFileAndOverwriteItWithMock(
-                  effectivePom, invocationOnMock, "-Doutput");
-            });
-
-    // when providing component content for our pom
-    var content = new JavaMavenProvider().provideComponent(targetPom);
-    mockedOperations.close();
-    // verify expected SBOM is returned
-    assertThat(content.type).isEqualTo(Api.CYCLONEDX_MEDIA_TYPE);
-    assertThat(dropIgnored(new String(content.buffer))).isEqualTo(dropIgnored(expectedSbom));
+      // when providing component content for our pom
+      var content = new JavaMavenProvider(targetPom).provideComponent();
+      // verify expected SBOM is returned
+      assertThat(content.type).isEqualTo(Api.CYCLONEDX_MEDIA_TYPE);
+      assertThat(dropIgnored(new String(content.buffer))).isEqualTo(dropIgnored(expectedSbom));
+    }
   }
 
   @ParameterizedTest
@@ -170,7 +164,7 @@ public class Java_Maven_Provider_Test extends ExhortTest {
     var tmpPomFile = Files.createTempFile("exhort_test_", ".xml");
     try (var is =
         getResourceAsStreamDecision(
-            getClass(), new String[] {"tst_manifests", "maven", testFolder, "pom.xml"})) {
+            getClass(), String.format("tst_manifests/maven/%s/pom.xml", testFolder))) {
       Files.write(tmpPomFile, is.readAllBytes());
     }
     // load expected SBOM
@@ -178,32 +172,31 @@ public class Java_Maven_Provider_Test extends ExhortTest {
     try (var is =
         getResourceAsStreamDecision(
             getClass(),
-            new String[] {"tst_manifests", "maven", testFolder, "expected_component_sbom.json"})) {
+            String.format("tst_manifests/maven/%s/expected_component_sbom.json", testFolder))) {
       expectedSbom = new String(is.readAllBytes());
     }
 
     String effectivePom;
     try (var is =
         getResourceAsStreamDecision(
-            getClass(), new String[] {"tst_manifests", "maven", testFolder, "effectivePom.xml"})) {
+            getClass(), String.format("tst_manifests/maven/%s/effectivePom.xml", testFolder))) {
       effectivePom = new String(is.readAllBytes());
     }
+    try (MockedStatic<Operations> mockedOperations = mockStatic(Operations.class)) {
+      mockedOperations
+          .when(() -> Operations.runProcess(any(), any()))
+          .thenAnswer(
+              invocationOnMock -> {
+                return getOutputFileAndOverwriteItWithMock(
+                    effectivePom, invocationOnMock, "-Doutput");
+              });
 
-    MockedStatic<Operations> mockedOperations = mockStatic(Operations.class);
-    mockedOperations
-        .when(() -> Operations.runProcess(any(), any()))
-        .thenAnswer(
-            invocationOnMock -> {
-              return getOutputFileAndOverwriteItWithMock(
-                  effectivePom, invocationOnMock, "-Doutput");
-            });
-
-    // when providing component content for our pom
-    var content = new JavaMavenProvider().provideComponent(tmpPomFile);
-    // verify expected SBOM is returned
-    mockedOperations.close();
-    assertThat(content.type).isEqualTo(Api.CYCLONEDX_MEDIA_TYPE);
-    assertThat(dropIgnored(new String(content.buffer))).isEqualTo(dropIgnored(expectedSbom));
+      // when providing component content for our pom
+      var content = new JavaMavenProvider(tmpPomFile).provideComponent();
+      // verify expected SBOM is returned
+      assertThat(content.type).isEqualTo(Api.CYCLONEDX_MEDIA_TYPE);
+      assertThat(dropIgnored(new String(content.buffer))).isEqualTo(dropIgnored(expectedSbom));
+    }
   }
 
   private String dropIgnored(String s) {

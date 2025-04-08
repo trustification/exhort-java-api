@@ -67,7 +67,7 @@ class ImageRefTest extends ExhortTest {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
         var is =
             getResourceAsStreamDecision(
-                this.getClass(), new String[] {"msc", "image", "skopeo_inspect_multi_raw.json"})) {
+                this.getClass(), "msc/image/skopeo_inspect_multi_raw.json")) {
       var json =
           new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
               .lines()

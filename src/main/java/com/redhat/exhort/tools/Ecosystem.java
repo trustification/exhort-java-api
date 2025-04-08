@@ -21,7 +21,6 @@ import com.redhat.exhort.providers.GradleProvider;
 import com.redhat.exhort.providers.JavaMavenProvider;
 import com.redhat.exhort.providers.JavaScriptNpmProvider;
 import com.redhat.exhort.providers.PythonPipProvider;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 /** Utility class used for instantiating providers. * */
@@ -53,40 +52,33 @@ public final class Ecosystem {
    * Utility function for instantiating {@link Provider} implementations.
    *
    * @param manifestPath the manifest Path
-   * @return a Manifest record
+   * @return a {@link Provider} suited for this manifest type
    */
   public static Provider getProvider(final Path manifestPath) {
-    return Ecosystem.getProvider(manifestPath.getFileName().toString(), manifestPath);
+    var provider = resolveProvider(manifestPath);
+    if (!provider.validateLockFile(manifestPath)) {
+      throw new IllegalStateException(
+          "Missing lock file for manifest file: " + manifestPath.toString());
+    }
+    return provider;
   }
 
-  /**
-   * Utility function for instantiating {@link Provider} implementations.
-   *
-   * @param manifestType the type (filename + type) of the manifest
-   * @return a Manifest record
-   */
-  public static Provider getProvider(final String manifestType, final Path manifestPath) {
-    switch (manifestType) {
+  private static Provider resolveProvider(final Path manifestPath) {
+    var manifestFile = manifestPath.getFileName().toString();
+    switch (manifestFile) {
       case "pom.xml":
-        return new JavaMavenProvider();
+        return new JavaMavenProvider(manifestPath);
       case "package.json":
-        Path lockFile = manifestPath.getParent().resolve("package-lock.json");
-        if (Files.exists(lockFile)) {
-          return new JavaScriptNpmProvider();
-        } else {
-          throw new IllegalStateException(
-              String.format("NPM Lock file could not be found for %s", manifestType));
-        }
+        return new JavaScriptNpmProvider(manifestPath);
       case "go.mod":
-        return new GoModulesProvider();
+        return new GoModulesProvider(manifestPath);
       case "requirements.txt":
-        return new PythonPipProvider();
+        return new PythonPipProvider(manifestPath);
       case "build.gradle":
       case "build.gradle.kts":
-        return new GradleProvider();
-
+        return new GradleProvider(manifestPath);
       default:
-        throw new IllegalStateException(String.format("Unknown manifest file %s", manifestType));
+        throw new IllegalStateException(String.format("Unknown manifest file %s", manifestFile));
     }
   }
 }

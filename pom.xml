@@ -23,10 +23,10 @@
     <jakarta.mail.version>2.0.2</jakarta.mail.version>
     <cyclonedx.version>7.3.2</cyclonedx.version>
     <!-- Testing Dependencies -->
-    <assertj.version>3.24.2</assertj.version>
-    <junit-jupiter.version>5.9.1</junit-jupiter.version>
-    <junit-pioneer.version>2.0.1</junit-pioneer.version>
-    <mockito.version>5.3.1</mockito.version>
+    <assertj.version>3.27.3</assertj.version>
+    <junit-jupiter.version>5.10.5</junit-jupiter.version>
+    <junit-pioneer.version>2.3.0</junit-pioneer.version>
+    <mockito.version>5.17.0</mockito.version>
     <!-- Plugins -->
     <maven-clean-plugin.version>3.2.0</maven-clean-plugin.version>
     <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
@@ -42,18 +42,18 @@
     <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
     <maven-site-plugin.version>4.0.0-M6</maven-site-plugin.version>
     <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
-    <maven-surefire-plugin.version>3.1.2</maven-surefire-plugin.version>
+    <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
     <build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
     <extra-enforcer-rules.version>1.6.2</extra-enforcer-rules.version>
     <flatten-maven-plugin.version>1.4.1</flatten-maven-plugin.version>
     <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
-    <junit-platform-maven-plugin.version>1.1.7</junit-platform-maven-plugin.version>
+    <junit-platform-maven-plugin.version>1.1.8</junit-platform-maven-plugin.version>
     <license-maven-plugin.version>4.1</license-maven-plugin.version>
     <openapi-generator-maven-plugin.version>6.6.0</openapi-generator-maven-plugin.version>
     <pitest-maven.version>1.13.2</pitest-maven.version>
     <pitest-junit5-plugin.version>1.1.2</pitest-junit5-plugin.version>
     <versions-maven-plugin.version>2.15.0</versions-maven-plugin.version>
-    <maven-failsafe-plugin.version>3.2.5</maven-failsafe-plugin.version>
+    <maven-failsafe-plugin.version>3.5.3</maven-failsafe-plugin.version>
   </properties>
 
   <licenses>
@@ -215,11 +215,6 @@
       <artifactId>junit-jupiter-api</artifactId>
       <scope>test</scope>
     </dependency>
-<!--    <dependency>-->
-<!--      <groupId>org.junit.jupiter</groupId>-->
-<!--      <artifactId>junit-jupiter-engine</artifactId>-->
-<!--      <scope>test</scope>-->
-<!--    </dependency>-->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
       <artifactId>junit-jupiter-params</artifactId>
@@ -453,7 +448,6 @@ limitations under the License.]]>
       <plugin>
         <groupId>de.sormuras.junit</groupId>
         <artifactId>junit-platform-maven-plugin</artifactId>
-<!--        <extensions>true</extensions>-->
         <executions>
           <execution>
             <id>Launch JUNit Platform</id>
@@ -464,10 +458,6 @@ limitations under the License.]]>
           </execution>
         </executions>
         <configuration>
-<!--          <tags>-->
-<!--            <tag>ExhortApi</tag>-->
-<!--            <tag>Operations</tag>-->
-<!--          </tags>-->
           <skip>${skip.junit_platform}</skip>
           <classNamePatterns>
             <pattern>.*Exhort_Api_Test</pattern>

@@ -50,47 +50,25 @@ public final class JavaScriptNpmProvider extends Provider {
 
   private System.Logger log = System.getLogger(this.getClass().getName());
 
-  public JavaScriptNpmProvider() {
-    super(Type.NPM);
+  public JavaScriptNpmProvider(Path manifest) {
+    super(Type.NPM, manifest);
   }
 
   @Override
-  public Content provideStack(final Path manifestPath) throws IOException {
+  public Content provideStack() throws IOException {
     // check for custom npm executable
-    Sbom sbom = getDependencySbom(manifestPath, true, false);
+    Sbom sbom = getDependencySbom(manifest, true, false);
     return new Content(
         sbom.getAsJsonString().getBytes(StandardCharsets.UTF_8), Api.CYCLONEDX_MEDIA_TYPE);
   }
 
   @Override
-  public Content provideComponent(byte[] manifestContent) throws IOException {
-    // check for custom npm executable
+  public Content provideComponent() throws IOException {
     return new Content(
-        getDependencyTree(manifestContent).getAsJsonString().getBytes(StandardCharsets.UTF_8),
-        Api.CYCLONEDX_MEDIA_TYPE);
-  }
-
-  @Override
-  public Content provideComponent(Path manifestPath) throws IOException {
-    return new Content(
-        getDependencySbom(manifestPath, false, false)
+        getDependencySbom(manifest, false, false)
             .getAsJsonString()
             .getBytes(StandardCharsets.UTF_8),
         Api.CYCLONEDX_MEDIA_TYPE);
-  }
-
-  private Sbom getDependencyTree(byte[] manifestContent) {
-    Sbom sbom;
-    try {
-      Path tempDir = Files.createTempDirectory("exhort_npm");
-      Path path = Files.createFile(Path.of(tempDir.toString(), "package.json"));
-      Files.write(path, manifestContent);
-      sbom = getDependencySbom(path, false, true);
-      Files.delete(path);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-    return sbom;
   }
 
   private PackageURL getRoot(JsonNode jsonDependenciesNpm) throws MalformedPackageURLException {
@@ -140,11 +118,20 @@ public final class JavaScriptNpmProvider extends Provider {
     var npm = Operations.getCustomPathOrElse("npm");
     var npmEnvs = getNpmExecEnv();
     // clean command used to clean build target
-    Path packageLockJson = Path.of(manifestPath.getParent().toString(), "package-lock.json");
+    Path manifestDir = null;
+    try {
+      // MacOS requires resolving to the CanonicalPath to avoid problems with /var being a symlink
+      // of /private/var
+      manifestDir = Path.of(manifestPath.getParent().toFile().getCanonicalPath());
+    } catch (IOException e) {
+      throw new RuntimeException(
+          String.format(
+              "Unable to resolve manifest directory %s, got %s",
+              manifestPath.getParent(), e.getMessage()));
+    }
+    Path packageLockJson = manifestDir.resolve("package-lock.json");
     var createPackageLock =
-        new String[] {
-          npm, "i", "--package-lock-only", "--prefix", manifestPath.getParent().toString()
-        };
+        new String[] {npm, "i", "--package-lock-only", "--prefix", manifestDir.toString()};
     // execute the clean command
     Operations.runProcess(createPackageLock, npmEnvs);
     String[] npmAllDeps;
@@ -155,19 +142,19 @@ public final class JavaScriptNpmProvider extends Provider {
           new String[] {
             npm,
             "ls",
-            includeTransitive ? "--all" : "",
+            includeTransitive ? "--all" : "--depth=0",
             "--omit=dev",
             "--package-lock-only",
             "--json",
             "--prefix",
-            manifestPath.getParent().toString()
+            manifestDir.toString()
           };
     } else {
       npmAllDeps =
           new String[] {
             npm,
             "ls",
-            includeTransitive ? "--all" : "",
+            includeTransitive ? "--all" : "--depth=0",
             "--omit=dev",
             "--package-lock-only",
             "--json"

@@ -51,13 +51,13 @@ public final class GradleProvider extends BaseJavaProvider {
   };
   private Logger log = LoggersFactory.getLogger(this.getClass().getName());
 
-  public GradleProvider() {
-    super(Type.GRADLE);
+  public GradleProvider(Path manifest) {
+    super(Type.GRADLE, manifest);
   }
 
   @Override
-  public Content provideStack(final Path manifestPath) throws IOException {
-    Path tempFile = getDependencies(manifestPath);
+  public Content provideStack() throws IOException {
+    Path tempFile = getDependencies(manifest);
     if (debugLoggingIsNeeded()) {
       String stackAnalysisDependencyTree = Files.readString(tempFile);
       log.info(
@@ -65,10 +65,10 @@ public final class GradleProvider extends BaseJavaProvider {
               "Package Manager Gradle Stack Analysis Dependency Tree Output: %s %s",
               System.lineSeparator(), stackAnalysisDependencyTree));
     }
-    Map<String, String> propertiesMap = extractProperties(manifestPath);
+    Map<String, String> propertiesMap = extractProperties(manifest);
 
     var sbom = buildSbomFromTextFormat(tempFile, propertiesMap, new String[] {"runtimeClasspath"});
-    var ignored = getIgnoredDeps(manifestPath);
+    var ignored = getIgnoredDeps(manifest);
 
     return new Content(
         sbom.filterIgnoredDeps(ignored).getAsJsonString().getBytes(), Api.CYCLONEDX_MEDIA_TYPE);
@@ -433,7 +433,7 @@ public final class GradleProvider extends BaseJavaProvider {
     if (!keyValueMap.isEmpty()) {
       return keyValueMap;
     } else {
-      return null;
+      return Collections.emptyMap();
     }
   }
 
@@ -461,25 +461,15 @@ public final class GradleProvider extends BaseJavaProvider {
   }
 
   @Override
-  public Content provideComponent(byte[] manifestContent) throws IOException {
-    throw new IllegalArgumentException(
-        "Gradle Package Manager requires the full package directory, not just the manifest content,"
-            + " to generate the dependency tree. Please provide the complete package directory"
-            + " path.");
-  }
+  public Content provideComponent() throws IOException {
 
-  @Override
-  public Content provideComponent(Path manifestPath) throws IOException {
-
-    Path tempFile = getDependencies(manifestPath);
-    Map<String, String> propertiesMap = extractProperties(manifestPath);
+    Path tempFile = getDependencies(manifest);
+    Map<String, String> propertiesMap = extractProperties(manifest);
 
     String[] configurationNames = COMPONENT_ANALYSIS_CONFIGURATIONS;
 
-    String configName = null;
-
     var sbom = buildSbomFromTextFormat(tempFile, propertiesMap, configurationNames);
-    var ignored = getIgnoredDeps(manifestPath);
+    var ignored = getIgnoredDeps(manifest);
 
     return new Content(
         sbom.filterIgnoredDeps(ignored).getAsJsonString().getBytes(), Api.CYCLONEDX_MEDIA_TYPE);

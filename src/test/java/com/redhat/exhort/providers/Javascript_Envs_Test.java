@@ -31,7 +31,7 @@ public class Javascript_Envs_Test {
   @SetSystemProperty(key = "NODE_HOME", value = "test-node-home")
   @SetEnvironmentVariable(key = "PATH", value = "test-path")
   void test_javascript_get_envs() {
-    var envs = new JavaScriptNpmProvider().getNpmExecEnv();
+    var envs = new JavaScriptNpmProvider(null).getNpmExecEnv();
     assertEquals(
         Collections.singletonMap("PATH", "test-path" + File.pathSeparator + "test-node-home"),
         envs);
@@ -41,7 +41,7 @@ public class Javascript_Envs_Test {
   @SetSystemProperty(key = "NODE_HOME", value = "test-node-home")
   @ClearEnvironmentVariable(key = "PATH")
   void test_javascript_get_envs_no_path() {
-    var envs = new JavaScriptNpmProvider().getNpmExecEnv();
+    var envs = new JavaScriptNpmProvider(null).getNpmExecEnv();
     assertEquals(Collections.singletonMap("PATH", "test-node-home"), envs);
   }
 
@@ -49,7 +49,7 @@ public class Javascript_Envs_Test {
   @SetSystemProperty(key = "NODE_HOME", value = "")
   @SetEnvironmentVariable(key = "PATH", value = "test-path")
   void test_javascript_get_envs_empty_java_home() {
-    var envs = new JavaScriptNpmProvider().getNpmExecEnv();
+    var envs = new JavaScriptNpmProvider(null).getNpmExecEnv();
     assertNull(envs);
   }
 
@@ -57,7 +57,7 @@ public class Javascript_Envs_Test {
   @ClearSystemProperty(key = "NODE_HOME")
   @SetEnvironmentVariable(key = "PATH", value = "test-path")
   void test_javascript_get_envs_no_java_home() {
-    var envs = new JavaScriptNpmProvider().getNpmExecEnv();
+    var envs = new JavaScriptNpmProvider(null).getNpmExecEnv();
     assertNull(envs);
   }
 }

@@ -18,7 +18,6 @@ package com.redhat.exhort;
 import com.redhat.exhort.api.AnalysisReport;
 import com.redhat.exhort.image.ImageRef;
 import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.Objects;
@@ -100,15 +99,15 @@ public interface Api {
   /**
    * Use for creating a component analysis deserialized Json report for a given type and content.
    *
-   * @param manifestType the type of the manifest, i.e. {@code pom.xml}
+   * @param manifest the path of the manifest, example {@code /path/to/pom.xml}
    * @param manifestContent a byte array of the manifest's content
    * @return the deserialized Json report as an AnalysisReport wrapped in a CompletableFuture
    * @throws IOException when failed to load the manifest content
    */
-  CompletableFuture<AnalysisReport> componentAnalysis(
-      String manifestType, byte[] manifestContent, Path manifestPath) throws IOException;
+  CompletableFuture<AnalysisReport> componentAnalysis(String manifest, byte[] manifestContet)
+      throws IOException;
 
-  CompletableFuture<AnalysisReport> componentAnalysis(String manifestFile) throws IOException;
+  CompletableFuture<AnalysisReport> componentAnalysis(String manifest) throws IOException;
 
   CompletableFuture<Map<ImageRef, AnalysisReport>> imageAnalysis(Set<ImageRef> imageRefs)
       throws IOException;

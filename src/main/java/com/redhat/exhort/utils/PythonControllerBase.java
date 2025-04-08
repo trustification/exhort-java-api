@@ -15,7 +15,10 @@
  */
 package com.redhat.exhort.utils;
 
-import static com.redhat.exhort.impl.ExhortApi.*;
+import static com.redhat.exhort.Provider.PROP_MATCH_MANIFEST_VERSIONS;
+import static com.redhat.exhort.impl.ExhortApi.debugLoggingIsNeeded;
+import static com.redhat.exhort.impl.ExhortApi.getBooleanValueEnvironment;
+import static com.redhat.exhort.impl.ExhortApi.getStringValueEnvironment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -26,57 +29,25 @@ import com.redhat.exhort.tools.Operations;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Base64;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public abstract class PythonControllerBase {
-  public static void main(String[] args) {
 
-    PythonControllerBase pythonController;
-    //    pythonController = new PythonControllerVirtualEnv("/usr/bin/python3");
-    LocalDateTime start = LocalDateTime.now();
-    List<Map<String, Object>> dependencies;
-    //    dependencies = pythonController.getDependencies("/tmp/requirements.txt",true);
-    LocalDateTime end = LocalDateTime.now();
-    System.out.println("start time:" + start + "\n");
-    System.out.println("end time:" + end + "\n");
-    System.out.println("elapsed time: " + start.until(end, ChronoUnit.SECONDS) + "\n");
-    pythonController = new PythonControllerRealEnv("/usr/bin/python3", "/usr/bin/pip3");
-    start = LocalDateTime.now();
-    try {
-      dependencies =
-          pythonController.getDependencies(
-              "/home/zgrinber/git/exhort-java-api/src/test/resources/tst_manifests/pip/pip_requirements_txt_ignore/requirements.txt",
-              true);
-    } catch (PackageNotInstalledException e) {
-      System.out.println(e.getMessage());
-      dependencies = null;
-    }
-    end = LocalDateTime.now();
-    //    LocalDateTime startNaive = LocalDateTime.now();
-    //    List<Map<String, Object>> dependenciesNaive = pythonController.getDependenciesNaive();
-    //    LocalDateTime endNaive = LocalDateTime.now();
-    System.out.println("start time:" + start + "\n");
-    System.out.println("end time:" + end + "\n");
-    System.out.println("elapsed time: " + start.until(end, ChronoUnit.SECONDS) + "\n");
-    //    System.out.println("naive start time:" + startNaive + "\n" );
-    //    System.out.println("naive end time:" + endNaive + "\n");
-    //    System.out.println("elapsed time: " + startNaive.until(endNaive, ChronoUnit.SECONDS));
-
-    ObjectMapper om = new ObjectMapper();
-    try {
-      String json = om.writerWithDefaultPrettyPrinter().writeValueAsString(dependencies);
-      System.out.println(json);
-      //      System.out.println(pythonController.counter);
-
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException(e);
-    }
-  }
+  public static final String PROP_EXHORT_PIP_PIPDEPTREE = "EXHORT_PIP_PIPDEPTREE";
+  public static final String PROP_EXHORT_PIP_FREEZE = "EXHORT_PIP_FREEZE";
+  public static final String PROP_EXHORT_PIP_USE_DEP_TREE = "EXHORT_PIP_USE_DEP_TREE";
+  public static final String PROP_EXHORT_PYTHON_INSTALL_BEST_EFFORTS =
+      "EXHORT_PYTHON_INSTALL_BEST_EFFORTS";
+  public static final String PROP_EXHORT_PIP_SHOW = "EXHORT_PIP_SHOW";
+  public static final String PROP_EXHORT_PYTHON_VIRTUAL_ENV = "EXHORT_PYTHON_VIRTUAL_ENV";
 
   private Logger log = LoggersFactory.getLogger(this.getClass().getName());
   protected Path pythonEnvironmentDir;
@@ -85,8 +56,6 @@ public abstract class PythonControllerBase {
   protected String pathToPythonBin;
 
   protected String pipBinaryLocation;
-
-  //  public int counter =0;
 
   public abstract void prepareEnvironment(String pathToPythonBin);
 
@@ -103,99 +72,6 @@ public abstract class PythonControllerBase {
 
   public abstract void cleanEnvironment(boolean deleteEnvironment);
 
-  //  public List<Map<String,Object>> getDependenciesNaive()
-  //  {
-  //    List<Map<String,Object>> dependencies = new ArrayList<>();
-  //    String freeze = Operations.runProcessGetOutput(pythonEnvironmentDir, pipBinaryLocation,
-  // "freeze");
-  //    String[] deps = freeze.split(System.lineSeparator());
-  //    Arrays.stream(deps).forEach(dep ->
-  //    {
-  //      Map<String,Object> component = new HashMap<>();
-  //      dependencies.add(component);
-  //      bringAllDependenciesNaive(component, getDependencyName(dep));
-  //    });
-  //
-  //
-  //
-  //    return dependencies;
-  //  }
-  //
-  //  private void bringAllDependenciesNaive(Map<String, Object> dependencies, String depName) {
-  //
-  //    if(dependencies == null || depName.trim().equals(""))
-  //         return;
-  //    counter++;
-  //    LocalDateTime start = LocalDateTime.now();
-  //    String pipShowOutput = Operations.runProcessGetOutput(pythonEnvironmentDir,
-  // pipBinaryLocation, "show",
-  // depName);
-  //    LocalDateTime end = LocalDateTime.now();
-  //    System.out.println("pip show start time:" + start + "\n");
-  //    System.out.println("pip show end time:" + end  + "\n");
-  //    System.out.println("pip show elapsed time: " + start.until(end, ChronoUnit.SECONDS)  + "\n"
-  // );
-  //    String depVersion = getDependencyVersion(pipShowOutput);
-  //    List<String> directDeps = getDepsList(pipShowOutput);
-  //    dependencies.put("name", depName);
-  //    dependencies.put("version",depVersion);
-  //    List<Map<String, Object>> targetDeps = new ArrayList<>();
-  //    directDeps.stream().forEach(d -> {
-  //      Map<String, Object> myMap = new HashMap<>();
-  //      targetDeps.add(myMap);
-  //      bringAllDependenciesNaive(myMap,d);
-  //    });
-  //    dependencies.put("dependencies",targetDeps);
-  //
-  //  }
-  //  public List<Map<String,Object>> getDependencies()
-  //  {
-  //    List<Map<String,Object>> dependencies = new ArrayList<>();
-  //    String freeze = Operations.runProcessGetOutput(pythonEnvironmentDir, pipBinaryLocation,
-  // "freeze");
-  //    String[] deps = freeze.split(System.lineSeparator());
-  //    String depNames =
-  // Arrays.stream(deps).map(this::getDependencyName).collect(Collectors.joining(" "));
-  //    bringAllDependencies(dependencies, depNames);
-  //
-  //
-  //
-  //
-  //    return dependencies;
-  //  }
-  //
-  //  private void bringAllDependencies(List<Map<String, Object>> dependencies, String depName) {
-  //
-  //    if (dependencies == null || depName.trim().equals(""))
-  //      return;
-  //    counter++;
-  //    LocalDateTime start = LocalDateTime.now();
-  //    String pipShowOutput = Operations.runProcessGetOutput(pythonEnvironmentDir,
-  // pipBinaryLocation, "show",
-  // depName);
-  //    LocalDateTime end = LocalDateTime.now();
-  //    System.out.println("pip show start time:" + start + "\n");
-  //    System.out.println("pip show end time:" + end  + "\n");
-  //    System.out.println("pip show elapsed time: " + start.until(end, ChronoUnit.MILLIS)  + "\n"
-  // );
-  //    List<String> allLines =
-  // Arrays.stream(pipShowOutput.split("---")).collect(Collectors.toList());
-  //    allLines.stream().forEach(record -> {
-  //      String depVersion = getDependencyVersion(record);
-  //      List<String> directDeps = getDepsList(record);
-  //      getDependencyNameShow(record);
-  //      Map<String, Object> entry = new HashMap<String,Object>();
-  //      dependencies.add(entry);
-  //      entry.put("name", getDependencyNameShow(record));
-  //      entry.put("version", depVersion);
-  //      List<Map<String, Object>> targetDeps = new ArrayList<>();
-  //      String depsList = directDeps.stream().map(str -> str.replace(",",
-  // "")).collect(Collectors.joining(" "));
-  //      bringAllDependencies(targetDeps, depsList);
-  //      entry.put("dependencies",targetDeps);
-  //    });
-  //  }
-
   public final List<Map<String, Object>> getDependencies(
       String pathToRequirements, boolean includeTransitive) {
     if (isVirtualEnv() || isRealEnv()) {
@@ -203,7 +79,7 @@ public abstract class PythonControllerBase {
     }
     if (automaticallyInstallPackageOnEnvironment()) {
       boolean installBestEfforts =
-          getBooleanValueEnvironment("EXHORT_PYTHON_INSTALL_BEST_EFFORTS", "false");
+          getBooleanValueEnvironment(PROP_EXHORT_PYTHON_INSTALL_BEST_EFFORTS, "false");
       /*
        make best efforts to install the requirements.txt on the virtual environment created from
        the python3 passed in. that means that it will install the packages without referring to
@@ -212,11 +88,14 @@ public abstract class PythonControllerBase {
       */
       if (installBestEfforts) {
         boolean matchManifestVersions =
-            getBooleanValueEnvironment("MATCH_MANIFEST_VERSIONS", "true");
+            getBooleanValueEnvironment(PROP_MATCH_MANIFEST_VERSIONS, "true");
         if (matchManifestVersions) {
           throw new RuntimeException(
-              "Conflicting settings, EXHORT_PYTHON_INSTALL_BEST_EFFORTS=true can only work with"
-                  + " MATCH_MANIFEST_VERSIONS=false");
+              "Conflicting settings, "
+                  + PythonControllerBase.PROP_EXHORT_PYTHON_INSTALL_BEST_EFFORTS
+                  + "=true can only work with "
+                  + PROP_MATCH_MANIFEST_VERSIONS
+                  + "=false");
         } else {
           installingRequirementsOneByOne(pathToRequirements);
         }
@@ -263,27 +142,38 @@ public abstract class PythonControllerBase {
   }
 
   private List<Map<String, Object>> getDependenciesImpl(
-      String pathToRequirements, boolean includeTransitive) {
+      String requirements, boolean includeTransitive) {
     List<Map<String, Object>> dependencies = new ArrayList<>();
     Map<StringInsensitive, PythonDependency> cachedEnvironmentDeps = new HashMap<>();
     fillCacheWithEnvironmentDeps(cachedEnvironmentDeps);
+    var requirementsPath = Path.of(requirements);
+    if (!Files.isRegularFile(requirementsPath)) {
+      throw new IllegalArgumentException(
+          "The requirements.txt file does not exist or is not a regular file: " + requirements);
+    }
     List<String> linesOfRequirements;
     try {
       linesOfRequirements =
-          Files.readAllLines(Path.of(pathToRequirements)).stream()
+          Files.readAllLines(requirementsPath).stream()
               .filter((line) -> !line.startsWith("#"))
               .map(String::trim)
               .collect(Collectors.toList());
     } catch (IOException e) {
-      throw new RuntimeException(e);
+      log.warning(
+          "Error while trying to read the requirements.txt file, will not be able to install"
+              + " packages one by one");
+      throw new RuntimeException("Unable to read requirements.txt file: " + e.getMessage());
     }
     try {
       ObjectMapper om = new ObjectMapper();
       om.writerWithDefaultPrettyPrinter().writeValueAsString(cachedEnvironmentDeps);
     } catch (JsonProcessingException e) {
+      log.warning(
+          "Error while trying to convert the cached environment dependencies to JSON string");
       throw new RuntimeException(e);
     }
-    boolean matchManifestVersions = getBooleanValueEnvironment("MATCH_MANIFEST_VERSIONS", "true");
+    boolean matchManifestVersions =
+        getBooleanValueEnvironment(PROP_MATCH_MANIFEST_VERSIONS, "true");
 
     for (String dep : linesOfRequirements) {
       if (matchManifestVersions) {
@@ -312,8 +202,11 @@ public abstract class PythonControllerBase {
                           + " name=%s, manifest version=%s, installed Version=%s, if you"
                           + " want to allow version mismatch for analysis between installed"
                           + " and requested packages, set environment variable/setting -"
-                          + " MATCH_MANIFEST_VERSIONS=false",
-                      dependencyName, manifestVersion, installedVersion));
+                          + " %s=false",
+                      dependencyName,
+                      manifestVersion,
+                      installedVersion,
+                      PROP_MATCH_MANIFEST_VERSIONS));
             }
           }
         }
@@ -328,27 +221,31 @@ public abstract class PythonControllerBase {
     return dependencies;
   }
 
-  private String getPipShowFromEnvironment(String depNames) {
-    return executeCommandOrExtractFromEnv("EXHORT_PIP_SHOW", pipBinaryLocation, "show", depNames);
+  private String getPipShowFromEnvironment(List<String> depNames) {
+    var args = new ArrayList<>();
+    args.add(pipBinaryLocation);
+    args.add("show");
+    args.addAll(depNames);
+    return executeCommandOrExtractFromEnv(PROP_EXHORT_PIP_SHOW, args.toArray(new String[] {}));
   }
 
   String getPipFreezeFromEnvironment() {
     return executeCommandOrExtractFromEnv(
-        "EXHORT_PIP_FREEZE", pipBinaryLocation, "freeze", "--all");
+        PROP_EXHORT_PIP_FREEZE, pipBinaryLocation, "freeze", "--all");
   }
 
   List<PythonDependency> getDependencyTreeJsonFromPipDepTree() {
     executeCommandOrExtractFromEnv(
-        "EXHORT_PIP_PIPDEPTREE", pipBinaryLocation, "install", "pipdeptree");
+        PROP_EXHORT_PIP_PIPDEPTREE, pipBinaryLocation, "install", "pipdeptree");
 
     String pipdeptreeJsonString = "";
     if (isVirtualEnv()) {
       pipdeptreeJsonString =
-          executeCommandOrExtractFromEnv("EXHORT_PIP_PIPDEPTREE", "./bin/pipdeptree", "--json");
+          executeCommandOrExtractFromEnv(PROP_EXHORT_PIP_PIPDEPTREE, "./bin/pipdeptree", "--json");
     } else if (isRealEnv()) {
       pipdeptreeJsonString =
           executeCommandOrExtractFromEnv(
-              "EXHORT_PIP_PIPDEPTREE", pathToPythonBin, "-m", "pipdeptree", "--json");
+              PROP_EXHORT_PIP_PIPDEPTREE, pathToPythonBin, "-m", "pipdeptree", "--json");
     }
     if (debugLoggingIsNeeded()) {
       String pipdeptreeMessage =
@@ -391,7 +288,7 @@ public abstract class PythonControllerBase {
 
   private String executeCommandOrExtractFromEnv(String EnvVar, String... cmdList) {
     String envValue = getStringValueEnvironment(EnvVar, "");
-    if (envValue.trim().equals(""))
+    if (envValue.trim().isBlank())
       return Operations.runProcessGetOutput(pythonEnvironmentDir, cmdList);
     return new String(Base64.getDecoder().decode(envValue));
   }
@@ -411,9 +308,9 @@ public abstract class PythonControllerBase {
           String.format(
               "Package name=>%s is not installed on your python environment, either install it ("
                   + " better to install requirements.txt altogether) or turn on environment"
-                  + " variable EXHORT_PYTHON_VIRTUAL_ENV=true to automatically installs it on"
-                  + " virtual environment ( will slow down the analysis)",
-              depName));
+                  + " variable %s=true to automatically install it on"
+                  + " virtual environment (will slow down the analysis)",
+              depName, PROP_EXHORT_PYTHON_VIRTUAL_ENV));
     }
 
     Map<String, Object> dataMap = new HashMap<>();
@@ -517,7 +414,7 @@ public abstract class PythonControllerBase {
   }
 
   private void fillCacheWithEnvironmentDeps(Map<StringInsensitive, PythonDependency> cache) {
-    boolean usePipDepTree = getBooleanValueEnvironment("EXHORT_PIP_USE_DEP_TREE", "false");
+    boolean usePipDepTree = getBooleanValueEnvironment(PROP_EXHORT_PIP_USE_DEP_TREE, "false");
     if (usePipDepTree) {
       getDependencyTreeJsonFromPipDepTree().forEach(d -> saveToCacheWithKeyVariations(cache, d));
     } else {
@@ -530,10 +427,11 @@ public abstract class PythonControllerBase {
         log.info(freezeMessage);
       }
       String[] deps = freezeOutput.split(System.lineSeparator());
-      String depNames =
+      var depNames =
           Arrays.stream(deps)
+              .filter(line -> !line.contains("@ file"))
               .map(PythonControllerBase::getDependencyName)
-              .collect(Collectors.joining(" "));
+              .collect(Collectors.toList());
       String pipShowOutput = getPipShowFromEnvironment(depNames);
       if (debugLoggingIsNeeded()) {
         String pipShowMessage =

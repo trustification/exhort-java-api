@@ -19,7 +19,6 @@ import static java.lang.String.join;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.Map;
@@ -90,15 +89,24 @@ public final class Operations {
     }
     // verify the command was executed successfully or throw a runtime exception
     if (exitCode != 0) {
-      String errMsg =
-          new BufferedReader(new InputStreamReader(process.getErrorStream()))
-              .lines()
-              .collect(Collectors.joining(System.lineSeparator()));
+      String errMsg = "";
+      try (var reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
+        errMsg = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+      } catch (IOException e) {
+        throw new RuntimeException(
+            String.format(
+                "unable to process error output for '%s', got %s",
+                join(" ", cmdList), e.getMessage()));
+      }
+
       if (errMsg.isEmpty()) {
-        errMsg =
-            new BufferedReader(new InputStreamReader(process.getInputStream()))
-                .lines()
-                .collect(Collectors.joining(System.lineSeparator()));
+        try (var reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+          errMsg = reader.lines().collect(Collectors.joining(System.lineSeparator()));
+        } catch (IOException e) {
+          throw new RuntimeException(
+              String.format(
+                  "unable to process output for '%s', got %s", join(" ", cmdList), e.getMessage()));
+        }
       }
       if (errMsg.isEmpty()) {
         throw new RuntimeException(
@@ -121,49 +129,34 @@ public final class Operations {
   }
 
   public static String runProcessGetOutput(Path dir, final String[] cmdList, String[] envList) {
-    StringBuilder sb = new StringBuilder();
     try {
       Process process;
-      InputStream inputStream;
       if (dir == null) {
         if (envList != null) {
-          process = Runtime.getRuntime().exec(join(" ", cmdList), envList);
+          process = Runtime.getRuntime().exec(cmdList, envList);
         } else {
-          process = Runtime.getRuntime().exec(join(" ", cmdList));
+          process = Runtime.getRuntime().exec(cmdList, null);
         }
       } else {
         if (envList != null) {
-          process = Runtime.getRuntime().exec(join(" ", cmdList), envList, dir.toFile());
+          process = Runtime.getRuntime().exec(cmdList, envList, dir.toFile());
         } else {
-          process = Runtime.getRuntime().exec(join(" ", cmdList), null, dir.toFile());
+          process = Runtime.getRuntime().exec(cmdList, null, dir.toFile());
         }
       }
 
-      inputStream = process.getInputStream();
+      String stdout = new String(process.getInputStream().readAllBytes());
+      String stderr = new String(process.getErrorStream().readAllBytes());
 
-      BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-      String line;
-      while ((line = reader.readLine()) != null) {
-        sb.append(line);
-        if (!line.endsWith(System.lineSeparator())) {
-          sb.append("\n");
-        }
+      // TODO: This should throw an exception if the process fails
+      if (!stderr.isBlank()) {
+        return stderr.trim();
       }
-      if (sb.toString().trim().equals("")) {
-        inputStream = process.getErrorStream();
-        reader = new BufferedReader(new InputStreamReader(inputStream));
-        while ((line = reader.readLine()) != null) {
-          sb.append(line);
-          if (!line.endsWith(System.lineSeparator())) {
-            sb.append("\n");
-          }
-        }
-      }
+      return stdout.trim();
     } catch (IOException e) {
       throw new RuntimeException(
           String.format("Failed to execute command '%s' ", join(" ", cmdList)), e);
     }
-    return sb.toString();
   }
 
   public static ProcessExecOutput runProcessGetFullOutput(
@@ -172,15 +165,15 @@ public final class Operations {
       Process process;
       if (dir == null) {
         if (envList != null) {
-          process = Runtime.getRuntime().exec(join(" ", cmdList), envList);
+          process = Runtime.getRuntime().exec(cmdList, envList);
         } else {
-          process = Runtime.getRuntime().exec(join(" ", cmdList));
+          process = Runtime.getRuntime().exec(cmdList);
         }
       } else {
         if (envList != null) {
-          process = Runtime.getRuntime().exec(join(" ", cmdList), envList, dir.toFile());
+          process = Runtime.getRuntime().exec(cmdList, envList, dir.toFile());
         } else {
-          process = Runtime.getRuntime().exec(join(" ", cmdList), null, dir.toFile());
+          process = Runtime.getRuntime().exec(cmdList, null, dir.toFile());
         }
       }
 
