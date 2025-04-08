@@ -18,7 +18,7 @@ jobs:
       RUN_PYTHON_BIN: ${{ vars.RUN_PYTHON_BIN }}
     strategy:
       matrix:
-        java: [11, 20]
+        java: [11, 17, 21]
     steps:
     - name: Checkout sources
       uses: actions/checkout@v3
@@ -36,7 +36,7 @@ jobs:
         python-version: '3.9'
         cache: 'pip'
     - name: Setup Gradle
-      uses: gradle/gradle-build-action@v3
+      uses: gradle/actions/setup-gradle@v4
     - name: setup go
       uses: actions/setup-go@v5
       with:
