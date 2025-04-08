@@ -22,3 +22,7 @@
   java.base/java.lang=org.junitpioneer
 --add-opens
   java.base/java.util=org.junitpioneer
+--add-opens
+  java.base/java.lang=ALL-UNNAMED
+--add-opens 
+  java.base/java.util=ALL-UNNAMED

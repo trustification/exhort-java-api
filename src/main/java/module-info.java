@@ -7,7 +7,7 @@ module com.redhat.exhort {
   requires java.xml;
   requires jakarta.mail;
   requires cyclonedx.core.java;
-  requires transitive packageurl.java;
+  requires packageurl.java;
   requires transitive java.logging;
   requires org.tomlj;
   requires java.base;
