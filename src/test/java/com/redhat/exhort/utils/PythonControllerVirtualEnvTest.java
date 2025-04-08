@@ -78,8 +78,7 @@ class PythonControllerVirtualEnvTest extends ExhortTest {
   void test_Virtual_Environment_Flow() throws IOException {
     //    Mockito
     String requirementsTxt = "Jinja2==3.0.3";
-    Path requirementsFilePath =
-        Path.of(System.getProperty("user.dir").toString(), "requirements.txt");
+    Path requirementsFilePath = Path.of(Environment.get("user.dir").toString(), "requirements.txt");
     Files.write(requirementsFilePath, requirementsTxt.getBytes());
 
     spiedPythonControllerVirtualEnv.getDependencies(requirementsFilePath.toString(), true);

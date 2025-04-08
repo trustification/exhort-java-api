@@ -18,18 +18,19 @@ package com.redhat.exhort.providers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import com.redhat.exhort.utils.Environment;
 import java.io.File;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.jupiter.ClearEnvironmentVariable;
 import org.junitpioneer.jupiter.ClearSystemProperty;
-import org.junitpioneer.jupiter.SetEnvironmentVariable;
 import org.junitpioneer.jupiter.SetSystemProperty;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class Javascript_Envs_Test {
   @Test
   @SetSystemProperty(key = "NODE_HOME", value = "test-node-home")
-  @SetEnvironmentVariable(key = "PATH", value = "test-path")
+  @SetSystemProperty(key = "PATH", value = "test-path")
   void test_javascript_get_envs() {
     var envs = new JavaScriptNpmProvider(null).getNpmExecEnv();
     assertEquals(
@@ -39,15 +40,18 @@ public class Javascript_Envs_Test {
 
   @Test
   @SetSystemProperty(key = "NODE_HOME", value = "test-node-home")
-  @ClearEnvironmentVariable(key = "PATH")
   void test_javascript_get_envs_no_path() {
-    var envs = new JavaScriptNpmProvider(null).getNpmExecEnv();
-    assertEquals(Collections.singletonMap("PATH", "test-node-home"), envs);
+    try (MockedStatic<Environment> mockEnv =
+        Mockito.mockStatic(Environment.class, Mockito.CALLS_REAL_METHODS)) {
+      mockEnv.when(() -> Environment.get("PATH")).thenReturn(null);
+      var envs = new JavaScriptNpmProvider(null).getNpmExecEnv();
+      assertEquals(Collections.singletonMap("PATH", "test-node-home"), envs);
+    }
   }
 
   @Test
   @SetSystemProperty(key = "NODE_HOME", value = "")
-  @SetEnvironmentVariable(key = "PATH", value = "test-path")
+  @SetSystemProperty(key = "PATH", value = "test-path")
   void test_javascript_get_envs_empty_java_home() {
     var envs = new JavaScriptNpmProvider(null).getNpmExecEnv();
     assertNull(envs);
@@ -55,7 +59,7 @@ public class Javascript_Envs_Test {
 
   @Test
   @ClearSystemProperty(key = "NODE_HOME")
-  @SetEnvironmentVariable(key = "PATH", value = "test-path")
+  @SetSystemProperty(key = "PATH", value = "test-path")
   void test_javascript_get_envs_no_java_home() {
     var envs = new JavaScriptNpmProvider(null).getNpmExecEnv();
     assertNull(envs);

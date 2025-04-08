@@ -17,8 +17,6 @@ package com.redhat.exhort.utils;
 
 import static com.redhat.exhort.Provider.PROP_MATCH_MANIFEST_VERSIONS;
 import static com.redhat.exhort.impl.ExhortApi.debugLoggingIsNeeded;
-import static com.redhat.exhort.impl.ExhortApi.getBooleanValueEnvironment;
-import static com.redhat.exhort.impl.ExhortApi.getStringValueEnvironment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -79,7 +77,7 @@ public abstract class PythonControllerBase {
     }
     if (automaticallyInstallPackageOnEnvironment()) {
       boolean installBestEfforts =
-          getBooleanValueEnvironment(PROP_EXHORT_PYTHON_INSTALL_BEST_EFFORTS, "false");
+          Environment.getBoolean(PROP_EXHORT_PYTHON_INSTALL_BEST_EFFORTS, false);
       /*
        make best efforts to install the requirements.txt on the virtual environment created from
        the python3 passed in. that means that it will install the packages without referring to
@@ -87,8 +85,7 @@ public abstract class PythonControllerBase {
        environment( and of pip package manager) for each package.
       */
       if (installBestEfforts) {
-        boolean matchManifestVersions =
-            getBooleanValueEnvironment(PROP_MATCH_MANIFEST_VERSIONS, "true");
+        boolean matchManifestVersions = Environment.getBoolean(PROP_MATCH_MANIFEST_VERSIONS, true);
         if (matchManifestVersions) {
           throw new RuntimeException(
               "Conflicting settings, "
@@ -172,8 +169,7 @@ public abstract class PythonControllerBase {
           "Error while trying to convert the cached environment dependencies to JSON string");
       throw new RuntimeException(e);
     }
-    boolean matchManifestVersions =
-        getBooleanValueEnvironment(PROP_MATCH_MANIFEST_VERSIONS, "true");
+    boolean matchManifestVersions = Environment.getBoolean(PROP_MATCH_MANIFEST_VERSIONS, true);
 
     for (String dep : linesOfRequirements) {
       if (matchManifestVersions) {
@@ -287,7 +283,7 @@ public abstract class PythonControllerBase {
   }
 
   private String executeCommandOrExtractFromEnv(String EnvVar, String... cmdList) {
-    String envValue = getStringValueEnvironment(EnvVar, "");
+    String envValue = Environment.get(EnvVar, "");
     if (envValue.trim().isBlank())
       return Operations.runProcessGetOutput(pythonEnvironmentDir, cmdList);
     return new String(Base64.getDecoder().decode(envValue));
@@ -414,7 +410,7 @@ public abstract class PythonControllerBase {
   }
 
   private void fillCacheWithEnvironmentDeps(Map<StringInsensitive, PythonDependency> cache) {
-    boolean usePipDepTree = getBooleanValueEnvironment(PROP_EXHORT_PIP_USE_DEP_TREE, "false");
+    boolean usePipDepTree = Environment.getBoolean(PROP_EXHORT_PIP_USE_DEP_TREE, false);
     if (usePipDepTree) {
       getDependencyTreeJsonFromPipDepTree().forEach(d -> saveToCacheWithKeyVariations(cache, d));
     } else {

@@ -30,6 +30,7 @@ import com.redhat.exhort.sbom.SbomFactory;
 import com.redhat.exhort.tools.Ecosystem;
 import com.redhat.exhort.tools.Ecosystem.Type;
 import com.redhat.exhort.tools.Operations;
+import com.redhat.exhort.utils.Environment;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -48,6 +49,7 @@ import java.util.Map.Entry;
  */
 public final class JavaScriptNpmProvider extends Provider {
 
+  private static final String PROP_PATH = "PATH";
   private System.Logger log = System.getLogger(this.getClass().getName());
 
   public JavaScriptNpmProvider(Path manifest) {
@@ -219,13 +221,13 @@ public final class JavaScriptNpmProvider extends Provider {
   }
 
   Map<String, String> getNpmExecEnv() {
-    String nodeHome = System.getProperty("NODE_HOME");
+    String nodeHome = Environment.get("NODE_HOME");
     if (nodeHome != null && !nodeHome.isBlank()) {
-      String path = System.getenv("PATH");
+      String path = Environment.get(PROP_PATH);
       if (path != null) {
-        return Collections.singletonMap("PATH", path + File.pathSeparator + nodeHome);
+        return Collections.singletonMap(PROP_PATH, path + File.pathSeparator + nodeHome);
       } else {
-        return Collections.singletonMap("PATH", nodeHome);
+        return Collections.singletonMap(PROP_PATH, nodeHome);
       }
     }
     return null;

@@ -64,9 +64,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junitpioneer.jupiter.RestoreEnvironmentVariables;
 import org.junitpioneer.jupiter.RestoreSystemProperties;
-import org.junitpioneer.jupiter.SetEnvironmentVariable;
+import org.junitpioneer.jupiter.SetSystemProperty;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -75,9 +74,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @Tag("IntegrationTest")
 @ExtendWith(HelperExtension.class)
 @ExtendWith(MockitoExtension.class)
-@SetEnvironmentVariable(key = "RHDA_SOURCE", value = "exhort-java-api-it")
-@SetEnvironmentVariable(key = "EXHORT_DEV_MODE", value = "false")
-@RestoreEnvironmentVariables
+@SetSystemProperty(key = "RHDA_SOURCE", value = "exhort-java-api-it")
+@SetSystemProperty(key = "EXHORT_DEV_MODE", value = "false")
+@RestoreSystemProperties
 class ExhortApiIT extends ExhortTest {
 
   private static Api api;

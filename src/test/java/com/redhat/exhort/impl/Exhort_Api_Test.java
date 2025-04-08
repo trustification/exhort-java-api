@@ -64,8 +64,9 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junitpioneer.jupiter.ClearEnvironmentVariable;
-import org.junitpioneer.jupiter.SetEnvironmentVariable;
+import org.junitpioneer.jupiter.ClearSystemProperty;
+import org.junitpioneer.jupiter.RestoreSystemProperties;
+import org.junitpioneer.jupiter.SetSystemProperty;
 import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -74,11 +75,11 @@ import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
-@ClearEnvironmentVariable(key = "EXHORT_SNYK_TOKEN")
-@ClearEnvironmentVariable(key = "EXHORT_DEV_MODE")
-@ClearEnvironmentVariable(key = "DEV_EXHORT_BACKEND_URL")
-@ClearEnvironmentVariable(key = "RHDA_TOKEN")
-@ClearEnvironmentVariable(key = "RHDA_SOURCE")
+@ClearSystemProperty(key = "EXHORT_SNYK_TOKEN")
+@ClearSystemProperty(key = "EXHORT_DEV_MODE")
+@ClearSystemProperty(key = "DEV_EXHORT_BACKEND_URL")
+@ClearSystemProperty(key = "RHDA_TOKEN")
+@ClearSystemProperty(key = "RHDA_SOURCE")
 @SuppressWarnings("unchecked")
 class Exhort_Api_Test extends ExhortTest {
   @Mock Provider mockProvider;
@@ -93,9 +94,9 @@ class Exhort_Api_Test extends ExhortTest {
   }
 
   @Test
-  @SetEnvironmentVariable(key = "EXHORT_SNYK_TOKEN", value = "snyk-token-from-env-var")
-  @SetEnvironmentVariable(key = "RHDA_TOKEN", value = "rhda-token-from-env-var")
-  @SetEnvironmentVariable(key = "RHDA_SOURCE", value = "rhda-source-from-env-var")
+  @SetSystemProperty(key = "EXHORT_SNYK_TOKEN", value = "snyk-token-from-env-var")
+  @SetSystemProperty(key = "RHDA_TOKEN", value = "rhda-token-from-env-var")
+  @SetSystemProperty(key = "RHDA_SOURCE", value = "rhda-source-from-env-var")
   void stackAnalysisHtml_with_pom_xml_should_return_html_report_from_the_backend()
       throws IOException, ExecutionException, InterruptedException {
     // create a temporary pom.xml file
@@ -154,11 +155,9 @@ class Exhort_Api_Test extends ExhortTest {
   }
 
   @Test
-  //    System.setProperty("RHDA_TOKEN", "rhda-token-from-property");
-  //    System.setProperty("RHDA_SOURCE", "rhda-source-from-property");
-  @SetEnvironmentVariable(key = "EXHORT_SNYK_TOKEN", value = "snyk-token-from-env-var")
-  @SetEnvironmentVariable(key = "RHDA_TOKEN", value = "rhda-token-from-env-var")
-  @SetEnvironmentVariable(key = "RHDA_SOURCE", value = "rhda-source-from-env-var")
+  @SetSystemProperty(key = "EXHORT_SNYK_TOKEN", value = "snyk-token")
+  @SetSystemProperty(key = "RHDA_TOKEN", value = "rhda-token")
+  @SetSystemProperty(key = "RHDA_SOURCE", value = "rhda-source")
   void stackAnalysis_with_pom_xml_should_return_json_object_from_the_backend()
       throws IOException, ExecutionException, InterruptedException {
     // create a temporary pom.xml file
@@ -172,21 +171,14 @@ class Exhort_Api_Test extends ExhortTest {
     given(mockProvider.provideStack())
         .willReturn(new Provider.Content("fake-body-content".getBytes(), "fake-content-type"));
 
-    // we expect this to be ignored because tokens from env vars takes precedence
-    System.setProperty("EXHORT_SNYK_TOKEN", "snyk-token-from-property");
-
     // create an argument matcher to make sure we mock the response for the right request
     ArgumentMatcher<HttpRequest> matchesRequest =
         r ->
             r.headers().firstValue("Content-Type").get().equals("fake-content-type")
                 && r.headers().firstValue("Accept").get().equals("application/json")
-                &&
-                // snyk token is set using the environment variable (annotation) - ignored the one
-                // set in
-                // properties
-                r.headers().firstValue("ex-snyk-token").get().equals("snyk-token-from-env-var")
-                && r.headers().firstValue("rhda-token").get().equals("rhda-token-from-env-var")
-                && r.headers().firstValue("rhda-source").get().equals("rhda-source-from-env-var")
+                && r.headers().firstValue("ex-snyk-token").get().equals("snyk-token")
+                && r.headers().firstValue("rhda-token").get().equals("rhda-token")
+                && r.headers().firstValue("rhda-source").get().equals("rhda-source")
                 && r.headers().firstValue("rhda-operation-type").get().equals("Stack Analysis")
                 && r.method().equals("POST");
 
@@ -223,6 +215,7 @@ class Exhort_Api_Test extends ExhortTest {
   }
 
   @Test
+  @RestoreSystemProperties
   void componentAnalysis_with_pom_xml_should_return_json_object_from_the_backend()
       throws IOException, ExecutionException, InterruptedException {
     // load pom.xml
@@ -358,6 +351,7 @@ class Exhort_Api_Test extends ExhortTest {
   }
 
   @Test
+  @RestoreSystemProperties
   void componentAnalysis_with_pom_xml_as_path_should_return_json_object_from_the_backend()
       throws IOException, ExecutionException, InterruptedException {
     // load pom.xml
@@ -417,109 +411,36 @@ class Exhort_Api_Test extends ExhortTest {
     }
   }
 
-  @AfterEach
-  void afterEach() {
-    System.clearProperty("EXHORT_DEV_MODE");
-    System.clearProperty("DEV_EXHORT_BACKEND_URL");
-    System.clearProperty("RHDA_TOKEN");
-    System.clearProperty("RHDA_SOURCE");
-  }
-
   @Test
-  @SetEnvironmentVariable(key = "EXHORT_DEV_MODE", value = "true")
-  @ClearEnvironmentVariable(key = "DEV_EXHORT_BACKEND_URL")
-  void check_Exhort_Url_When_DEV_Mode_true_Both() {
-    System.setProperty("EXHORT_DEV_MODE", "true");
-    ExhortApi exhortApi = new ExhortApi();
-    then(exhortApi.getEndpoint()).isEqualTo(ExhortApi.DEFAULT_ENDPOINT_DEV);
-    then(exhortApi.getEndpoint()).isNotEqualTo(ExhortApi.DEFAULT_ENDPOINT);
-  }
-
-  @Test
-  @SetEnvironmentVariable(key = "EXHORT_DEV_MODE", value = "true")
-  @ClearEnvironmentVariable(key = "DEV_EXHORT_BACKEND_URL")
-  void check_Exhort_Url_When_env_DEV_Mode_true_property_DEV_Mode_false() {
-    System.setProperty("EXHORT_DEV_MODE", "false");
-    ExhortApi exhortApi = new ExhortApi();
-    then(exhortApi.getEndpoint()).isEqualTo(ExhortApi.DEFAULT_ENDPOINT_DEV);
-    then(exhortApi.getEndpoint()).isNotEqualTo(ExhortApi.DEFAULT_ENDPOINT);
-  }
-
-  @Test
-  @SetEnvironmentVariable(key = "EXHORT_DEV_MODE", value = "true")
-  @ClearEnvironmentVariable(key = "DEV_EXHORT_BACKEND_URL")
-  void
-      check_Exhort_Url_When_env_DEV_Mode_true_And_DEV_Exhort_Url_Set_Then_Default_DEV_Exhort_URL_Not_Selected() {
+  @SetSystemProperty(key = "EXHORT_DEV_MODE", value = "true")
+  @ClearSystemProperty(key = "DEV_EXHORT_BACKEND_URL")
+  @RestoreSystemProperties
+  void check_Exhort_Url_When_DEV_Mode_true_And_DEV_Exhort_Url_Set() {
     String dummyUrl = "http://dummy-url";
     System.setProperty("DEV_EXHORT_BACKEND_URL", dummyUrl);
     ExhortApi exhortApi = new ExhortApi();
     then(exhortApi.getEndpoint()).isEqualTo(dummyUrl);
-    then(exhortApi.getEndpoint()).isNotEqualTo(ExhortApi.DEFAULT_ENDPOINT_DEV);
   }
 
   @Test
-  @SetEnvironmentVariable(key = "EXHORT_DEV_MODE", value = "false")
-  @ClearEnvironmentVariable(key = "DEV_EXHORT_BACKEND_URL")
-  void
-      check_Exhort_Url_When_env_DEV_Mode_false_And_DEV_Exhort_Url_Set_Then_Default_DEV_Exhort_URL_Not_Selected() {
-    System.setProperty("EXHORT_DEV_MODE", "false");
+  @SetSystemProperty(key = "EXHORT_DEV_MODE", value = "false")
+  void check_Exhort_Url_When_DEV_Mode_false_And_DEV_Exhort_Url_Set() {
     ExhortApi exhortApi = new ExhortApi();
     then(exhortApi.getEndpoint()).isEqualTo(ExhortApi.DEFAULT_ENDPOINT);
-    then(exhortApi.getEndpoint()).isNotEqualTo(ExhortApi.DEFAULT_ENDPOINT_DEV);
   }
 
   @Test
-  @SetEnvironmentVariable(key = "EXHORT_DEV_MODE", value = "false")
-  void
-      check_Exhort_Url_When_env_DEV_Mode_false_And_Property_Dev_Mode_true_Default_Exhort_URL_Selected() {
-    System.setProperty("EXHORT_DEV_MODE", "true");
+  @SetSystemProperty(key = "EXHORT_DEV_MODE", value = "true")
+  void check_Exhort_Url_When_DEV_Mode_true_Dev_Exhort_URL_Selected() {
     ExhortApi exhortApi = new ExhortApi();
-    then(exhortApi.getEndpoint()).isEqualTo(ExhortApi.DEFAULT_ENDPOINT);
-    then(exhortApi.getEndpoint()).isNotEqualTo(ExhortApi.DEFAULT_ENDPOINT_DEV);
-  }
-
-  @Test
-  @SetEnvironmentVariable(key = "EXHORT_DEV_MODE", value = "false")
-  @SetEnvironmentVariable(key = "DEV_EXHORT_BACKEND_URL", value = "http://dummy-route")
-  void
-      check_Exhort_Url_When_env_DEV_Mode_false_And_DEV_Exhort_Url_Set_Then_Default_Exhort_URL_Selected_Anyway() {
-    System.setProperty("EXHORT_DEV_MODE", "true");
-    System.setProperty("DEV_EXHORT_BACKEND_URL", "http://dummy-route2");
-    ExhortApi exhortApi = new ExhortApi();
-    then(exhortApi.getEndpoint()).isEqualTo(ExhortApi.DEFAULT_ENDPOINT);
-    then(exhortApi.getEndpoint()).isNotEqualTo(System.getenv("DEV_EXHORT_BACKEND_URL"));
-    then(exhortApi.getEndpoint()).isNotEqualTo(System.getProperty("DEV_EXHORT_BACKEND_URL"));
-  }
-
-  @Test
-  void
-      check_Exhort_Url_When_env_DEV_Mode_not_set_And_Property_Exhort_Dev_Mode_false_Then_Default_Exhort_URL_Selected() {
-    System.setProperty("EXHORT_DEV_MODE", "false");
-    ExhortApi exhortApi = new ExhortApi();
-    then(exhortApi.getEndpoint()).isEqualTo(ExhortApi.DEFAULT_ENDPOINT);
-    then(exhortApi.getEndpoint()).isNotEqualTo(ExhortApi.DEFAULT_ENDPOINT_DEV);
-  }
-
-  @Test
-  void
-      check_Exhort_Url_When_env_DEV_Mode_not_set_And_Property_Exhort_Dev_Mode_true_Then_Default_DEV_Exhort_URL_Selected() {
-    System.setProperty("EXHORT_DEV_MODE", "true");
-    ExhortApi exhortApi = new ExhortApi();
-    then(exhortApi.getEndpoint()).isNotEqualTo(ExhortApi.DEFAULT_ENDPOINT);
     then(exhortApi.getEndpoint()).isEqualTo(ExhortApi.DEFAULT_ENDPOINT_DEV);
   }
 
   @Test
-  @SetEnvironmentVariable(key = "DEV_EXHORT_BACKEND_URL", value = "http://dummy-route")
-  void
-      check_Exhort_Url_When_env_DEV_Mode_not_set_And_Property_Exhort_Dev_Mode_true_and_Env_DEV_Exhort_Backend_Url_Set_Then_DEV_ENV_Exhort_URL_Selected() {
-    System.setProperty("EXHORT_DEV_MODE", "true");
-    System.setProperty("DEV_EXHORT_BACKEND_URL", "http://dummy-route2");
+  @SetSystemProperty(key = "EXHORT_DEV_MODE", value = "false")
+  void check_Exhort_Url_When_DEV_Mode_not_set_Then_Default_Exhort_URL_Selected() {
     ExhortApi exhortApi = new ExhortApi();
-    then(exhortApi.getEndpoint()).isNotEqualTo(ExhortApi.DEFAULT_ENDPOINT);
-    then(exhortApi.getEndpoint()).isNotEqualTo(ExhortApi.DEFAULT_ENDPOINT_DEV);
-    then(exhortApi.getEndpoint()).isNotEqualTo("http://dummy-route2");
-    then(exhortApi.getEndpoint()).isEqualTo("http://dummy-route");
+    then(exhortApi.getEndpoint()).isEqualTo(ExhortApi.DEFAULT_ENDPOINT);
   }
 
   @Test
@@ -529,9 +450,9 @@ class Exhort_Api_Test extends ExhortTest {
   }
 
   @Test
-  @SetEnvironmentVariable(key = "EXHORT_SNYK_TOKEN", value = "snyk-token-from-env-var")
-  @SetEnvironmentVariable(key = "RHDA_TOKEN", value = "rhda-token-from-env-var")
-  @SetEnvironmentVariable(key = "RHDA_SOURCE", value = "rhda-source-from-env-var")
+  @SetSystemProperty(key = "EXHORT_SNYK_TOKEN", value = "snyk-token-from-env-var")
+  @SetSystemProperty(key = "RHDA_TOKEN", value = "rhda-token-from-env-var")
+  @SetSystemProperty(key = "RHDA_SOURCE", value = "rhda-source-from-env-var")
   void test_image_analysis()
       throws IOException, ExecutionException, InterruptedException, MalformedPackageURLException {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
@@ -626,9 +547,9 @@ class Exhort_Api_Test extends ExhortTest {
   }
 
   @Test
-  @SetEnvironmentVariable(key = "EXHORT_SNYK_TOKEN", value = "snyk-token-from-env-var")
-  @SetEnvironmentVariable(key = "RHDA_TOKEN", value = "rhda-token-from-env-var")
-  @SetEnvironmentVariable(key = "RHDA_SOURCE", value = "rhda-source-from-env-var")
+  @SetSystemProperty(key = "EXHORT_SNYK_TOKEN", value = "snyk-token-from-env-var")
+  @SetSystemProperty(key = "RHDA_TOKEN", value = "rhda-token-from-env-var")
+  @SetSystemProperty(key = "RHDA_SOURCE", value = "rhda-source-from-env-var")
   void imageAnalysisHtml()
       throws IOException, ExecutionException, InterruptedException, MalformedPackageURLException {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
@@ -702,9 +623,9 @@ class Exhort_Api_Test extends ExhortTest {
   }
 
   @Test
-  @SetEnvironmentVariable(key = "EXHORT_SNYK_TOKEN", value = "snyk-token-from-env-var")
-  @SetEnvironmentVariable(key = "RHDA_TOKEN", value = "rhda-token-from-env-var")
-  @SetEnvironmentVariable(key = "RHDA_SOURCE", value = "rhda-source-from-env-var")
+  @SetSystemProperty(key = "EXHORT_SNYK_TOKEN", value = "snyk-token-from-env-var")
+  @SetSystemProperty(key = "RHDA_TOKEN", value = "rhda-token-from-env-var")
+  @SetSystemProperty(key = "RHDA_SOURCE", value = "rhda-source-from-env-var")
   void test_perform_batch_analysis()
       throws IOException, MalformedPackageURLException, ExecutionException, InterruptedException {
     try (var is = getResourceAsStreamDecision(this.getClass(), "msc/image/image_sbom.json")) {

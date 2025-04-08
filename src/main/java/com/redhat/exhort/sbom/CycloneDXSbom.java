@@ -20,6 +20,7 @@ import static com.redhat.exhort.impl.ExhortApi.debugLoggingIsNeeded;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.redhat.exhort.logging.LoggersFactory;
+import com.redhat.exhort.utils.Environment;
 import java.util.*;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
@@ -35,6 +36,7 @@ import org.cyclonedx.model.Metadata;
 
 public class CycloneDXSbom implements Sbom {
 
+  private static final String EXHORT_IGNORE_METHOD = "EXHORT_IGNORE_METHOD";
   private Logger log = LoggersFactory.getLogger(this.getClass().getName());
   private static final Version VERSION = Version.VERSION_14;
   private String exhortIgnoreMethod;
@@ -109,16 +111,8 @@ public class CycloneDXSbom implements Sbom {
   }
 
   private String getExhortIgnoreMethod() {
-    boolean result;
-    return System.getenv("EXHORT_IGNORE_METHOD") != null
-        ? System.getenv("EXHORT_IGNORE_METHOD").trim().toLowerCase()
-        : getExhortIgnoreProperty();
-  }
-
-  private String getExhortIgnoreProperty() {
-    return System.getProperty("EXHORT_IGNORE_METHOD") != null
-        ? System.getProperty("EXHORT_IGNORE_METHOD").trim().toLowerCase()
-        : null;
+    var val = Environment.get(EXHORT_IGNORE_METHOD);
+    return val != null ? val.trim().toLowerCase() : null;
   }
 
   private Component newRootComponent(PackageURL ref) {

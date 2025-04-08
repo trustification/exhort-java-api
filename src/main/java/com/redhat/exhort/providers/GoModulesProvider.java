@@ -16,7 +16,6 @@
 package com.redhat.exhort.providers;
 
 import static com.redhat.exhort.impl.ExhortApi.debugLoggingIsNeeded;
-import static com.redhat.exhort.impl.ExhortApi.getBooleanValueEnvironment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -29,6 +28,7 @@ import com.redhat.exhort.sbom.Sbom;
 import com.redhat.exhort.sbom.SbomFactory;
 import com.redhat.exhort.tools.Ecosystem.Type;
 import com.redhat.exhort.tools.Operations;
+import com.redhat.exhort.utils.Environment;
 import com.redhat.exhort.vcs.GitVersionControlSystemImpl;
 import com.redhat.exhort.vcs.TagInfo;
 import com.redhat.exhort.vcs.VersionControlSystem;
@@ -129,7 +129,7 @@ public final class GoModulesProvider extends Provider {
     Sbom sbom;
     List<PackageURL> ignoredDeps = getIgnoredDeps(manifestPath);
     boolean matchManifestVersions =
-        getBooleanValueEnvironment(Provider.PROP_MATCH_MANIFEST_VERSIONS, "false");
+        Environment.getBoolean(Provider.PROP_MATCH_MANIFEST_VERSIONS, false);
     if (matchManifestVersions) {
       String[] goModGraphLines = goModulesResult.split(System.lineSeparator());
       performManifestVersionsCheck(goModGraphLines, manifestPath);
@@ -281,8 +281,7 @@ public final class GoModulesProvider extends Provider {
         startingIndex += deps.size();
       }
     }
-    boolean goMvsLogicEnabled =
-        getBooleanValueEnvironment(PROP_EXHORT_GO_MVS_LOGIC_ENABLED, "false");
+    boolean goMvsLogicEnabled = Environment.getBoolean(PROP_EXHORT_GO_MVS_LOGIC_ENABLED, false);
     if (goMvsLogicEnabled) {
       edges = getFinalPackagesVersionsForModule(edges, manifestPath);
     }

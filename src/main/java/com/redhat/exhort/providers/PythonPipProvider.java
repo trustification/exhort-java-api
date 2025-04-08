@@ -27,6 +27,7 @@ import com.redhat.exhort.sbom.Sbom;
 import com.redhat.exhort.sbom.SbomFactory;
 import com.redhat.exhort.tools.Ecosystem;
 import com.redhat.exhort.tools.Operations;
+import com.redhat.exhort.utils.Environment;
 import com.redhat.exhort.utils.PythonControllerBase;
 import com.redhat.exhort.utils.PythonControllerRealEnv;
 import com.redhat.exhort.utils.PythonControllerVirtualEnv;
@@ -137,8 +138,7 @@ public final class PythonPipProvider extends Provider {
     // resolved by pip.
     sbom.setBelongingCriteriaBinaryAlgorithm(Sbom.BelongingCondition.NAME);
     sbom.filterIgnoredDeps(ignoredDepsNoVersions);
-    boolean matchManifestVersions =
-        getBooleanValueEnvironment(PROP_MATCH_MANIFEST_VERSIONS, "true");
+    boolean matchManifestVersions = Environment.getBoolean(PROP_MATCH_MANIFEST_VERSIONS, true);
     // filter out by purl from sbom all exhortignore dependencies that their version hardcoded in
     // requirements.txt -
     // in case all versions in manifest matching installed versions of packages in environment.
@@ -208,37 +208,23 @@ public final class PythonPipProvider extends Provider {
 
   private PythonControllerBase getPythonController() {
     String pythonPipBinaries;
-    String useVirtualPythonEnv;
-    if (!getStringValueEnvironment(PythonControllerBase.PROP_EXHORT_PIP_SHOW, "").trim().equals("")
-        && !getStringValueEnvironment(PythonControllerBase.PROP_EXHORT_PIP_FREEZE, "")
-            .trim()
-            .equals("")) {
+    boolean useVirtualPythonEnv;
+    if (!Environment.get(PythonControllerBase.PROP_EXHORT_PIP_SHOW, "").trim().equals("")
+        && !Environment.get(PythonControllerBase.PROP_EXHORT_PIP_FREEZE, "").trim().equals("")) {
       pythonPipBinaries = "python;;pip";
-      useVirtualPythonEnv = "false";
+      useVirtualPythonEnv = false;
     } else {
       pythonPipBinaries = getPythonPipBinaries();
       useVirtualPythonEnv =
-          Objects.requireNonNullElseGet(
-              System.getenv(PythonControllerBase.PROP_EXHORT_PYTHON_VIRTUAL_ENV),
-              () ->
-                  Objects.requireNonNullElse(
-                      System.getProperty(PythonControllerBase.PROP_EXHORT_PYTHON_VIRTUAL_ENV),
-                      "false"));
+          Environment.getBoolean(PythonControllerBase.PROP_EXHORT_PYTHON_VIRTUAL_ENV, false);
     }
 
     String[] parts = pythonPipBinaries.split(";;");
     var python = parts[0];
     var pip = parts[1];
-    useVirtualPythonEnv =
-        Objects.requireNonNullElseGet(
-            System.getenv(PythonControllerBase.PROP_EXHORT_PYTHON_VIRTUAL_ENV),
-            () ->
-                Objects.requireNonNullElse(
-                    System.getProperty(PythonControllerBase.PROP_EXHORT_PYTHON_VIRTUAL_ENV),
-                    "false"));
     PythonControllerBase pythonController;
     if (this.pythonController == null) {
-      if (Boolean.parseBoolean(useVirtualPythonEnv)) {
+      if (useVirtualPythonEnv) {
         pythonController = new PythonControllerVirtualEnv(python);
       } else {
         pythonController = new PythonControllerRealEnv(python, pip);

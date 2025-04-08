@@ -28,6 +28,7 @@ import com.redhat.exhort.image.ImageRef;
 import com.redhat.exhort.image.ImageUtils;
 import com.redhat.exhort.logging.LoggersFactory;
 import com.redhat.exhort.tools.Ecosystem;
+import com.redhat.exhort.utils.Environment;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMultipart;
 import jakarta.mail.util.ByteArrayDataSource;
@@ -60,6 +61,12 @@ import java.util.stream.Stream;
 
 /** Concrete implementation of the Exhort {@link Api} Service. */
 public final class ExhortApi implements Api {
+
+  private static final String DEV_EXHORT_BACKEND_URL = "DEV_EXHORT_BACKEND_URL";
+
+  private static final String EXHORT_DEV_MODE = "EXHORT_DEV_MODE";
+
+  private static final String HTTP_VERSION_EXHORT_CLIENT = "HTTP_VERSION_EXHORT_CLIENT";
 
   private static final Logger LOG = LoggersFactory.getLogger(ExhortApi.class.getName());
 
@@ -126,8 +133,8 @@ public final class ExhortApi implements Api {
    * @return i.e. HttpClient.Version.HTTP_1.1
    */
   static HttpClient.Version getHttpVersion() {
-    return (System.getenv("HTTP_VERSION_EXHORT_CLIENT") != null
-            && System.getenv("HTTP_VERSION_EXHORT_CLIENT").contains("2"))
+    var version = Environment.get(HTTP_VERSION_EXHORT_CLIENT);
+    return (version != null && version.contains("2"))
         ? HttpClient.Version.HTTP_2
         : HttpClient.Version.HTTP_1_1;
   }
@@ -141,7 +148,7 @@ public final class ExhortApi implements Api {
     this.client = client;
     this.mapper = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     // Take default from config.properties in case client didn't override DEV MODE
-    if (System.getProperty("EXHORT_DEV_MODE") == null) {
+    if (Environment.get(EXHORT_DEV_MODE) == null) {
       try {
         InputStream exhortConfig =
             this.getClass().getClassLoader().getResourceAsStream("config.properties");
@@ -149,11 +156,11 @@ public final class ExhortApi implements Api {
           LOG.info(
               "config.properties not found on the class path, fallback to default DEV MODE ="
                   + " false");
-          System.setProperty("EXHORT_DEV_MODE", "false");
+          System.setProperty(EXHORT_DEV_MODE, "false");
         } else {
           Properties properties = new Properties();
           properties.load(exhortConfig);
-          System.setProperty("EXHORT_DEV_MODE", (String) properties.get("EXHORT_DEV_MODE"));
+          System.setProperty(EXHORT_DEV_MODE, (String) properties.get(EXHORT_DEV_MODE));
         }
       } catch (IOException e) {
         LOG.info(
@@ -161,7 +168,7 @@ public final class ExhortApi implements Api {
                 "Error loading config.properties , fallback to set default property DEV MODE ="
                     + " false, Error message = %s",
                 e.getMessage()));
-        System.setProperty("EXHORT_DEV_MODE", "false");
+        System.setProperty(EXHORT_DEV_MODE, "false");
       }
     }
 
@@ -198,8 +205,8 @@ public final class ExhortApi implements Api {
 
   public String getExhortUrl() {
     String endpoint;
-    if (getBooleanValueEnvironment("EXHORT_DEV_MODE", "false")) {
-      endpoint = getStringValueEnvironment("DEV_EXHORT_BACKEND_URL", DEFAULT_ENDPOINT_DEV);
+    if (Environment.getBoolean(EXHORT_DEV_MODE, false)) {
+      endpoint = Environment.get(DEV_EXHORT_BACKEND_URL, DEFAULT_ENDPOINT_DEV);
 
     } else {
       endpoint = DEFAULT_ENDPOINT;
@@ -209,27 +216,13 @@ public final class ExhortApi implements Api {
           String.format(
               "EXHORT_DEV_MODE=%s,DEV_EXHORT_BACKEND_URL=%s, Chosen Backend URL=%s ,"
                   + " DEFAULT_ENDPOINT_DEV=%s , DEFAULT_ENDPOINT=%s",
-              getBooleanValueEnvironment("EXHORT_DEV_MODE", "false"),
-              getStringValueEnvironment("DEV_EXHORT_BACKEND_URL", DEFAULT_ENDPOINT_DEV),
+              Environment.getBoolean(EXHORT_DEV_MODE, false),
+              Environment.get(DEV_EXHORT_BACKEND_URL, DEFAULT_ENDPOINT_DEV),
               endpoint,
               DEFAULT_ENDPOINT_DEV,
               DEFAULT_ENDPOINT));
     }
     return endpoint;
-  }
-
-  public static boolean getBooleanValueEnvironment(String key, String defaultValue) {
-    String result =
-        Objects.requireNonNullElse(
-            System.getenv(key), Objects.requireNonNullElse(System.getProperty(key), defaultValue));
-    return Boolean.parseBoolean(result.trim().toLowerCase());
-  }
-
-  public static String getStringValueEnvironment(String key, String defaultValue) {
-    String result =
-        Objects.requireNonNullElse(
-            System.getenv(key), Objects.requireNonNullElse(System.getProperty(key), defaultValue));
-    return result;
   }
 
   @Override
@@ -390,7 +383,7 @@ public final class ExhortApi implements Api {
   }
 
   public static boolean debugLoggingIsNeeded() {
-    return Boolean.parseBoolean(getStringValueEnvironment("EXHORT_DEBUG", "false"));
+    return Environment.getBoolean("EXHORT_DEBUG", false);
   }
 
   @Override
@@ -639,20 +632,20 @@ public final class ExhortApi implements Api {
     Stream.of(ExhortApi.TokenProvider.values())
         .forEach(
             p -> {
-              var envToken = System.getenv(p.getVarName());
+              var envToken = Environment.get(p.getVarName());
               if (Objects.nonNull(envToken)) {
                 request.setHeader(p.getHeaderName(), envToken);
               } else {
-                var propToken = System.getProperty(p.getVarName());
+                var propToken = Environment.get(p.getVarName());
                 if (Objects.nonNull(propToken)) {
                   request.setHeader(p.getHeaderName(), propToken);
                 }
               }
-              var envUser = System.getenv(p.getUserHeaderName());
+              var envUser = Environment.get(p.getUserHeaderName());
               if (Objects.nonNull(envUser)) {
                 request.setHeader(p.getUserHeaderName(), envUser);
               } else {
-                var propUser = System.getProperty(p.getUserVarName());
+                var propUser = Environment.get(p.getUserVarName());
                 if (Objects.nonNull(propUser)) {
                   request.setHeader(p.getUserHeaderName(), propUser);
                 }
@@ -685,11 +678,6 @@ public final class ExhortApi implements Api {
   }
 
   private String calculateHeaderValueActual(String headerName) {
-    String result = null;
-    result = System.getenv(headerName);
-    if (result == null) {
-      result = System.getProperty(headerName);
-    }
-    return result;
+    return Environment.get(headerName);
   }
 }

@@ -17,12 +17,12 @@ package com.redhat.exhort.tools;
 
 import static java.lang.String.join;
 
+import com.redhat.exhort.utils.Environment;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
 import java.util.Map;
-import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -46,9 +46,7 @@ public final class Operations {
   public static String getCustomPathOrElse(String defaultExecutable) {
     var target = defaultExecutable.toUpperCase().replaceAll(" ", "_").replaceAll("-", "_");
     var executableKey = String.format("EXHORT_%s_PATH", target);
-    return Objects.requireNonNullElseGet(
-        System.getenv(executableKey),
-        () -> Objects.requireNonNullElse(System.getProperty(executableKey), defaultExecutable));
+    return Environment.get(executableKey, defaultExecutable);
   }
 
   /**

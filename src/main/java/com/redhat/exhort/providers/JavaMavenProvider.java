@@ -21,12 +21,12 @@ import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.redhat.exhort.Api;
 import com.redhat.exhort.Provider;
-import com.redhat.exhort.impl.ExhortApi;
 import com.redhat.exhort.logging.LoggersFactory;
 import com.redhat.exhort.sbom.Sbom;
 import com.redhat.exhort.sbom.SbomFactory;
 import com.redhat.exhort.tools.Ecosystem.Type;
 import com.redhat.exhort.tools.Operations;
+import com.redhat.exhort.utils.Environment;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -50,6 +50,7 @@ import javax.xml.stream.XMLStreamReader;
  */
 public final class JavaMavenProvider extends BaseJavaProvider {
 
+  private static final String PROP_JAVA_HOME = "JAVA_HOME";
   private Logger log = LoggersFactory.getLogger(this.getClass().getName());
 
   public JavaMavenProvider(Path manifest) {
@@ -303,9 +304,9 @@ public final class JavaMavenProvider extends BaseJavaProvider {
   }
 
   Map<String, String> getMvnExecEnvs() {
-    var javaHome = ExhortApi.getStringValueEnvironment("JAVA_HOME", "");
+    var javaHome = Environment.get(PROP_JAVA_HOME);
     if (javaHome != null && !javaHome.isBlank()) {
-      return Collections.singletonMap("JAVA_HOME", javaHome);
+      return Collections.singletonMap(PROP_JAVA_HOME, javaHome);
     }
     return null;
   }

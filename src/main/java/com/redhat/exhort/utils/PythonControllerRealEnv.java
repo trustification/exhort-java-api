@@ -25,7 +25,7 @@ public class PythonControllerRealEnv extends PythonControllerBase {
     if (this.pipBinaryDir == null) {
       this.pipBinaryDir = pipPath;
     }
-    this.pythonEnvironmentDir = Path.of(System.getProperty("user.dir"));
+    this.pythonEnvironmentDir = Path.of(Environment.get("user.dir"));
     this.pathToPythonBin = pathToPythonBin;
   }
 
