@@ -15,7 +15,12 @@
  */
 package com.redhat.exhort.impl;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static com.redhat.exhort.Provider.PROP_MATCH_MANIFEST_VERSIONS;
+import static com.redhat.exhort.utils.PythonControllerBase.PROP_EXHORT_PYTHON_INSTALL_BEST_EFFORTS;
+import static com.redhat.exhort.utils.PythonControllerBase.PROP_EXHORT_PYTHON_VIRTUAL_ENV;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -39,6 +44,8 @@ import java.net.HttpURLConnection;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.AbstractMap;
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,7 +56,6 @@ import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.stream.Collectors;
-import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
@@ -58,6 +64,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.EnumSource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junitpioneer.jupiter.RestoreSystemProperties;
+import org.junitpioneer.jupiter.SetSystemProperty;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
@@ -66,64 +74,67 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @Tag("IntegrationTest")
 @ExtendWith(HelperExtension.class)
 @ExtendWith(MockitoExtension.class)
+@SetSystemProperty(key = "RHDA_SOURCE", value = "exhort-java-api-it")
+@SetSystemProperty(key = "EXHORT_DEV_MODE", value = "false")
+@RestoreSystemProperties
 class ExhortApiIT extends ExhortTest {
 
   private static Api api;
-  private static Map<String, String> ecoSystemsManifestNames;
+  private static Map<String, AbstractMap.SimpleEntry<String, Optional<String>>>
+      ecoSystemsManifestNames;
 
   private MockedStatic<Operations> mockedOperations;
 
   @BeforeAll
   static void beforeAll() {
     api = new ExhortApi();
-    System.setProperty("RHDA_SOURCE", "exhort-java-api-it");
-    System.setProperty("EXHORT_DEV_MODE", "false");
     ecoSystemsManifestNames =
         Map.of(
             "golang",
-            "go.mod",
+            new SimpleEntry<>("go.mod", Optional.empty()),
             "maven",
-            "pom.xml",
+            new SimpleEntry<>("pom.xml", Optional.empty()),
             "npm",
-            "package.json",
+            new SimpleEntry<>("package.json", Optional.of("package-lock.json")),
             "pypi",
-            "requirements.txt",
+            new SimpleEntry<>("requirements.txt", Optional.empty()),
             "gradle-groovy",
-            "build.gradle",
+            new SimpleEntry<>("build.gradle", Optional.empty()),
             "gradle-kotlin",
-            "build.gradle.kts");
-  }
-
-  @Tag("IntegrationTest")
-  @AfterAll
-  static void afterAll() {
-    System.clearProperty("RHDA_SOURCE");
-    System.clearProperty("EXHORT_DEV_MODE");
-    api = null;
+            new SimpleEntry<>("build.gradle.kts", Optional.empty()));
   }
 
   private static List<Arguments> scenarios() {
     return ecoSystemsManifestNames.entrySet().stream()
-        .map(e -> Arguments.of(e.getKey(), e.getValue()))
+        .map(e -> Arguments.of(e.getKey(), e.getValue().getKey(), e.getValue().getValue()))
         .collect(Collectors.toList());
   }
 
   @Tag("IntegrationTest")
   @ParameterizedTest(name = "StackAnalysis for: {0} with manifest: {1}")
   @MethodSource("scenarios")
-  void Integration_Test_End_To_End_Stack_Analysis(String useCase, String manifestFileName)
+  @RestoreSystemProperties
+  void Integration_Test_End_To_End_Stack_Analysis(
+      String useCase, String manifestFileName, Optional<String> lockFilename)
       throws IOException, ExecutionException, InterruptedException {
-    var provider = Ecosystem.getProvider(manifestFileName);
+    Path manifestDirPath =
+        new TempDirFromResources()
+            .addFile(manifestFileName)
+            .fromResources(String.format("tst_manifests/it/%s/%s", useCase, manifestFileName))
+            .addFile(
+                lockFilename,
+                () -> String.format("tst_manifests/it/%s/%s", useCase, lockFilename.get()))
+            .getTempDir();
+    Path manifestFileNamePath = manifestDirPath.resolve(manifestFileName);
+    var provider = Ecosystem.getProvider(manifestFileNamePath);
     var packageManager = provider.ecosystem;
-    String pathToManifest =
-        getFileFromResource(manifestFileName, "tst_manifests", "it", useCase, manifestFileName);
     preparePythonEnvironment(packageManager);
     // Github action runner with all maven and java versions seems to enter infinite loop in
     // integration tests of
-    // MAVEN when runnig dependency maven plugin to produce verbose text dependenct tree format.
+    // MAVEN when running dependency maven plugin to produce verbose text dependenct tree format.
     // locally it's not recreated with same versions
     mockMavenDependencyTree(packageManager);
-    AnalysisReport analysisReportResult = api.stackAnalysis(pathToManifest).get();
+    AnalysisReport analysisReportResult = api.stackAnalysis(manifestFileNamePath.toString()).get();
     handleJsonResponse(analysisReportResult, true);
     releaseStaticMock(packageManager);
   }
@@ -137,12 +148,22 @@ class ExhortApiIT extends ExhortTest {
   @Tag("IntegrationTest")
   @ParameterizedTest(name = "StackAnalysis Mixed for: {0} with manifest: {1}")
   @MethodSource("scenarios")
-  void Integration_Test_End_To_End_Stack_Analysis_Mixed(String useCase, String manifestFileName)
+  @RestoreSystemProperties
+  void Integration_Test_End_To_End_Stack_Analysis_Mixed(
+      String useCase, String manifestFileName, Optional<String> lockFilename)
       throws IOException, ExecutionException, InterruptedException {
-    var provider = Ecosystem.getProvider(manifestFileName);
+    Path manifestDirPath =
+        new TempDirFromResources()
+            .addFile(manifestFileName)
+            .fromResources(String.format("tst_manifests/it/%s/%s", useCase, manifestFileName))
+            .addFile(
+                lockFilename,
+                () -> String.format("tst_manifests/it/%s/%s", useCase, lockFilename.get()))
+            .getTempDir();
+    Path manifestFileNamePath = manifestDirPath.resolve(manifestFileName);
+    String pathToManifest = manifestFileNamePath.toString();
+    var provider = Ecosystem.getProvider(Path.of(pathToManifest));
     var packageManager = provider.ecosystem;
-    String pathToManifest =
-        getFileFromResource(manifestFileName, "tst_manifests", "it", useCase, manifestFileName);
     preparePythonEnvironment(packageManager);
     // Github action runner with all maven and java versions seems to enter infinite loop in
     // integration tests of
@@ -159,12 +180,22 @@ class ExhortApiIT extends ExhortTest {
   @Tag("IntegrationTest")
   @ParameterizedTest(name = "StackAnalysis HTML for: {0} with manifest: {1}")
   @MethodSource("scenarios")
-  void Integration_Test_End_To_End_Stack_Analysis_Html(String useCase, String manifestFileName)
+  @RestoreSystemProperties
+  void Integration_Test_End_To_End_Stack_Analysis_Html(
+      String useCase, String manifestFileName, Optional<String> lockFilename)
       throws IOException, ExecutionException, InterruptedException {
-    var provider = Ecosystem.getProvider(manifestFileName);
+    Path manifestDirPath =
+        new TempDirFromResources()
+            .addFile(manifestFileName)
+            .fromResources(String.format("tst_manifests/it/%s/%s", useCase, manifestFileName))
+            .addFile(
+                lockFilename,
+                () -> String.format("tst_manifests/it/%s/%s", useCase, lockFilename.get()))
+            .getTempDir();
+    Path manifestFileNamePath = manifestDirPath.resolve(manifestFileName);
+    String pathToManifest = manifestFileNamePath.toString();
+    var provider = Ecosystem.getProvider(Path.of(pathToManifest));
     var packageManager = provider.ecosystem;
-    String pathToManifest =
-        getFileFromResource(manifestFileName, "tst_manifests", "it", useCase, manifestFileName);
     preparePythonEnvironment(packageManager);
     // Github action runner with all maven and java versions seems to enter infinite loop in
     // integration tests of
@@ -178,18 +209,26 @@ class ExhortApiIT extends ExhortTest {
 
   @Tag("IntegrationTest")
   @ParameterizedTest
+  @RestoreSystemProperties
   @EnumSource(
       value = Ecosystem.Type.class,
       names = {"GOLANG", "MAVEN", "NPM", "PYTHON"})
   void Integration_Test_End_To_End_Component_Analysis(Ecosystem.Type packageManager)
       throws IOException, ExecutionException, InterruptedException {
-    String manifestFileName = ecoSystemsManifestNames.get(packageManager.getType());
-    byte[] manifestContent =
-        getStringFromFile("tst_manifests", "it", packageManager.getType(), manifestFileName)
-            .getBytes();
+    String manifestFileName = ecoSystemsManifestNames.get(packageManager.getType()).getKey();
+
+    Path tempDir =
+        new TempDirFromResources()
+            .addDirectory(
+                packageManager.getType(),
+                String.format("tst_manifests/it/%s", packageManager.getType()))
+            .getTempDir();
+    Path manifestPath = tempDir.resolve(packageManager.getType()).resolve(manifestFileName);
+    byte[] manifestContent = Files.readAllBytes(manifestPath);
+
     preparePythonEnvironment(packageManager);
     AnalysisReport analysisReportResult =
-        api.componentAnalysis(manifestFileName, manifestContent).get();
+        api.componentAnalysis(manifestPath.toString(), manifestContent).get();
     handleJsonResponse(analysisReportResult, false);
   }
 
@@ -229,9 +268,7 @@ class ExhortApiIT extends ExhortTest {
   private static <T> T testImageAnalysis(Function<Set<ImageRef>, T> imageAnalysisFunction)
       throws IOException {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
-        var sbomIS =
-            getResourceAsStreamDecision(
-                ExhortApiIT.class, new String[] {"msc", "image", "image_sbom.json"})) {
+        var sbomIS = getResourceAsStreamDecision(ExhortApiIT.class, "msc/image/image_sbom.json")) {
 
       var imageRef =
           new ImageRef(
@@ -269,13 +306,9 @@ class ExhortApiIT extends ExhortTest {
 
   private static void preparePythonEnvironment(Ecosystem.Type packageManager) {
     if (packageManager.equals(Ecosystem.Type.PYTHON)) {
-      System.setProperty("EXHORT_PYTHON_VIRTUAL_ENV", "true");
-      System.setProperty("EXHORT_PYTHON_INSTALL_BEST_EFFORTS", "true");
-      System.setProperty("MATCH_MANIFEST_VERSIONS", "false");
-    } else {
-      System.clearProperty("EXHORT_PYTHON_VIRTUAL_ENV");
-      System.clearProperty("EXHORT_PYTHON_INSTALL_BEST_EFFORTS");
-      System.clearProperty("MATCH_MANIFEST_VERSIONS");
+      System.setProperty(PROP_EXHORT_PYTHON_VIRTUAL_ENV, "true");
+      System.setProperty(PROP_EXHORT_PYTHON_INSTALL_BEST_EFFORTS, "true");
+      System.setProperty(PROP_MATCH_MANIFEST_VERSIONS, "false");
     }
   }
 
@@ -285,7 +318,8 @@ class ExhortApiIT extends ExhortTest {
         .forEach(
             provider -> {
               assertTrue(provider.getValue().getStatus().getOk());
-              assertTrue(provider.getValue().getStatus().getCode() == HttpURLConnection.HTTP_OK);
+              assertThat(provider.getValue().getStatus().getCode())
+                  .isEqualTo(HttpURLConnection.HTTP_OK);
             });
     analysisReportResult.getProviders().entrySet().stream()
         .map(Map.Entry::getValue)
@@ -293,33 +327,31 @@ class ExhortApiIT extends ExhortTest {
         .map(Map::entrySet)
         .flatMap(Collection::stream)
         .map(Map.Entry::getValue)
-        .forEach(source -> assertTrue(source.getSummary().getTotal() > 0));
+        .forEach(source -> assertThat(source.getSummary().getTotal()).isGreaterThan(0));
 
     if (positiveNumberOfTransitives) {
-      assertTrue(analysisReportResult.getScanned().getTransitive() > 0);
+      assertThat(analysisReportResult.getScanned().getTransitive()).isGreaterThan(0);
     } else {
-      assertEquals(0, analysisReportResult.getScanned().getTransitive());
+      assertThat(analysisReportResult.getScanned().getTransitive()).isZero();
     }
   }
 
   private void handleHtmlResponse(String analysisReportHtml) throws JsonProcessingException {
     ObjectMapper om = new ObjectMapper();
-    assertTrue(analysisReportHtml.contains("svg") && analysisReportHtml.contains("html"));
+    assertThat(analysisReportHtml).contains("svg", "html");
   }
 
   private void handleHtmlResponseForImage(String analysisReportHtml)
       throws JsonProcessingException {
     ObjectMapper om = new ObjectMapper();
-    assertTrue(analysisReportHtml.contains("svg") && analysisReportHtml.contains("html"));
+    assertThat(analysisReportHtml).contains("svg", "html");
   }
 
   private void mockMavenDependencyTree(Ecosystem.Type packageManager) throws IOException {
     if (packageManager.equals(Ecosystem.Type.MAVEN)) {
       mockedOperations = mockStatic(Operations.class);
       String depTree;
-      try (var is =
-          getResourceAsStreamDecision(
-              getClass(), new String[] {"tst_manifests", "it", "maven", "depTree.txt"})) {
+      try (var is = getResourceAsStreamDecision(getClass(), "tst_manifests/it/maven/depTree.txt")) {
         depTree = new String(is.readAllBytes());
       }
       mockedOperations

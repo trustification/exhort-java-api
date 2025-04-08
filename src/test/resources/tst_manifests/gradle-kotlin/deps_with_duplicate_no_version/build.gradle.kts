@@ -1,5 +1,5 @@
 plugins {
-    id("java")
+    id ("java")
 }
 
 group = "org.acme.dbaas"
@@ -10,9 +10,9 @@ repositories {
 }
 
 dependencies {
-    implementation("log4j:log4j:1.2.17")
-    implementation(group: "log4j", name: "log4j")
+    implementation ("log4j:log4j:1.2.17")
+    implementation (group: "log4j", name: "log4j")
 }
-tasks.test {
+test {
     useJUnitPlatform()
 }

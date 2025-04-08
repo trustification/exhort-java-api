@@ -18,31 +18,40 @@ package com.redhat.exhort.providers;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import com.redhat.exhort.utils.Environment;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
-import org.junitpioneer.jupiter.ClearEnvironmentVariable;
-import org.junitpioneer.jupiter.SetEnvironmentVariable;
+import org.junitpioneer.jupiter.SetSystemProperty;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 
 public class Java_Envs_Test {
 
   @Test
-  @SetEnvironmentVariable(key = "JAVA_HOME", value = "test-java-home")
+  @SetSystemProperty(key = "JAVA_HOME", value = "test-java-home")
   void test_java_get_envs() {
-    var envs = new JavaMavenProvider().getMvnExecEnvs();
+    var envs = new JavaMavenProvider(null).getMvnExecEnvs();
     assertEquals(Collections.singletonMap("JAVA_HOME", "test-java-home"), envs);
   }
 
   @Test
-  @SetEnvironmentVariable(key = "JAVA_HOME", value = "")
+  @SetSystemProperty(key = "JAVA_HOME", value = "")
   void test_java_get_envs_empty_java_home() {
-    var envs = new JavaMavenProvider().getMvnExecEnvs();
-    assertNull(envs);
+    try (MockedStatic<Environment> mockEnv =
+        Mockito.mockStatic(Environment.class, Mockito.CALLS_REAL_METHODS)) {
+      mockEnv.when(() -> Environment.get("JAVA_HOME")).thenReturn(null);
+      var envs = new JavaMavenProvider(null).getMvnExecEnvs();
+      assertNull(envs);
+    }
   }
 
   @Test
-  @ClearEnvironmentVariable(key = "JAVA_HOME")
   void test_java_get_envs_no_java_home() {
-    var envs = new JavaMavenProvider().getMvnExecEnvs();
-    assertNull(envs);
+    try (MockedStatic<Environment> mockEnv =
+        Mockito.mockStatic(Environment.class, Mockito.CALLS_REAL_METHODS)) {
+      mockEnv.when(() -> Environment.get("JAVA_HOME")).thenReturn(null);
+      var envs = new JavaMavenProvider(null).getMvnExecEnvs();
+      assertNull(envs);
+    }
   }
 }

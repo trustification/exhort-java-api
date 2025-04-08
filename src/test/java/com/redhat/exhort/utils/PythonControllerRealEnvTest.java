@@ -15,21 +15,31 @@
  */
 package com.redhat.exhort.utils;
 
+import static com.redhat.exhort.Provider.PROP_MATCH_MANIFEST_VERSIONS;
 import static com.redhat.exhort.utils.PythonControllerBaseTest.matchCommandPipFreeze;
 import static com.redhat.exhort.utils.PythonControllerBaseTest.matchCommandPipShow;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 
 import com.redhat.exhort.ExhortTest;
 import com.redhat.exhort.tools.Operations;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.junitpioneer.jupiter.RestoreSystemProperties;
+import org.junitpioneer.jupiter.SetSystemProperty;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -37,39 +47,9 @@ class PythonControllerRealEnvTest extends ExhortTest {
 
   private static PythonControllerRealEnv pythonControllerRealEnv;
   private final String PIP_FREEZE_LINES_CYCLIC =
-      getStringFromFile("msc", "python", "pip_freeze_lines_cyclic.txt");
+      getStringFromFile("msc/python/pip_freeze_lines_cyclic.txt");
   private final String PIP_SHOW_LINES_CYCLIC =
-      getStringFromFile("msc", "python", "pip_show_lines_cyclic.txt");
-
-  //  ArgumentMatcher<String[]> matchCommandPipFreeze = new ArgumentMatcher<String[]>() {
-  //    @Override
-  //    public boolean matches(String[] command) {
-  //      return Arrays.stream(command).anyMatch(word -> word.contains("freeze"));
-  //    }
-  //    // in var args, must override type default method' void.class in argumentMatcher interface
-  // in order to let
-  // custom ArgumentMatcher work correctly.
-  //    @Override
-  //    public Class type()
-  //    {
-  //      return String[].class;
-  //    }
-  //
-  //  };
-  //
-  //  ArgumentMatcher<String[]> matchCommandPipShow = new ArgumentMatcher<String[]>() {
-  //    @Override
-  //    public boolean matches(String[] command) {
-  //      return Arrays.stream(command).anyMatch(word -> word.contains("show"));
-  //    }
-  //
-  //    @Override
-  //    public Class type()
-  //    {
-  //      return String[].class;
-  //    }
-  //
-  //  };
+      getStringFromFile("msc/python/pip_show_lines_cyclic.txt");
 
   @BeforeEach
   void setUp() {
@@ -227,7 +207,7 @@ class PythonControllerRealEnvTest extends ExhortTest {
         .when(() -> Operations.runProcessGetOutput(any(Path.class), argThat(matchCommandPipShow)))
         .thenReturn(pipShowResults);
     if (!MatchManifestVersionsEnabled) {
-      System.setProperty("MATCH_MANIFEST_VERSIONS", "false");
+      System.setProperty(PROP_MATCH_MANIFEST_VERSIONS, "false");
     }
     if (MatchManifestVersionsEnabled) {
       RuntimeException runtimeException =
@@ -247,10 +227,10 @@ class PythonControllerRealEnvTest extends ExhortTest {
 
       List<Map<String, Object>> dependencies =
           pythonControllerRealEnv.getDependencies(requirementsPath, true);
-      System.clearProperty("MATCH_MANIFEST_VERSIONS");
+      System.clearProperty(PROP_MATCH_MANIFEST_VERSIONS);
       // collect all packages returned from getDependencies into Set.
       System.out.println(dependencies);
-      Set<String> actualSetOfPackages = new HashSet();
+      Set<String> actualSetOfPackages = new HashSet<>();
       dependencies.forEach(
           entry -> {
             accumulateAllPackages(entry, actualSetOfPackages);
@@ -287,26 +267,21 @@ class PythonControllerRealEnvTest extends ExhortTest {
   }
 
   @Test
+  @RestoreSystemProperties
+  @SetSystemProperty(key = PROP_MATCH_MANIFEST_VERSIONS, value = "false")
   void get_Dependencies_from_Cyclic_Tree() {
     MockedStatic<Operations> operationsMockedStatic = Mockito.mockStatic(Operations.class);
-    //    ArgumentMatcher<String[]> matchCommandPipFreeze = command ->
-    // Arrays.stream(command).anyMatch(word ->
-    // word.contains("freeze"));
 
     operationsMockedStatic
         .when(() -> Operations.runProcessGetOutput(any(Path.class), argThat(matchCommandPipFreeze)))
         .thenReturn(PIP_FREEZE_LINES_CYCLIC);
-    //    operationsMockedStatic.when(() ->
-    // Operations.runProcessGetOutput(any(Path.class),any(String[].class))).thenReturn(PIP_FREEZE_LINES_CYCLIC);
     operationsMockedStatic
         .when(() -> Operations.runProcessGetOutput(any(Path.class), argThat(matchCommandPipShow)))
         .thenReturn(PIP_SHOW_LINES_CYCLIC);
     String requirementsTxt =
-        getFileFromResource("requirements.txt", "msc", "python", "requirements-cyclic-test.txt");
-    System.setProperty("MATCH_MANIFEST_VERSIONS", "false");
+        getFileFromResource("requirements.txt", "msc/python/requirements-cyclic-test.txt");
     List<Map<String, Object>> dependencies =
         pythonControllerRealEnv.getDependencies(requirementsTxt, true);
-    System.clearProperty("MATCH_MANIFEST_VERSIONS");
     assertEquals(104, dependencies.size());
 
     operationsMockedStatic.close();
@@ -314,7 +289,6 @@ class PythonControllerRealEnvTest extends ExhortTest {
 
   @Test
   void get_Dependency_Name_requirements() {
-
     assertEquals("something", PythonControllerRealEnv.getDependencyName("something==2.0.5"));
     assertEquals("something", PythonControllerRealEnv.getDependencyName("something == 2.0.5"));
     assertEquals("something", PythonControllerRealEnv.getDependencyName("something>=2.0.5"));
@@ -322,17 +296,17 @@ class PythonControllerRealEnvTest extends ExhortTest {
 
   @Test
   void automaticallyInstallPackageOnEnvironment() {
-    assertFalse(this.pythonControllerRealEnv.automaticallyInstallPackageOnEnvironment());
+    assertFalse(pythonControllerRealEnv.automaticallyInstallPackageOnEnvironment());
   }
 
   @Test
   void isRealEnv() {
 
-    assertTrue(this.pythonControllerRealEnv.isRealEnv());
+    assertTrue(pythonControllerRealEnv.isRealEnv());
   }
 
   @Test
   void isVirtualEnv() {
-    assertFalse(this.pythonControllerRealEnv.isVirtualEnv());
+    assertFalse(pythonControllerRealEnv.isVirtualEnv());
   }
 }

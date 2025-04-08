@@ -27,6 +27,7 @@ import com.redhat.exhort.sbom.Sbom;
 import com.redhat.exhort.sbom.SbomFactory;
 import com.redhat.exhort.tools.Ecosystem;
 import com.redhat.exhort.tools.Operations;
+import com.redhat.exhort.utils.Environment;
 import com.redhat.exhort.utils.PythonControllerBase;
 import com.redhat.exhort.utils.PythonControllerRealEnv;
 import com.redhat.exhort.utils.PythonControllerVirtualEnv;
@@ -34,7 +35,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -51,38 +51,22 @@ public final class PythonPipProvider extends Provider {
 
   private PythonControllerBase pythonController;
 
-  public static void main(String[] args) {
-    try {
-      PythonPipProvider pythonPipProvider = new PythonPipProvider();
-      //      byte[] bytes = Files.readAllBytes(Path.of("/tmp/exhort_env/requirements.txt"));
-      //      Content content = pythonPipProvider.provideComponent(bytes);
-      Content content =
-          pythonPipProvider.provideStack(
-              Path.of(
-                  "/home/zgrinber/git/exhort-java-api/src/test/resources/tst_manifests/pip/pip_requirements_txt_ignore/requirements.txt"));
-      String s = new String(content.buffer);
-      System.out.print(s);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public PythonPipProvider() {
-    super(Ecosystem.Type.PYTHON);
+  public PythonPipProvider(Path manifest) {
+    super(Ecosystem.Type.PYTHON, manifest);
   }
 
   @Override
-  public Content provideStack(Path manifestPath) throws IOException {
+  public Content provideStack() throws IOException {
     PythonControllerBase pythonController = getPythonController();
     List<Map<String, Object>> dependencies =
-        pythonController.getDependencies(manifestPath.toString(), true);
+        pythonController.getDependencies(manifest.toString(), true);
     printDependenciesTree(dependencies);
     Sbom sbom = SbomFactory.newInstance(Sbom.BelongingCondition.PURL, "sensitive");
     sbom.addRoot(toPurl(DEFAULT_PIP_ROOT_COMPONENT_NAME, DEFAULT_PIP_ROOT_COMPONENT_VERSION));
     for (Map<String, Object> component : dependencies) {
       addAllDependencies(sbom.getRoot(), component, sbom);
     }
-    byte[] requirementsFile = Files.readAllBytes(manifestPath);
+    byte[] requirementsFile = Files.readAllBytes(manifest);
     handleIgnoredDependencies(new String(requirementsFile), sbom);
     return new Content(
         sbom.getAsJsonString().getBytes(StandardCharsets.UTF_8), Api.CYCLONEDX_MEDIA_TYPE);
@@ -104,16 +88,10 @@ public final class PythonPipProvider extends Provider {
   }
 
   @Override
-  public Content provideComponent(byte[] manifestContent) throws IOException {
+  public Content provideComponent() throws IOException {
     PythonControllerBase pythonController = getPythonController();
-    Path tempRepository = Files.createTempDirectory("exhort-pip");
-    Path path =
-        Paths.get(tempRepository.toAbsolutePath().normalize().toString(), "requirements.txt");
-    Files.deleteIfExists(path);
-    Path manifestPath = Files.createFile(path);
-    Files.write(manifestPath, manifestContent);
     List<Map<String, Object>> dependencies =
-        pythonController.getDependencies(manifestPath.toString(), false);
+        pythonController.getDependencies(manifest.toString(), false);
     printDependenciesTree(dependencies);
     Sbom sbom = SbomFactory.newInstance();
     sbom.addRoot(toPurl(DEFAULT_PIP_ROOT_COMPONENT_NAME, DEFAULT_PIP_ROOT_COMPONENT_VERSION));
@@ -124,9 +102,9 @@ public final class PythonPipProvider extends Provider {
                   sbom.getRoot(),
                   toPurl((String) component.get("name"), (String) component.get("version")));
             });
-    Files.delete(manifestPath);
-    Files.delete(tempRepository);
-    handleIgnoredDependencies(new String(manifestContent), sbom);
+
+    var manifestContent = Files.readString(manifest);
+    handleIgnoredDependencies(manifestContent, sbom);
     return new Content(
         sbom.getAsJsonString().getBytes(StandardCharsets.UTF_8), Api.CYCLONEDX_MEDIA_TYPE);
   }
@@ -145,12 +123,12 @@ public final class PythonPipProvider extends Provider {
 
   private void handleIgnoredDependencies(String manifestContent, Sbom sbom) {
     Set<PackageURL> ignoredDeps = getIgnoredDependencies(manifestContent);
-    Set ignoredDepsVersions =
+    Set<String> ignoredDepsVersions =
         ignoredDeps.stream()
             .filter(dep -> !dep.getVersion().trim().equals("*"))
             .map(PackageURL::getCoordinates)
             .collect(Collectors.toSet());
-    Set ignoredDepsNoVersions =
+    Set<String> ignoredDepsNoVersions =
         ignoredDeps.stream()
             .filter(dep -> dep.getVersion().trim().equals("*"))
             .map(PackageURL::getCoordinates)
@@ -160,7 +138,7 @@ public final class PythonPipProvider extends Provider {
     // resolved by pip.
     sbom.setBelongingCriteriaBinaryAlgorithm(Sbom.BelongingCondition.NAME);
     sbom.filterIgnoredDeps(ignoredDepsNoVersions);
-    boolean matchManifestVersions = getBooleanValueEnvironment("MATCH_MANIFEST_VERSIONS", "true");
+    boolean matchManifestVersions = Environment.getBoolean(PROP_MATCH_MANIFEST_VERSIONS, true);
     // filter out by purl from sbom all exhortignore dependencies that their version hardcoded in
     // requirements.txt -
     // in case all versions in manifest matching installed versions of packages in environment.
@@ -171,8 +149,8 @@ public final class PythonPipProvider extends Provider {
       // in case version mismatch is possible (MATCH_MANIFEST_VERSIONS=false) , need to parse the
       // name of package
       // from the purl, and remove the package name from sbom according to name only
-      Set deps =
-          (Set)
+      Set<String> deps =
+          (Set<String>)
               ignoredDepsVersions.stream()
                   .map(
                       purlString -> {
@@ -188,7 +166,7 @@ public final class PythonPipProvider extends Provider {
     }
   }
 
-  private Set getIgnoredDependencies(String requirementsDeps) {
+  private Set<PackageURL> getIgnoredDependencies(String requirementsDeps) {
 
     String[] requirementsLines = requirementsDeps.split(System.lineSeparator());
     Set<PackageURL> collected =
@@ -230,33 +208,23 @@ public final class PythonPipProvider extends Provider {
 
   private PythonControllerBase getPythonController() {
     String pythonPipBinaries;
-    String useVirtualPythonEnv;
-    if (!getStringValueEnvironment("EXHORT_PIP_SHOW", "").trim().equals("")
-        && !getStringValueEnvironment("EXHORT_PIP_FREEZE", "").trim().equals("")) {
+    boolean useVirtualPythonEnv;
+    if (!Environment.get(PythonControllerBase.PROP_EXHORT_PIP_SHOW, "").trim().equals("")
+        && !Environment.get(PythonControllerBase.PROP_EXHORT_PIP_FREEZE, "").trim().equals("")) {
       pythonPipBinaries = "python;;pip";
-      useVirtualPythonEnv = "false";
+      useVirtualPythonEnv = false;
     } else {
       pythonPipBinaries = getPythonPipBinaries();
       useVirtualPythonEnv =
-          Objects.requireNonNullElseGet(
-              System.getenv("EXHORT_PYTHON_VIRTUAL_ENV"),
-              () ->
-                  Objects.requireNonNullElse(
-                      System.getProperty("EXHORT_PYTHON_VIRTUAL_ENV"), "false"));
+          Environment.getBoolean(PythonControllerBase.PROP_EXHORT_PYTHON_VIRTUAL_ENV, false);
     }
 
     String[] parts = pythonPipBinaries.split(";;");
     var python = parts[0];
     var pip = parts[1];
-    useVirtualPythonEnv =
-        Objects.requireNonNullElseGet(
-            System.getenv("EXHORT_PYTHON_VIRTUAL_ENV"),
-            () ->
-                Objects.requireNonNullElse(
-                    System.getProperty("EXHORT_PYTHON_VIRTUAL_ENV"), "false"));
     PythonControllerBase pythonController;
     if (this.pythonController == null) {
-      if (Boolean.parseBoolean(useVirtualPythonEnv)) {
+      if (useVirtualPythonEnv) {
         pythonController = new PythonControllerVirtualEnv(python);
       } else {
         pythonController = new PythonControllerRealEnv(python, pip);
@@ -280,11 +248,5 @@ public final class PythonPipProvider extends Provider {
       Operations.runProcess(pip, "--version");
     }
     return String.format("%s;;%s", python, pip);
-  }
-
-  @Override
-  public Content provideComponent(Path manifestPath) throws IOException {
-    throw new IllegalArgumentException(
-        "provideComponent with file system path for Python pip package manager is not supported");
   }
 }

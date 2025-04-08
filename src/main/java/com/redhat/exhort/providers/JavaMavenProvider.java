@@ -21,19 +21,21 @@ import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.redhat.exhort.Api;
 import com.redhat.exhort.Provider;
-import com.redhat.exhort.impl.ExhortApi;
 import com.redhat.exhort.logging.LoggersFactory;
 import com.redhat.exhort.sbom.Sbom;
 import com.redhat.exhort.sbom.SbomFactory;
-import com.redhat.exhort.tools.Ecosystem;
 import com.redhat.exhort.tools.Ecosystem.Type;
 import com.redhat.exhort.tools.Operations;
+import com.redhat.exhort.utils.Environment;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.xml.stream.XMLInputFactory;
@@ -48,37 +50,19 @@ import javax.xml.stream.XMLStreamReader;
  */
 public final class JavaMavenProvider extends BaseJavaProvider {
 
+  private static final String PROP_JAVA_HOME = "JAVA_HOME";
   private Logger log = LoggersFactory.getLogger(this.getClass().getName());
 
-  public static void main(String[] args) throws IOException {
-    JavaMavenProvider javaMavenProvider = new JavaMavenProvider();
-    PackageURL packageURL =
-        javaMavenProvider.parseDep("+- org.assertj:assertj-core:jar:3.24.2:test");
-    LocalDateTime start = LocalDateTime.now();
-    System.out.print(start);
-    Content content =
-        javaMavenProvider.provideStack(
-            Path.of("/tmp/devfile-sample-java-springboot-basic/pom.xml"));
-
-    //    PackageURL packageURL =
-    // javaMavenProvider.parseDep("pom-with-deps-no-ignore:pom-with-dependency-not-ignored-common-paths:jar:0.0.1");
-    //    String report = new String(content.buffer);
-    System.out.println(new String(content.buffer));
-    LocalDateTime end = LocalDateTime.now();
-    System.out.print(end);
-    System.out.print("Total time elapsed = " + start.until(end, ChronoUnit.NANOS));
-  }
-
-  public JavaMavenProvider() {
-    super(Type.MAVEN);
+  public JavaMavenProvider(Path manifest) {
+    super(Type.MAVEN, manifest);
   }
 
   @Override
-  public Content provideStack(final Path manifestPath) throws IOException {
+  public Content provideStack() throws IOException {
     // check for custom mvn executable
     var mvn = Operations.getCustomPathOrElse("mvn");
     // clean command used to clean build target
-    var mvnCleanCmd = new String[] {mvn, "clean", "-f", manifestPath.toString()};
+    var mvnCleanCmd = new String[] {mvn, "clean", "-f", manifest.toString()};
     var mvnEnvs = getMvnExecEnvs();
     // execute the clean command
     Operations.runProcess(mvnCleanCmd, mvnEnvs);
@@ -94,12 +78,12 @@ public final class JavaMavenProvider extends BaseJavaProvider {
             add("-DoutputType=text");
             add(String.format("-DoutputFile=%s", tmpFile.toString()));
             add("-f");
-            add(manifestPath.toString());
+            add(manifest.toString());
           }
         };
     // if we have dependencies marked as ignored, exclude them from the tree command
     var ignored =
-        getDependencies(manifestPath).stream()
+        getDependencies(manifest).stream()
             .filter(d -> d.ignored)
             .map(DependencyAggregator::toPurl)
             .map(PackageURL::getCoordinates)
@@ -134,31 +118,13 @@ public final class JavaMavenProvider extends BaseJavaProvider {
     return sbom;
   }
 
-  private PackageURL txtPkgToPurl(String dotPkg) {
-    var parts = dotPkg.replaceAll("\"", "").trim().split(":");
-    if (parts.length >= 4) {
-      try {
-        return new PackageURL(
-            Ecosystem.Type.MAVEN.getType(), parts[0], parts[1], parts[3], null, null);
-      } catch (MalformedPackageURLException e) {
-        throw new IllegalArgumentException("Unable to parse dot package: " + dotPkg, e);
-      }
-    }
-    throw new IllegalArgumentException("Invalid dot package format: " + dotPkg);
-  }
-
   @Override
-  public Content provideComponent(byte[] manifestContent) throws IOException {
-    // save content in temporary file
-    var originPom = Files.createTempFile("exhort_orig_pom_", ".xml");
-    Files.write(originPom, manifestContent);
+  public Content provideComponent() throws IOException {
     // build effective pom command
-    Content content = generateSbomFromEffectivePom(originPom);
-    Files.delete(originPom);
-    return content;
+    return generateSbomFromEffectivePom();
   }
 
-  private Content generateSbomFromEffectivePom(Path originPom) throws IOException {
+  private Content generateSbomFromEffectivePom() throws IOException {
     // check for custom mvn executable
     var mvn = Operations.getCustomPathOrElse("mvn");
     var tmpEffPom = Files.createTempFile("exhort_eff_pom_", ".xml");
@@ -169,7 +135,7 @@ public final class JavaMavenProvider extends BaseJavaProvider {
           "help:effective-pom",
           String.format("-Doutput=%s", tmpEffPom.toString()),
           "-f",
-          originPom.toString()
+          manifest.toString()
         };
     // execute the effective pom command
     Operations.runProcess(mvnEffPomCmd, getMvnExecEnvs());
@@ -182,7 +148,7 @@ public final class JavaMavenProvider extends BaseJavaProvider {
     }
     // if we have dependencies marked as ignored grab ignored dependencies from the original pom
     // the effective-pom goal doesn't carry comments
-    List<DependencyAggregator> dependencies = getDependencies(originPom);
+    List<DependencyAggregator> dependencies = getDependencies(manifest);
     var ignored =
         dependencies.stream()
             .filter(d -> d.ignored)
@@ -208,12 +174,6 @@ public final class JavaMavenProvider extends BaseJavaProvider {
 
     // build and return content for constructing request to the backend
     return new Content(sbom.getAsJsonString().getBytes(), Api.CYCLONEDX_MEDIA_TYPE);
-  }
-
-  @Override
-  public Content provideComponent(Path manifestPath) throws IOException {
-    Content content = generateSbomFromEffectivePom(manifestPath);
-    return content;
   }
 
   private PackageURL getRoot(final Path manifestPath) throws IOException {
@@ -344,9 +304,9 @@ public final class JavaMavenProvider extends BaseJavaProvider {
   }
 
   Map<String, String> getMvnExecEnvs() {
-    var javaHome = ExhortApi.getStringValueEnvironment("JAVA_HOME", "");
+    var javaHome = Environment.get(PROP_JAVA_HOME);
     if (javaHome != null && !javaHome.isBlank()) {
-      return Collections.singletonMap("JAVA_HOME", javaHome);
+      return Collections.singletonMap(PROP_JAVA_HOME, javaHome);
     }
     return null;
   }

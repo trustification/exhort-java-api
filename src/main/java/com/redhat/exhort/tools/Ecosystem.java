@@ -52,34 +52,33 @@ public final class Ecosystem {
    * Utility function for instantiating {@link Provider} implementations.
    *
    * @param manifestPath the manifest Path
-   * @return a Manifest record
+   * @return a {@link Provider} suited for this manifest type
    */
   public static Provider getProvider(final Path manifestPath) {
-    return Ecosystem.getProvider(manifestPath.getFileName().toString());
+    var provider = resolveProvider(manifestPath);
+    if (!provider.validateLockFile(manifestPath)) {
+      throw new IllegalStateException(
+          "Missing lock file for manifest file: " + manifestPath.toString());
+    }
+    return provider;
   }
 
-  /**
-   * Utility function for instantiating {@link Provider} implementations.
-   *
-   * @param manifestType the type (filename + type) of the manifest
-   * @return a Manifest record
-   */
-  public static Provider getProvider(final String manifestType) {
-    switch (manifestType) {
+  private static Provider resolveProvider(final Path manifestPath) {
+    var manifestFile = manifestPath.getFileName().toString();
+    switch (manifestFile) {
       case "pom.xml":
-        return new JavaMavenProvider();
+        return new JavaMavenProvider(manifestPath);
       case "package.json":
-        return new JavaScriptNpmProvider();
+        return new JavaScriptNpmProvider(manifestPath);
       case "go.mod":
-        return new GoModulesProvider();
+        return new GoModulesProvider(manifestPath);
       case "requirements.txt":
-        return new PythonPipProvider();
+        return new PythonPipProvider(manifestPath);
       case "build.gradle":
       case "build.gradle.kts":
-        return new GradleProvider();
-
+        return new GradleProvider(manifestPath);
       default:
-        throw new IllegalStateException(String.format("Unknown manifest file %s", manifestType));
+        throw new IllegalStateException(String.format("Unknown manifest file %s", manifestFile));
     }
   }
 }

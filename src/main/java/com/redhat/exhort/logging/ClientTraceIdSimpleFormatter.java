@@ -41,9 +41,6 @@ public class ClientTraceIdSimpleFormatter extends SimpleFormatter {
 
   @Override
   public String format(LogRecord record) {
-    //    return String.format("%s, ex-client-trace-id:
-    // %s",super.format(record).trim(),RequestManager.getInstance().getTraceIdOfRequest() +
-    // System.lineSeparator());
     Map<String, Object> messageKeysValues = new HashMap<>();
     ObjectMapper objectMapper = new ObjectMapper();
     objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
@@ -59,22 +56,14 @@ public class ClientTraceIdSimpleFormatter extends SimpleFormatter {
       source = record.getLoggerName();
     }
     String message = formatMessage(record);
-    String throwable = "";
     if (record.getThrown() != null) {
       StringWriter sw = new StringWriter();
       PrintWriter pw = new PrintWriter(sw);
       pw.println();
       record.getThrown().printStackTrace(pw);
       pw.close();
-      throwable = sw.toString();
     }
-    //    return String.format(super.format,
-    //                         zdt,
-    //                         source,
-    //                         record.getLoggerName(),
-    //                         record.getLevel().getLocalizedLevelName(),
-    //                         message,
-    //                         throwable);
+
     messageKeysValues.put("timestamp", zdt.toString());
     messageKeysValues.put("ex-client-trace-id", RequestManager.getInstance().getTraceIdOfRequest());
     messageKeysValues.put("methodName", source);

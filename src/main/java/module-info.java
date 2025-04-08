@@ -7,8 +7,10 @@ module com.redhat.exhort {
   requires java.xml;
   requires jakarta.mail;
   requires cyclonedx.core.java;
-  requires transitive packageurl.java;
+  requires packageurl.java;
+  requires transitive java.logging;
   requires org.tomlj;
+  requires java.base;
 
   opens com.redhat.exhort.api to
       com.fasterxml.jackson.databind;
@@ -21,6 +23,7 @@ module com.redhat.exhort {
   exports com.redhat.exhort.impl;
   exports com.redhat.exhort.sbom;
   exports com.redhat.exhort.tools;
+  exports com.redhat.exhort.utils;
 
   opens com.redhat.exhort.utils to
       com.fasterxml.jackson.databind;

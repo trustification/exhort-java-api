@@ -39,6 +39,7 @@ import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.packageurl.MalformedPackageURLException;
 import com.redhat.exhort.ExhortTest;
 import com.redhat.exhort.tools.Operations;
+import com.redhat.exhort.utils.Environment;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -55,8 +56,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.junitpioneer.jupiter.ClearEnvironmentVariable;
-import org.junitpioneer.jupiter.SetEnvironmentVariable;
+import org.junitpioneer.jupiter.ClearSystemProperty;
+import org.junitpioneer.jupiter.SetSystemProperty;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
@@ -116,17 +117,15 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @ClearEnvironmentVariable(key = "PATH")
-  @ClearEnvironmentVariable(key = "EXHORT_SYFT_PATH")
-  @ClearEnvironmentVariable(key = EXHORT_SYFT_CONFIG_PATH)
-  @ClearEnvironmentVariable(key = "EXHORT_DOCKER_PATH")
-  @ClearEnvironmentVariable(key = "EXHORT_PODMAN_PATH")
-  @ClearEnvironmentVariable(key = EXHORT_SYFT_IMAGE_SOURCE)
+  @ClearSystemProperty(key = "PATH")
+  @ClearSystemProperty(key = "EXHORT_SYFT_PATH")
+  @ClearSystemProperty(key = EXHORT_SYFT_CONFIG_PATH)
+  @ClearSystemProperty(key = "EXHORT_DOCKER_PATH")
+  @ClearSystemProperty(key = "EXHORT_PODMAN_PATH")
+  @ClearSystemProperty(key = EXHORT_SYFT_IMAGE_SOURCE)
   void test_generate_image_sbom() throws IOException, MalformedPackageURLException {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
-        var is =
-            getResourceAsStreamDecision(
-                this.getClass(), new String[] {"msc", "image", "image_sbom.json"})) {
+        var is = getResourceAsStreamDecision(this.getClass(), "msc/image/image_sbom.json")) {
       var json =
           new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
               .lines()
@@ -164,17 +163,16 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @ClearEnvironmentVariable(key = "EXHORT_SKOPEO_PATH")
-  @ClearEnvironmentVariable(key = EXHORT_SKOPEO_CONFIG_PATH)
-  @ClearEnvironmentVariable(key = EXHORT_IMAGE_SERVICE_ENDPOINT)
+  @ClearSystemProperty(key = "EXHORT_SKOPEO_PATH")
+  @ClearSystemProperty(key = EXHORT_SKOPEO_CONFIG_PATH)
+  @ClearSystemProperty(key = EXHORT_IMAGE_SERVICE_ENDPOINT)
   void test_get_image_digests_single() throws IOException {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
         var isRaw =
             getResourceAsStreamDecision(
-                this.getClass(), new String[] {"msc", "image", "skopeo_inspect_single_raw.json"});
+                this.getClass(), "msc/image/skopeo_inspect_single_raw.json");
         var is =
-            getResourceAsStreamDecision(
-                this.getClass(), new String[] {"msc", "image", "skopeo_inspect_single.json"})) {
+            getResourceAsStreamDecision(this.getClass(), "msc/image/skopeo_inspect_single.json")) {
       var jsonRaw =
           new BufferedReader(new InputStreamReader(isRaw, StandardCharsets.UTF_8))
               .lines()
@@ -229,14 +227,14 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @ClearEnvironmentVariable(key = "EXHORT_SKOPEO_PATH")
-  @ClearEnvironmentVariable(key = EXHORT_SKOPEO_CONFIG_PATH)
-  @ClearEnvironmentVariable(key = EXHORT_IMAGE_SERVICE_ENDPOINT)
+  @ClearSystemProperty(key = "EXHORT_SKOPEO_PATH")
+  @ClearSystemProperty(key = EXHORT_SKOPEO_CONFIG_PATH)
+  @ClearSystemProperty(key = EXHORT_IMAGE_SERVICE_ENDPOINT)
   void test_get_image_digests_multiple() throws IOException {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
         var is =
             getResourceAsStreamDecision(
-                this.getClass(), new String[] {"msc", "image", "skopeo_inspect_multi_raw.json"})) {
+                this.getClass(), "msc/image/skopeo_inspect_multi_raw.json")) {
       var json =
           new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
               .lines()
@@ -280,33 +278,33 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @SetEnvironmentVariable(key = EXHORT_IMAGE_PLATFORM, value = mockImagePlatform)
-  @SetEnvironmentVariable(key = EXHORT_SYFT_IMAGE_SOURCE, value = mockSyftSource)
-  @SetEnvironmentVariable(key = EXHORT_IMAGE_OS, value = mockOs)
-  @SetEnvironmentVariable(key = EXHORT_IMAGE_ARCH, value = mockArch)
-  @SetEnvironmentVariable(key = EXHORT_IMAGE_VARIANT, value = mockVariant)
+  @SetSystemProperty(key = EXHORT_IMAGE_PLATFORM, value = mockImagePlatform)
+  @SetSystemProperty(key = EXHORT_SYFT_IMAGE_SOURCE, value = mockSyftSource)
+  @SetSystemProperty(key = EXHORT_IMAGE_OS, value = mockOs)
+  @SetSystemProperty(key = EXHORT_IMAGE_ARCH, value = mockArch)
+  @SetSystemProperty(key = EXHORT_IMAGE_VARIANT, value = mockVariant)
   void test_get_image_platform() {
     var platform = ImageUtils.getImagePlatform();
     assertEquals(new Platform(mockImagePlatform), platform);
   }
 
   @Test
-  @ClearEnvironmentVariable(key = EXHORT_IMAGE_PLATFORM)
-  @SetEnvironmentVariable(key = EXHORT_SYFT_IMAGE_SOURCE, value = mockSyftSource)
-  @SetEnvironmentVariable(key = EXHORT_IMAGE_OS, value = mockOs)
-  @SetEnvironmentVariable(key = EXHORT_IMAGE_ARCH, value = mockArch)
-  @SetEnvironmentVariable(key = EXHORT_IMAGE_VARIANT, value = mockVariant)
+  @ClearSystemProperty(key = EXHORT_IMAGE_PLATFORM)
+  @SetSystemProperty(key = EXHORT_SYFT_IMAGE_SOURCE, value = mockSyftSource)
+  @SetSystemProperty(key = EXHORT_IMAGE_OS, value = mockOs)
+  @SetSystemProperty(key = EXHORT_IMAGE_ARCH, value = mockArch)
+  @SetSystemProperty(key = EXHORT_IMAGE_VARIANT, value = mockVariant)
   void test_get_image_platform_no_default() {
     var platform = ImageUtils.getImagePlatform();
     assertEquals(new Platform(mockOs, mockArch, mockVariant), platform);
   }
 
   @Test
-  @ClearEnvironmentVariable(key = EXHORT_IMAGE_PLATFORM)
-  @SetEnvironmentVariable(key = EXHORT_SYFT_IMAGE_SOURCE, value = "podman")
-  @SetEnvironmentVariable(key = EXHORT_IMAGE_OS, value = mockOs)
-  @SetEnvironmentVariable(key = EXHORT_IMAGE_ARCH, value = mockArch)
-  @ClearEnvironmentVariable(key = EXHORT_IMAGE_VARIANT)
+  @ClearSystemProperty(key = EXHORT_IMAGE_PLATFORM)
+  @SetSystemProperty(key = EXHORT_SYFT_IMAGE_SOURCE, value = "podman")
+  @SetSystemProperty(key = EXHORT_IMAGE_OS, value = mockOs)
+  @SetSystemProperty(key = EXHORT_IMAGE_ARCH, value = mockArch)
+  @ClearSystemProperty(key = EXHORT_IMAGE_VARIANT)
   void test_get_image_platform_no_default_no_variant() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       mock.when(() -> Operations.getCustomPathOrElse(eq("podman"))).thenReturn("podman");
@@ -323,12 +321,12 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @ClearEnvironmentVariable(key = EXHORT_IMAGE_PLATFORM)
-  @SetEnvironmentVariable(key = EXHORT_SYFT_IMAGE_SOURCE, value = "podman")
-  @ClearEnvironmentVariable(key = EXHORT_IMAGE_OS)
-  @ClearEnvironmentVariable(key = EXHORT_IMAGE_ARCH)
-  @ClearEnvironmentVariable(key = EXHORT_IMAGE_VARIANT)
-  @ClearEnvironmentVariable(key = "PATH")
+  @ClearSystemProperty(key = EXHORT_IMAGE_PLATFORM)
+  @SetSystemProperty(key = EXHORT_SYFT_IMAGE_SOURCE, value = "podman")
+  @ClearSystemProperty(key = EXHORT_IMAGE_OS)
+  @ClearSystemProperty(key = EXHORT_IMAGE_ARCH)
+  @ClearSystemProperty(key = EXHORT_IMAGE_VARIANT)
+  @ClearSystemProperty(key = "PATH")
   void test_get_image_platform_no_defaults() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       mock.when(() -> Operations.getCustomPathOrElse(eq("podman"))).thenReturn("podman");
@@ -346,127 +344,132 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @ClearEnvironmentVariable(key = "PATH")
-  @SetEnvironmentVariable(key = "EXHORT_SYFT_PATH", value = mockSyftPath)
-  @SetEnvironmentVariable(key = EXHORT_SYFT_CONFIG_PATH, value = mockSyftConfig)
-  @SetEnvironmentVariable(key = "EXHORT_DOCKER_PATH", value = mockDockerPath)
-  @SetEnvironmentVariable(key = "EXHORT_PODMAN_PATH", value = mockPodmanPath)
-  @SetEnvironmentVariable(key = EXHORT_SYFT_IMAGE_SOURCE, value = mockSyftSource)
+  @SetSystemProperty(key = EXHORT_SYFT_CONFIG_PATH, value = mockSyftConfig)
+  @SetSystemProperty(key = EXHORT_SYFT_IMAGE_SOURCE, value = mockSyftSource)
   void test_exec_syft() {
-    try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
-      var output = new Operations.ProcessExecOutput("test-output", "test-error", 0);
+    try (MockedStatic<Environment> mockEnv =
+        Mockito.mockStatic(Environment.class, Mockito.CALLS_REAL_METHODS)) {
+      mockEnv.when(() -> Environment.get("PATH")).thenReturn(null);
+      try (MockedStatic<Operations> opsMock = Mockito.mockStatic(Operations.class)) {
+        var output = new Operations.ProcessExecOutput("test-output", "test-error", 0);
 
-      mock.when(() -> Operations.getCustomPathOrElse(eq("syft"))).thenReturn(mockSyftPath);
+        opsMock.when(() -> Operations.getCustomPathOrElse(eq("syft"))).thenReturn(mockSyftPath);
 
-      mock.when(() -> Operations.getCustomPathOrElse(eq("docker"))).thenReturn(mockDockerPath);
+        opsMock.when(() -> Operations.getCustomPathOrElse(eq("docker"))).thenReturn(mockDockerPath);
 
-      mock.when(() -> Operations.getCustomPathOrElse(eq("podman"))).thenReturn(mockPodmanPath);
+        opsMock.when(() -> Operations.getCustomPathOrElse(eq("podman"))).thenReturn(mockPodmanPath);
 
-      mock.when(
-              () ->
-                  Operations.runProcessGetFullOutput(
-                      isNull(),
-                      aryEq(
-                          new String[] {
-                            mockSyftPath,
-                            mockImageRef.getImage().getFullName(),
-                            "--from",
-                            mockSyftSource,
-                            "-c",
-                            mockSyftConfig,
-                            "-s",
-                            "all-layers",
-                            "-o",
-                            "cyclonedx-json",
-                            "-q"
-                          }),
-                      eq(
-                          new String[] {
-                            "PATH=" + "test-path/" + File.pathSeparator + "test-path/"
-                          })))
-          .thenReturn(output);
+        opsMock
+            .when(
+                () ->
+                    Operations.runProcessGetFullOutput(
+                        isNull(),
+                        aryEq(
+                            new String[] {
+                              mockSyftPath,
+                              mockImageRef.getImage().getFullName(),
+                              "--from",
+                              mockSyftSource,
+                              "-c",
+                              mockSyftConfig,
+                              "-s",
+                              "all-layers",
+                              "-o",
+                              "cyclonedx-json",
+                              "-q"
+                            }),
+                        eq(
+                            new String[] {
+                              "PATH=" + "test-path/" + File.pathSeparator + "test-path/"
+                            })))
+            .thenReturn(output);
 
-      assertThat(ImageUtils.execSyft(mockImageRef)).isEqualTo(output);
+        assertThat(ImageUtils.execSyft(mockImageRef)).isEqualTo(output);
+      }
     }
   }
 
   @Test
-  @ClearEnvironmentVariable(key = "PATH")
-  @ClearEnvironmentVariable(key = "EXHORT_SYFT_PATH")
-  @ClearEnvironmentVariable(key = EXHORT_SYFT_CONFIG_PATH)
-  @ClearEnvironmentVariable(key = "EXHORT_DOCKER_PATH")
-  @ClearEnvironmentVariable(key = "EXHORT_PODMAN_PATH")
-  @ClearEnvironmentVariable(key = EXHORT_SYFT_IMAGE_SOURCE)
+  @ClearSystemProperty(key = EXHORT_SYFT_CONFIG_PATH)
+  @ClearSystemProperty(key = EXHORT_SYFT_IMAGE_SOURCE)
   void test_exec_syft_no_config_no_source() {
-    try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
-      var output = new Operations.ProcessExecOutput("test-output", "test-error", 0);
+    try (MockedStatic<Environment> mockEnv =
+        Mockito.mockStatic(Environment.class, Mockito.CALLS_REAL_METHODS)) {
+      mockEnv.when(() -> Environment.get("PATH")).thenReturn(null);
+      try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
+        var output = new Operations.ProcessExecOutput("test-output", "test-error", 0);
 
-      mock.when(() -> Operations.getCustomPathOrElse(eq("docker"))).thenReturn("docker");
+        mock.when(() -> Operations.getCustomPathOrElse(eq("docker"))).thenReturn("docker");
 
-      mock.when(() -> Operations.getCustomPathOrElse(eq("podman"))).thenReturn("podman");
+        mock.when(() -> Operations.getCustomPathOrElse(eq("podman"))).thenReturn("podman");
 
-      mock.when(() -> Operations.getCustomPathOrElse(eq("syft"))).thenReturn("syft");
+        mock.when(() -> Operations.getCustomPathOrElse(eq("syft"))).thenReturn("syft");
 
-      mock.when(
-              () ->
-                  Operations.runProcessGetFullOutput(
-                      isNull(),
-                      aryEq(
-                          new String[] {
-                            "syft",
-                            mockImageRef.getImage().getFullName(),
-                            "-s",
-                            "all-layers",
-                            "-o",
-                            "cyclonedx-json",
-                            "-q"
-                          }),
-                      isNull()))
-          .thenReturn(output);
+        mock.when(
+                () ->
+                    Operations.runProcessGetFullOutput(
+                        isNull(),
+                        aryEq(
+                            new String[] {
+                              "syft",
+                              mockImageRef.getImage().getFullName(),
+                              "-s",
+                              "all-layers",
+                              "-o",
+                              "cyclonedx-json",
+                              "-q"
+                            }),
+                        isNull()))
+            .thenReturn(output);
 
-      assertThat(ImageUtils.execSyft(mockImageRef)).isEqualTo(output);
+        assertThat(ImageUtils.execSyft(mockImageRef)).isEqualTo(output);
+      }
     }
   }
 
   @Test
-  @ClearEnvironmentVariable(key = "PATH")
   void test_get_syft_envs() {
-    var envs1 = ImageUtils.getSyftEnvs("", "");
-    assertTrue(envs1.isEmpty());
+    try (MockedStatic<Environment> mockEnv = Mockito.mockStatic(Environment.class)) {
+      mockEnv.when(() -> Environment.get("PATH")).thenReturn(null);
 
-    var envs2 = ImageUtils.getSyftEnvs("test-docker-path", "");
-    var expected_envs2 = new ArrayList<>();
-    expected_envs2.add("PATH=test-docker-path");
-    assertEquals(expected_envs2, envs2);
+      var envs1 = ImageUtils.getSyftEnvs("", "");
+      assertTrue(envs1.isEmpty());
 
-    var envs3 = ImageUtils.getSyftEnvs("", "test-podman-path");
-    var expected_envs3 = new ArrayList<>();
-    expected_envs3.add("PATH=test-podman-path");
-    assertEquals(expected_envs3, envs3);
+      var envs2 = ImageUtils.getSyftEnvs("test-docker-path", "");
+      var expected_envs2 = new ArrayList<>();
+      expected_envs2.add("PATH=test-docker-path");
+      assertEquals(expected_envs2, envs2);
 
-    var envs4 = ImageUtils.getSyftEnvs("test-docker-path", "test-podman-path");
-    var expected_envs4 = new ArrayList<>();
-    expected_envs4.add("PATH=test-docker-path" + File.pathSeparator + "test-podman-path");
-    assertEquals(expected_envs4, envs4);
+      var envs3 = ImageUtils.getSyftEnvs("", "test-podman-path");
+      var expected_envs3 = new ArrayList<>();
+      expected_envs3.add("PATH=test-podman-path");
+      assertEquals(expected_envs3, envs3);
+
+      var envs4 = ImageUtils.getSyftEnvs("test-docker-path", "test-podman-path");
+      var expected_envs4 = new ArrayList<>();
+      expected_envs4.add("PATH=test-docker-path" + File.pathSeparator + "test-podman-path");
+      assertEquals(expected_envs4, envs4);
+    }
   }
 
   @Test
-  @SetEnvironmentVariable(key = "PATH", value = mockPath)
+  @SetSystemProperty(key = "PATH", value = mockPath)
   void test_update_PATH_env() {
     var path = ImageUtils.updatePATHEnv("test-exec-path");
     assertEquals("PATH=test-path" + File.pathSeparator + "test-exec-path", path);
   }
 
   @Test
-  @ClearEnvironmentVariable(key = "PATH")
   void test_update_PATH_env_no_PATH() {
-    var path = ImageUtils.updatePATHEnv("test-exec-path");
-    assertEquals("PATH=test-exec-path", path);
+    try (MockedStatic<Environment> mockEnv = Mockito.mockStatic(Environment.class)) {
+      var path = ImageUtils.updatePATHEnv("test-exec-path");
+      assertEquals("PATH=test-exec-path", path);
+    }
   }
 
   @Test
-  @SetEnvironmentVariable(key = "EXHORT_DOCKER_PATH", value = mockDockerPath)
-  @SetEnvironmentVariable(key = "PATH", value = mockPath)
+  @SetSystemProperty(key = "EXHORT_DOCKER_PATH", value = mockDockerPath)
+  @SetSystemProperty(key = "PATH", value = mockPath)
   void test_host_info_docker() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       var output = new Operations.ProcessExecOutput("info0: test\n info: test-output", "", 0);
@@ -484,7 +487,7 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @ClearEnvironmentVariable(key = "EXHORT_DOCKER_PATH")
+  @ClearSystemProperty(key = "EXHORT_DOCKER_PATH")
   void test_host_info_no_docker_path() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       var output = new Operations.ProcessExecOutput("", "test-error", 0);
@@ -508,8 +511,8 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @SetEnvironmentVariable(key = "EXHORT_DOCKER_PATH", value = mockDockerPath)
-  @SetEnvironmentVariable(key = "PATH", value = mockPath)
+  @SetSystemProperty(key = "EXHORT_DOCKER_PATH", value = mockDockerPath)
+  @SetSystemProperty(key = "PATH", value = mockPath)
   void test_docker_get_os() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       var output = new Operations.ProcessExecOutput("OSType: test-output", "", 0);
@@ -527,8 +530,8 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @ParameterizedTest(name = "{0}")
-  @SetEnvironmentVariable(key = "EXHORT_DOCKER_PATH", value = mockDockerPath)
-  @SetEnvironmentVariable(key = "PATH", value = mockPath)
+  @SetSystemProperty(key = "EXHORT_DOCKER_PATH", value = mockDockerPath)
+  @SetSystemProperty(key = "PATH", value = mockPath)
   @MethodSource("dockerArchSources")
   void test_docker_get_arch(String sysArch, String arch) {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
@@ -547,8 +550,8 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @ParameterizedTest(name = "{0}")
-  @SetEnvironmentVariable(key = "EXHORT_DOCKER_PATH", value = mockDockerPath)
-  @SetEnvironmentVariable(key = "PATH", value = mockPath)
+  @SetSystemProperty(key = "EXHORT_DOCKER_PATH", value = mockDockerPath)
+  @SetSystemProperty(key = "PATH", value = mockPath)
   @MethodSource("dockerVariantSources")
   void test_docker_get_variant(String sysArch, String variant) {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
@@ -567,8 +570,8 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @SetEnvironmentVariable(key = "EXHORT_PODMAN_PATH", value = mockPodmanPath)
-  @SetEnvironmentVariable(key = "PATH", value = mockPath)
+  @SetSystemProperty(key = "EXHORT_PODMAN_PATH", value = mockPodmanPath)
+  @SetSystemProperty(key = "PATH", value = mockPath)
   void test_host_info_podman() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       var output = new Operations.ProcessExecOutput("info: test-output\nabcdesss", "", 0);
@@ -586,8 +589,8 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @SetEnvironmentVariable(key = "EXHORT_PODMAN_PATH", value = mockPodmanPath)
-  @SetEnvironmentVariable(key = "PATH", value = mockPath)
+  @SetSystemProperty(key = "EXHORT_PODMAN_PATH", value = mockPodmanPath)
+  @SetSystemProperty(key = "PATH", value = mockPath)
   void test_podman_get_os() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       var output = new Operations.ProcessExecOutput("os: test-output", "", 0);
@@ -605,8 +608,8 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @SetEnvironmentVariable(key = "EXHORT_PODMAN_PATH", value = mockPodmanPath)
-  @SetEnvironmentVariable(key = "PATH", value = mockPath)
+  @SetSystemProperty(key = "EXHORT_PODMAN_PATH", value = mockPodmanPath)
+  @SetSystemProperty(key = "PATH", value = mockPath)
   void test_podman_get_arch() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       var output = new Operations.ProcessExecOutput("arch: test-output", "", 0);
@@ -624,8 +627,8 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @SetEnvironmentVariable(key = "EXHORT_PODMAN_PATH", value = mockPodmanPath)
-  @SetEnvironmentVariable(key = "PATH", value = mockPath)
+  @SetSystemProperty(key = "EXHORT_PODMAN_PATH", value = mockPodmanPath)
+  @SetSystemProperty(key = "PATH", value = mockPath)
   void test_podman_get_variant() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       var output = new Operations.ProcessExecOutput("variant: test-output", "", 0);
@@ -652,9 +655,9 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @SetEnvironmentVariable(key = "EXHORT_SKOPEO_PATH", value = mockSkopeoPath)
-  @SetEnvironmentVariable(key = EXHORT_SKOPEO_CONFIG_PATH, value = mockSkopeoConfig)
-  @SetEnvironmentVariable(key = EXHORT_IMAGE_SERVICE_ENDPOINT, value = mockSkopeoDaemon)
+  @SetSystemProperty(key = "EXHORT_SKOPEO_PATH", value = mockSkopeoPath)
+  @SetSystemProperty(key = EXHORT_SKOPEO_CONFIG_PATH, value = mockSkopeoConfig)
+  @SetSystemProperty(key = EXHORT_IMAGE_SERVICE_ENDPOINT, value = mockSkopeoDaemon)
   void test_exec_skopeo_inspect_raw() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       var output = new Operations.ProcessExecOutput("test-output", "test-error", 0);
@@ -684,9 +687,9 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @SetEnvironmentVariable(key = "EXHORT_SKOPEO_PATH", value = mockSkopeoPath)
-  @ClearEnvironmentVariable(key = EXHORT_SKOPEO_CONFIG_PATH)
-  @SetEnvironmentVariable(key = EXHORT_IMAGE_SERVICE_ENDPOINT, value = mockSkopeoDaemon)
+  @SetSystemProperty(key = "EXHORT_SKOPEO_PATH", value = mockSkopeoPath)
+  @ClearSystemProperty(key = EXHORT_SKOPEO_CONFIG_PATH)
+  @SetSystemProperty(key = EXHORT_IMAGE_SERVICE_ENDPOINT, value = mockSkopeoDaemon)
   void test_exec_skopeo_inspect_raw_no_config() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       var output = new Operations.ProcessExecOutput("test-output", "test-error", 0);
@@ -714,9 +717,9 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @ClearEnvironmentVariable(key = "EXHORT_SKOPEO_PATH")
-  @SetEnvironmentVariable(key = EXHORT_SKOPEO_CONFIG_PATH, value = mockSkopeoConfig)
-  @ClearEnvironmentVariable(key = EXHORT_IMAGE_SERVICE_ENDPOINT)
+  @ClearSystemProperty(key = "EXHORT_SKOPEO_PATH")
+  @SetSystemProperty(key = EXHORT_SKOPEO_CONFIG_PATH, value = mockSkopeoConfig)
+  @ClearSystemProperty(key = EXHORT_IMAGE_SERVICE_ENDPOINT)
   void test_exec_skopeo_inspect_raw_no_daemon() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       var output = new Operations.ProcessExecOutput("test-output", "test-error", 0);
@@ -744,9 +747,9 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @ClearEnvironmentVariable(key = "EXHORT_SKOPEO_PATH")
-  @ClearEnvironmentVariable(key = EXHORT_SKOPEO_CONFIG_PATH)
-  @ClearEnvironmentVariable(key = EXHORT_IMAGE_SERVICE_ENDPOINT)
+  @ClearSystemProperty(key = "EXHORT_SKOPEO_PATH")
+  @ClearSystemProperty(key = EXHORT_SKOPEO_CONFIG_PATH)
+  @ClearSystemProperty(key = EXHORT_IMAGE_SERVICE_ENDPOINT)
   void test_exec_skopeo_inspect_raw_no_config_no_daemon() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       var output = new Operations.ProcessExecOutput("test-output", "test-error", 0);
@@ -772,9 +775,9 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @SetEnvironmentVariable(key = "EXHORT_SKOPEO_PATH", value = mockSkopeoPath)
-  @SetEnvironmentVariable(key = EXHORT_SKOPEO_CONFIG_PATH, value = mockSkopeoConfig)
-  @SetEnvironmentVariable(key = EXHORT_IMAGE_SERVICE_ENDPOINT, value = mockSkopeoDaemon)
+  @SetSystemProperty(key = "EXHORT_SKOPEO_PATH", value = mockSkopeoPath)
+  @SetSystemProperty(key = EXHORT_SKOPEO_CONFIG_PATH, value = mockSkopeoConfig)
+  @SetSystemProperty(key = EXHORT_IMAGE_SERVICE_ENDPOINT, value = mockSkopeoDaemon)
   void test_exec_skopeo_inspect() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       var output = new Operations.ProcessExecOutput("test-output", "test-error", 0);
@@ -804,9 +807,9 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @SetEnvironmentVariable(key = "EXHORT_SKOPEO_PATH", value = mockSkopeoPath)
-  @ClearEnvironmentVariable(key = EXHORT_SKOPEO_CONFIG_PATH)
-  @SetEnvironmentVariable(key = EXHORT_IMAGE_SERVICE_ENDPOINT, value = mockSkopeoDaemon)
+  @SetSystemProperty(key = "EXHORT_SKOPEO_PATH", value = mockSkopeoPath)
+  @ClearSystemProperty(key = EXHORT_SKOPEO_CONFIG_PATH)
+  @SetSystemProperty(key = EXHORT_IMAGE_SERVICE_ENDPOINT, value = mockSkopeoDaemon)
   void test_exec_skopeo_inspect_no_config() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       var output = new Operations.ProcessExecOutput("test-output", "test-error", 0);
@@ -834,9 +837,9 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @ClearEnvironmentVariable(key = "EXHORT_SKOPEO_PATH")
-  @SetEnvironmentVariable(key = EXHORT_SKOPEO_CONFIG_PATH, value = mockSkopeoConfig)
-  @ClearEnvironmentVariable(key = EXHORT_IMAGE_SERVICE_ENDPOINT)
+  @ClearSystemProperty(key = "EXHORT_SKOPEO_PATH")
+  @SetSystemProperty(key = EXHORT_SKOPEO_CONFIG_PATH, value = mockSkopeoConfig)
+  @ClearSystemProperty(key = EXHORT_IMAGE_SERVICE_ENDPOINT)
   void test_exec_skopeo_inspect_no_daemon() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       var output = new Operations.ProcessExecOutput("test-output", "test-error", 0);
@@ -864,9 +867,9 @@ class ImageUtilsTest extends ExhortTest {
   }
 
   @Test
-  @ClearEnvironmentVariable(key = "EXHORT_SKOPEO_PATH")
-  @ClearEnvironmentVariable(key = EXHORT_SKOPEO_CONFIG_PATH)
-  @ClearEnvironmentVariable(key = EXHORT_IMAGE_SERVICE_ENDPOINT)
+  @ClearSystemProperty(key = "EXHORT_SKOPEO_PATH")
+  @ClearSystemProperty(key = EXHORT_SKOPEO_CONFIG_PATH)
+  @ClearSystemProperty(key = EXHORT_IMAGE_SERVICE_ENDPOINT)
   void test_exec_skopeo_inspect_no_config_no_daemon() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       var output = new Operations.ProcessExecOutput("test-output", "test-error", 0);
@@ -894,8 +897,7 @@ class ImageUtilsTest extends ExhortTest {
   @Test
   void test_get_multi_image_digests() throws IOException {
     try (var is =
-        getResourceAsStreamDecision(
-            this.getClass(), new String[] {"msc", "image", "skopeo_inspect_multi_raw.json"})) {
+        getResourceAsStreamDecision(this.getClass(), "msc/image/skopeo_inspect_multi_raw.json")) {
       var mapper = new ObjectMapper();
       var node = mapper.readTree(is);
 
@@ -931,8 +933,7 @@ class ImageUtilsTest extends ExhortTest {
   @Test
   void test_filter_mediaType() throws IOException {
     try (var is =
-        getResourceAsStreamDecision(
-            this.getClass(), new String[] {"msc", "image", "skopeo_inspect_multi_raw.json"})) {
+        getResourceAsStreamDecision(this.getClass(), "msc/image/skopeo_inspect_multi_raw.json")) {
       var mapper = new ObjectMapper();
       var node = mapper.readTree(is);
 
@@ -943,8 +944,7 @@ class ImageUtilsTest extends ExhortTest {
   @Test
   void test_filter_digest() throws IOException {
     try (var is =
-        getResourceAsStreamDecision(
-            this.getClass(), new String[] {"msc", "image", "skopeo_inspect_multi_raw.json"})) {
+        getResourceAsStreamDecision(this.getClass(), "msc/image/skopeo_inspect_multi_raw.json")) {
       var mapper = new ObjectMapper();
       var node = mapper.readTree(is);
 
@@ -955,8 +955,7 @@ class ImageUtilsTest extends ExhortTest {
   @Test
   void test_filter_platform() throws IOException {
     try (var is =
-        getResourceAsStreamDecision(
-            this.getClass(), new String[] {"msc", "image", "skopeo_inspect_multi_raw.json"})) {
+        getResourceAsStreamDecision(this.getClass(), "msc/image/skopeo_inspect_multi_raw.json")) {
       var mapper = new ObjectMapper();
       var node = mapper.readTree(is);
 
@@ -968,8 +967,7 @@ class ImageUtilsTest extends ExhortTest {
   void test_get_single_image_digest() throws IOException {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
         var is =
-            getResourceAsStreamDecision(
-                this.getClass(), new String[] {"msc", "image", "skopeo_inspect_single.json"})) {
+            getResourceAsStreamDecision(this.getClass(), "msc/image/skopeo_inspect_single.json")) {
       var json =
           new BufferedReader(new InputStreamReader(is, StandardCharsets.UTF_8))
               .lines()

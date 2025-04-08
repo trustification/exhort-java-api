@@ -24,8 +24,6 @@ import java.util.Objects;
 
 public class PackageRef {
 
-  private static final String MAVEN_TYPE = "maven";
-
   @JsonSerialize(using = PackageURLSerializer.class)
   @JsonValue
   private final PackageURL purl;

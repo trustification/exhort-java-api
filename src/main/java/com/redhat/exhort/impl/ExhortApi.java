@@ -28,6 +28,7 @@ import com.redhat.exhort.image.ImageRef;
 import com.redhat.exhort.image.ImageUtils;
 import com.redhat.exhort.logging.LoggersFactory;
 import com.redhat.exhort.tools.Ecosystem;
+import com.redhat.exhort.utils.Environment;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMultipart;
 import jakarta.mail.util.ByteArrayDataSource;
@@ -39,7 +40,7 @@ import java.net.http.HttpClient.Version;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.AbstractMap;
@@ -52,7 +53,6 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutionException;
 import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.logging.Logger;
@@ -62,7 +62,11 @@ import java.util.stream.Stream;
 /** Concrete implementation of the Exhort {@link Api} Service. */
 public final class ExhortApi implements Api {
 
-  //  private static final System.Logger LOG = System.getLogger(ExhortApi.class.getName());
+  private static final String DEV_EXHORT_BACKEND_URL = "DEV_EXHORT_BACKEND_URL";
+
+  private static final String EXHORT_DEV_MODE = "EXHORT_DEV_MODE";
+
+  private static final String HTTP_VERSION_EXHORT_CLIENT = "HTTP_VERSION_EXHORT_CLIENT";
 
   private static final Logger LOG = LoggersFactory.getLogger(ExhortApi.class.getName());
 
@@ -77,27 +81,6 @@ public final class ExhortApi implements Api {
 
   public String getEndpoint() {
     return endpoint;
-  }
-
-  public static final void main(String[] args)
-      throws IOException, InterruptedException, ExecutionException {
-    System.setProperty("EXHORT_DEV_MODE", "true");
-    AnalysisReport analysisReport =
-        new ExhortApi()
-            .stackAnalysisMixed("/tmp/exhort_test_10582748308498949664/pom.xml")
-            .get()
-            .json;
-    //    ObjectMapper om = new
-    // ObjectMapper().configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, false);
-    //
-    // System.out.println(om.writerWithDefaultPrettyPrinter().writeValueAsString(analysisReport));
-    //    AnalysisReport analysisReport = new ExhortApi()
-    //    byte[] analysisReport = new ExhortApi().
-    //
-    // stackAnalysisHtml("/home/zgrinber/git/exhort-java-api/src/test/resources/tst_manifests/golang/go_mod_with_one_ignored_prefix_go/go.mod").get();
-    //    Path html = Files.createFile(Path.of("/","tmp", "golang0210.html"));
-    //    Files.write(html,analysisReport);
-
   }
 
   /** Enum for identifying token environment variables and their corresponding request headers. */
@@ -150,8 +133,8 @@ public final class ExhortApi implements Api {
    * @return i.e. HttpClient.Version.HTTP_1.1
    */
   static HttpClient.Version getHttpVersion() {
-    return (System.getenv("HTTP_VERSION_EXHORT_CLIENT") != null
-            && System.getenv("HTTP_VERSION_EXHORT_CLIENT").contains("2"))
+    var version = Environment.get(HTTP_VERSION_EXHORT_CLIENT);
+    return (version != null && version.contains("2"))
         ? HttpClient.Version.HTTP_2
         : HttpClient.Version.HTTP_1_1;
   }
@@ -165,7 +148,7 @@ public final class ExhortApi implements Api {
     this.client = client;
     this.mapper = new ObjectMapper().disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     // Take default from config.properties in case client didn't override DEV MODE
-    if (System.getProperty("EXHORT_DEV_MODE") == null) {
+    if (Environment.get(EXHORT_DEV_MODE) == null) {
       try {
         InputStream exhortConfig =
             this.getClass().getClassLoader().getResourceAsStream("config.properties");
@@ -173,11 +156,11 @@ public final class ExhortApi implements Api {
           LOG.info(
               "config.properties not found on the class path, fallback to default DEV MODE ="
                   + " false");
-          System.setProperty("EXHORT_DEV_MODE", "false");
+          System.setProperty(EXHORT_DEV_MODE, "false");
         } else {
           Properties properties = new Properties();
           properties.load(exhortConfig);
-          System.setProperty("EXHORT_DEV_MODE", (String) properties.get("EXHORT_DEV_MODE"));
+          System.setProperty(EXHORT_DEV_MODE, (String) properties.get(EXHORT_DEV_MODE));
         }
       } catch (IOException e) {
         LOG.info(
@@ -185,7 +168,7 @@ public final class ExhortApi implements Api {
                 "Error loading config.properties , fallback to set default property DEV MODE ="
                     + " false, Error message = %s",
                 e.getMessage()));
-        System.setProperty("EXHORT_DEV_MODE", "false");
+        System.setProperty(EXHORT_DEV_MODE, "false");
       }
     }
 
@@ -194,7 +177,6 @@ public final class ExhortApi implements Api {
 
   private String commonHookBeginning(boolean startOfApi) {
     if (startOfApi) {
-      //      generateClientRequestId();
       if (debugLoggingIsNeeded()) {
         LOG.info("Start of exhort-java-api client");
         LOG.info(String.format("Starting time of API: %s", LocalDateTime.now()));
@@ -223,8 +205,8 @@ public final class ExhortApi implements Api {
 
   public String getExhortUrl() {
     String endpoint;
-    if (getBooleanValueEnvironment("EXHORT_DEV_MODE", "false")) {
-      endpoint = getStringValueEnvironment("DEV_EXHORT_BACKEND_URL", DEFAULT_ENDPOINT_DEV);
+    if (Environment.getBoolean(EXHORT_DEV_MODE, false)) {
+      endpoint = Environment.get(DEV_EXHORT_BACKEND_URL, DEFAULT_ENDPOINT_DEV);
 
     } else {
       endpoint = DEFAULT_ENDPOINT;
@@ -234,27 +216,13 @@ public final class ExhortApi implements Api {
           String.format(
               "EXHORT_DEV_MODE=%s,DEV_EXHORT_BACKEND_URL=%s, Chosen Backend URL=%s ,"
                   + " DEFAULT_ENDPOINT_DEV=%s , DEFAULT_ENDPOINT=%s",
-              getBooleanValueEnvironment("EXHORT_DEV_MODE", "false"),
-              getStringValueEnvironment("DEV_EXHORT_BACKEND_URL", DEFAULT_ENDPOINT_DEV),
+              Environment.getBoolean(EXHORT_DEV_MODE, false),
+              Environment.get(DEV_EXHORT_BACKEND_URL, DEFAULT_ENDPOINT_DEV),
               endpoint,
               DEFAULT_ENDPOINT_DEV,
               DEFAULT_ENDPOINT));
     }
     return endpoint;
-  }
-
-  public static boolean getBooleanValueEnvironment(String key, String defaultValue) {
-    String result =
-        Objects.requireNonNullElse(
-            System.getenv(key), Objects.requireNonNullElse(System.getProperty(key), defaultValue));
-    return Boolean.parseBoolean(result.trim().toLowerCase());
-  }
-
-  public static String getStringValueEnvironment(String key, String defaultValue) {
-    String result =
-        Objects.requireNonNullElse(
-            System.getenv(key), Objects.requireNonNullElse(System.getProperty(key), defaultValue));
-    return result;
   }
 
   @Override
@@ -402,7 +370,7 @@ public final class ExhortApi implements Api {
     }
   }
 
-  private static void logExhortRequestId(HttpResponse response) {
+  private static void logExhortRequestId(HttpResponse<?> response) {
     Optional<String> headerExRequestId =
         response.headers().allValues(EXHORT_REQUEST_ID_HEADER_NAME).stream().findFirst();
     headerExRequestId.ifPresent(
@@ -415,16 +383,17 @@ public final class ExhortApi implements Api {
   }
 
   public static boolean debugLoggingIsNeeded() {
-    return Boolean.parseBoolean(getStringValueEnvironment("EXHORT_DEBUG", "false"));
+    return Environment.getBoolean("EXHORT_DEBUG", false);
   }
 
   @Override
   public CompletableFuture<AnalysisReport> componentAnalysis(
-      final String manifestType, final byte[] manifestContent) throws IOException {
+      final String manifest, final byte[] manifestContent) throws IOException {
     String exClientTraceId = commonHookBeginning(false);
-    var provider = Ecosystem.getProvider(manifestType);
+    var manifestPath = Path.of(manifest);
+    var provider = Ecosystem.getProvider(manifestPath);
     var uri = URI.create(String.format("%s/api/v4/analysis", this.endpoint));
-    var content = provider.provideComponent(manifestContent);
+    var content = provider.provideComponent();
     commonHookAfterProviderCreatedSbomAndBeforeExhort();
     return getAnalysisReportForComponent(uri, content, exClientTraceId);
   }
@@ -465,10 +434,10 @@ public final class ExhortApi implements Api {
   public CompletableFuture<AnalysisReport> componentAnalysis(String manifestFile)
       throws IOException {
     String exClientTraceId = commonHookBeginning(false);
-    var manifestPath = Paths.get(manifestFile);
+    var manifestPath = Path.of(manifestFile);
     var provider = Ecosystem.getProvider(manifestPath);
     var uri = URI.create(String.format("%s/api/v4/analysis", this.endpoint));
-    var content = provider.provideComponent(manifestPath);
+    var content = provider.provideComponent();
     commonHookAfterProviderCreatedSbomAndBeforeExhort();
     return getAnalysisReportForComponent(uri, content, exClientTraceId);
   }
@@ -506,10 +475,10 @@ public final class ExhortApi implements Api {
    */
   private HttpRequest buildStackRequest(final String manifestFile, final MediaType acceptType)
       throws IOException {
-    var manifestPath = Paths.get(manifestFile);
+    var manifestPath = Path.of(manifestFile);
     var provider = Ecosystem.getProvider(manifestPath);
     var uri = URI.create(String.format("%s/api/v4/analysis", this.endpoint));
-    var content = provider.provideStack(manifestPath);
+    var content = provider.provideStack();
     commonHookAfterProviderCreatedSbomAndBeforeExhort();
 
     return buildRequest(content, uri, acceptType, "Stack Analysis");
@@ -663,20 +632,20 @@ public final class ExhortApi implements Api {
     Stream.of(ExhortApi.TokenProvider.values())
         .forEach(
             p -> {
-              var envToken = System.getenv(p.getVarName());
+              var envToken = Environment.get(p.getVarName());
               if (Objects.nonNull(envToken)) {
                 request.setHeader(p.getHeaderName(), envToken);
               } else {
-                var propToken = System.getProperty(p.getVarName());
+                var propToken = Environment.get(p.getVarName());
                 if (Objects.nonNull(propToken)) {
                   request.setHeader(p.getHeaderName(), propToken);
                 }
               }
-              var envUser = System.getenv(p.getUserHeaderName());
+              var envUser = Environment.get(p.getUserHeaderName());
               if (Objects.nonNull(envUser)) {
                 request.setHeader(p.getUserHeaderName(), envUser);
               } else {
-                var propUser = System.getProperty(p.getUserVarName());
+                var propUser = Environment.get(p.getUserVarName());
                 if (Objects.nonNull(propUser)) {
                   request.setHeader(p.getUserHeaderName(), propUser);
                 }
@@ -709,11 +678,6 @@ public final class ExhortApi implements Api {
   }
 
   private String calculateHeaderValueActual(String headerName) {
-    String result = null;
-    result = System.getenv(headerName);
-    if (result == null) {
-      result = System.getProperty(headerName);
-    }
-    return result;
+    return Environment.get(headerName);
   }
 }

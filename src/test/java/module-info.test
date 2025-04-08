@@ -1,10 +1,12 @@
 --add-modules
-  jdk.attach,jdk.unsupported,org.assertj.core,org.junit.jupiter.params,org.mockito,net.bytebuddy,net.bytebuddy.agent
+  jdk.attach,jdk.unsupported,org.assertj.core,org.junit.jupiter.params,org.mockito,org.mockito.junit.jupiter,net.bytebuddy,net.bytebuddy.agent
 
 --add-reads
   com.redhat.exhort=org.assertj.core,org.junit.jupiter.api
 --add-reads
-  com.redhat.exhort=org.junit.jupiter.params
+  com.redhat.exhort=org.junit.jupiter.params,org.mockito
+--add-reads
+  org.mockito=java.net.http
 
 --add-opens
   com.redhat.exhort/com.redhat.exhort.impl=org.junit.platform.commons
@@ -15,11 +17,7 @@
 --add-opens
   com.redhat.exhort/com.redhat.exhort.image=org.junit.platform.commons
 --add-opens
-  com.redhat.exhort/com.redhat.exhort=org.mockito
---add-opens
-  com.redhat.exhort.providers/com.redhat.exhort.providers=org.mockito
---add-opens
-  com.redhat.exhort.providers/com.redhat.exhort.image=org.mockito
+  com.redhat.exhort/com.redhat.exhort.image=org.mockito
 --add-opens
   java.base/java.lang=org.junitpioneer
 --add-opens

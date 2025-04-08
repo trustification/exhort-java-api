@@ -16,7 +16,6 @@
 package com.redhat.exhort.providers;
 
 import static com.redhat.exhort.impl.ExhortApi.debugLoggingIsNeeded;
-import static com.redhat.exhort.impl.ExhortApi.getBooleanValueEnvironment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
@@ -29,6 +28,7 @@ import com.redhat.exhort.sbom.Sbom;
 import com.redhat.exhort.sbom.SbomFactory;
 import com.redhat.exhort.tools.Ecosystem.Type;
 import com.redhat.exhort.tools.Operations;
+import com.redhat.exhort.utils.Environment;
 import com.redhat.exhort.vcs.GitVersionControlSystemImpl;
 import com.redhat.exhort.vcs.TagInfo;
 import com.redhat.exhort.vcs.VersionControlSystem;
@@ -36,7 +36,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.*;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -48,12 +47,12 @@ import java.util.stream.Collectors;
  */
 public final class GoModulesProvider extends Provider {
 
+  public static final String PROP_EXHORT_GO_MVS_LOGIC_ENABLED = "EXHORT_GO_MVS_LOGIC_ENABLED";
   private Logger log = LoggersFactory.getLogger(this.getClass().getName());
-  private static final String goHostArchitectureEnvName = "GOHOSTARCH";
-  private static final String goHostOperationSystemEnvName = "GOHOSTOS";
-  public static final String defaultMainVersion = "v0.0.0";
-  private final TreeMap goEnvironmentVariableForPurl;
-  private final TreeMap goEnvironmentVariablesForRef;
+  private static final String GO_HOST_ARCHITECTURE_ENV_NAME = "GOHOSTARCH";
+  private static final String GO_HOST_OPERATION_SYSTEM_ENV_NAME = "GOHOSTOS";
+  public static final String DEFAULT_MAIN_VERSION = "v0.0.0";
+  private final TreeMap<String, String> goEnvironmentVariableForPurl;
 
   public String getMainModuleVersion() {
     return mainModuleVersion;
@@ -61,78 +60,36 @@ public final class GoModulesProvider extends Provider {
 
   private String mainModuleVersion;
 
-  public static void main(String[] args) {
-
-    TreeMap qualifiers = GoModulesProvider.getQualifiers(true);
-    //    Path path =
-    // Path.of("/home/zgrinber/git/exhort-java-api/src/test/resources/tst_manifests/golang/go_mod_light_no_ignore/go.mod");
-    Path path = Path.of("/tmp/xieshen/go.mod");
-    Provider provider = new GoModulesProvider();
-    GoModulesProvider goProvider = (GoModulesProvider) provider;
-    //    boolean answer = goProvider.IgnoredLine("        github.com/davecgh/go-spew v1.1.1 //
-    // indirect
-    // //exhortignore");
-    try {
-      //      provider.provideStack(path);
-      byte[] bytes = Files.readAllBytes(path);
-      provider.provideComponent(bytes);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
-    }
-  }
-
-  public GoModulesProvider() {
-    super(Type.GOLANG);
+  public GoModulesProvider(Path manifest) {
+    super(Type.GOLANG, manifest);
     this.goEnvironmentVariableForPurl = getQualifiers(true);
-    this.goEnvironmentVariablesForRef = getQualifiers(false);
     this.mainModuleVersion = getDefaultMainModuleVersion();
   }
 
   @Override
-  public Content provideStack(final Path manifestPath) throws IOException {
+  public Content provideStack() throws IOException {
     // check for custom npm executable
-    Sbom sbom = getDependenciesSbom(manifestPath, true);
+    Sbom sbom = getDependenciesSbom(manifest, true);
     return new Content(
         sbom.getAsJsonString().getBytes(StandardCharsets.UTF_8), Api.CYCLONEDX_MEDIA_TYPE);
   }
 
   @Override
-  public Content provideComponent(byte[] manifestContent) throws IOException {
-    // check for custom npm executable
-    return new Content(
-        getDependenciesSbomCa(manifestContent).getAsJsonString().getBytes(StandardCharsets.UTF_8),
-        Api.CYCLONEDX_MEDIA_TYPE);
-  }
-
-  @Override
-  public Content provideComponent(Path manifestPath) throws IOException {
-    throw new IllegalArgumentException(
-        "provideComponent with file system path for GoModules package manager not implemented yet");
-  }
-
-  private Sbom getDependenciesSbomCa(byte[] manifestContent) {
-    Sbom sbom;
-    try {
-      Path tempRepository = Files.createTempDirectory("exhort-go");
-      Path path = Paths.get(tempRepository.toAbsolutePath().normalize().toString(), "go.mod");
-      Files.deleteIfExists(path);
-      Path manifestPath = Files.createFile(path);
-      Files.write(manifestPath, manifestContent);
-      sbom = getDependenciesSbom(manifestPath, false);
-
-      Files.delete(manifestPath);
-      Files.delete(tempRepository);
-    } catch (IOException e) {
-      throw new RuntimeException(e);
+  public Content provideComponent() throws IOException {
+    if (!Files.exists(manifest)) {
+      throw new IllegalArgumentException("Missing required go.mod file: " + manifest);
     }
-    return sbom;
+    if (!Files.isRegularFile(manifest)) {
+      throw new IllegalArgumentException(
+          "The provided manifest is not a regular file: " + manifest);
+    }
+    var sbom = getDependenciesSbom(manifest, false);
+    return new Content(
+        sbom.getAsJsonString().getBytes(StandardCharsets.UTF_8), Api.CYCLONEDX_MEDIA_TYPE);
   }
 
-  private PackageURL getRoot(String DependenciesGolang) {
-    return null;
-  }
-
-  private PackageURL toPurl(String dependency, String delimiter, TreeMap qualifiers) {
+  private PackageURL toPurl(
+      String dependency, String delimiter, TreeMap<String, String> qualifiers) {
     try {
       int lastSlashIndex = dependency.lastIndexOf("/");
       // there is no '/' char in module/package, so there is no namespace, only name
@@ -168,12 +125,12 @@ public final class GoModulesProvider extends Provider {
 
   Sbom getDependenciesSbom(Path manifestPath, boolean buildTree) throws IOException {
     var goModulesResult = buildGoModulesDependencies(manifestPath);
-    calculateMainModuleVersion(manifestPath.getParent());
+    determineMainModuleVersion(manifestPath.getParent());
     Sbom sbom;
     List<PackageURL> ignoredDeps = getIgnoredDeps(manifestPath);
-    boolean matchManifestVersions = getBooleanValueEnvironment("MATCH_MANIFEST_VERSIONS", "false");
+    boolean matchManifestVersions =
+        Environment.getBoolean(Provider.PROP_MATCH_MANIFEST_VERSIONS, false);
     if (matchManifestVersions) {
-      //      String rootName = getParentVertex()
       String[] goModGraphLines = goModulesResult.split(System.lineSeparator());
       performManifestVersionsCheck(goModGraphLines, manifestPath);
     }
@@ -182,8 +139,6 @@ public final class GoModulesProvider extends Provider {
     } else {
       sbom = buildSbomFromGraph(goModulesResult, ignoredDeps, manifestPath);
     }
-    //    List<String> ignoredDeps = getIgnoredDeps(manifestPath);
-    //    sbom.filterIgnoredDeps(ignoredDeps);
     return sbom;
   }
 
@@ -219,8 +174,11 @@ public final class GoModulesProvider extends Provider {
                                           + " Version=%s, if you want to allow version mismatch for"
                                           + " analysis between installed and requested packages,"
                                           + " set environment variable/setting -"
-                                          + " MATCH_MANIFEST_VERSIONS=false",
-                                      depName, currentVersion, version));
+                                          + " %s=false",
+                                      depName,
+                                      currentVersion,
+                                      version,
+                                      Provider.PROP_MATCH_MANIFEST_VERSIONS));
                             }
                           }
                         });
@@ -281,10 +239,7 @@ public final class GoModulesProvider extends Provider {
   }
 
   public void determineMainModuleVersion(Path directory) {
-    this.calculateMainModuleVersion(directory);
-  }
-
-  private void calculateMainModuleVersion(Path directory) {
+    // TODO: The javascript api doesn't implement this method
     VersionControlSystem vcs = new GitVersionControlSystemImpl();
     if (vcs.isDirectoryRepo(directory)) {
       TagInfo latestTagInfo = vcs.getLatestTag(directory);
@@ -306,44 +261,32 @@ public final class GoModulesProvider extends Provider {
 
   private Sbom buildSbomFromGraph(
       String goModulesResult, List<PackageURL> ignoredDeps, Path manifestPath) throws IOException {
-    //    Each entry contains a key of the module, and the list represents the module direct
+    // Each entry contains a key of the module, and the list represents the module direct
     // dependencies , so
     // pairing of the key with each of the dependencies in a list is basically an edge in the graph.
-    Map<String, List> edges = new HashMap<>();
+    Map<String, List<String>> edges = new HashMap<>();
     // iterate over go mod graph line by line and create map , with each entry to contain module as
     // a key , and
     // value of list of that module' dependencies.
-    String[] lines = goModulesResult.split(System.lineSeparator());
-    List<String> linesList = Arrays.asList(lines);
-    //    System.out.print("Start time: " + LocalDateTime.now() + System.lineSeparator());
+    List<String> linesList = Arrays.asList(goModulesResult.split(System.lineSeparator()));
 
     Integer startingIndex = 0;
-    Integer EndingIndex = lines.length - 1;
-    String[] targetLines = Arrays.copyOfRange(lines, 0, lines.length - 1);
     for (String line : linesList) {
-
       if (!edges.containsKey(getParentVertex(line))) {
         // Collect all direct dependencies of the current module into a list.
-        List<String> deps = collectAllDirectDependencies(targetLines, line);
+        List<String> deps =
+            collectAllDirectDependencies(
+                linesList.subList(startingIndex, linesList.size() - 1), line);
         edges.put(getParentVertex(line), deps);
         startingIndex += deps.size();
-        // Because all the deps of the current module were collected, not need to search for next
-        // modules on
-        // these lines, so truncate these lines from search array to make the search more rapid and
-        // efficient.
-        if (startingIndex < EndingIndex) {
-          targetLines = Arrays.copyOfRange(lines, startingIndex, EndingIndex);
-        }
       }
     }
-    // DEBUG
-    //    System.setProperty("EXHORT_GO_MVS_LOGIC_ENABLED","true");
-    boolean goMvsLogicEnabled = getBooleanValueEnvironment("EXHORT_GO_MVS_LOGIC_ENABLED", "false");
+    boolean goMvsLogicEnabled = Environment.getBoolean(PROP_EXHORT_GO_MVS_LOGIC_ENABLED, false);
     if (goMvsLogicEnabled) {
       edges = getFinalPackagesVersionsForModule(edges, manifestPath);
     }
     //    Build Sbom
-    String rootPackage = getParentVertex(lines[0]);
+    String rootPackage = getParentVertex(linesList.get(0));
 
     PackageURL root = toPurl(rootPackage, "@", this.goEnvironmentVariableForPurl);
     Sbom sbom = SbomFactory.newInstance(Sbom.BelongingCondition.PURL, "sensitive");
@@ -374,8 +317,8 @@ public final class GoModulesProvider extends Provider {
     return sbom;
   }
 
-  private Map<String, List> getFinalPackagesVersionsForModule(
-      Map<String, List> edges, Path manifestPath) {
+  private Map<String, List<String>> getFinalPackagesVersionsForModule(
+      Map<String, List<String>> edges, Path manifestPath) {
     Operations.runProcessGetOutput(manifestPath.getParent(), "go", "mod", "download");
     String finalVersionsForAllModules =
         Operations.runProcessGetOutput(manifestPath.getParent(), "go", "list", "-m", "all");
@@ -385,7 +328,7 @@ public final class GoModulesProvider extends Provider {
             .collect(
                 Collectors.toMap(
                     t -> t.split(" ")[0], t -> t.split(" ")[1], (first, second) -> second));
-    Map<String, List> listWithModifiedVersions = new HashMap<>();
+    Map<String, List<String>> listWithModifiedVersions = new HashMap<>();
     edges.entrySet().stream()
         .filter(string -> string.getKey().trim().split("@").length == 2)
         .collect(Collectors.toList())
@@ -393,17 +336,17 @@ public final class GoModulesProvider extends Provider {
             (entry) -> {
               String packageWithSelectedVersion =
                   getPackageWithFinalVersion(finalModulesVersions, entry.getKey());
-              List packagesWithFinalVersions =
-                  getListOfPackagesWithFinlVersions(finalModulesVersions, entry);
+              List<String> packagesWithFinalVersions =
+                  getListOfPackagesWithFinalVersions(finalModulesVersions, entry);
               listWithModifiedVersions.put(packageWithSelectedVersion, packagesWithFinalVersions);
             });
 
     return listWithModifiedVersions;
   }
 
-  private List getListOfPackagesWithFinlVersions(
-      Map<String, String> finalModulesVersions, Map.Entry<String, List> entry) {
-    return (List)
+  private List<String> getListOfPackagesWithFinalVersions(
+      Map<String, String> finalModulesVersions, Map.Entry<String, List<String>> entry) {
+    return (List<String>)
         entry.getValue().stream()
             .map(
                 (packageWithVersion) ->
@@ -414,7 +357,6 @@ public final class GoModulesProvider extends Provider {
   public static String getPackageWithFinalVersion(
       Map<String, String> finalModulesVersions, String packagePlusVersion) {
     String packageName = packagePlusVersion.split("@")[0];
-    String originalVersion = packagePlusVersion.split("@")[1];
     String finalVersion = finalModulesVersions.get(packageName);
     if (Objects.nonNull(finalVersion)) {
       return String.format("%s@%s", packageName, finalVersion);
@@ -429,25 +371,27 @@ public final class GoModulesProvider extends Provider {
             dependencyPurl -> dependencyPurl.getCoordinates().equals(checkedPurl.getCoordinates()));
   }
 
-  private static List<String> collectAllDirectDependencies(String[] targetLines, String edge) {
-    return Arrays.stream(targetLines)
-        .filter(line2 -> getParentVertex(line2).equals(getParentVertex(edge)))
+  private static List<String> collectAllDirectDependencies(List<String> targetLines, String edge) {
+    return targetLines.stream()
+        .filter(line -> getParentVertex(line).equals(getParentVertex(edge)))
         .map(GoModulesProvider::getChildVertex)
         .collect(Collectors.toList());
   }
 
-  private static TreeMap getQualifiers(boolean includeOsAndArch) {
+  private static TreeMap<String, String> getQualifiers(boolean includeOsAndArch) {
 
     if (includeOsAndArch) {
       var go = Operations.getCustomPathOrElse("go");
-      String goEnvironmentVariables =
-          Operations.runProcessGetOutput(null, new String[] {go, "env"});
-      String hostArch = getEnvironmentVariable(goEnvironmentVariables, goHostArchitectureEnvName);
-      String hostOS = getEnvironmentVariable(goEnvironmentVariables, goHostOperationSystemEnvName);
-      return new TreeMap(Map.of("type", "module", "goos", hostOS, "goarch", hostArch));
+      String goEnvironmentVariables = Operations.runProcessGetOutput(null, go, "env");
+      String hostArch =
+          getEnvironmentVariable(goEnvironmentVariables, GO_HOST_ARCHITECTURE_ENV_NAME);
+      String hostOS =
+          getEnvironmentVariable(goEnvironmentVariables, GO_HOST_OPERATION_SYSTEM_ENV_NAME);
+      return new TreeMap<String, String>(
+          Map.of("type", "module", "goos", hostOS, "goarch", hostArch));
     }
 
-    return new TreeMap(Map.of("type", "module"));
+    return new TreeMap<String, String>(Map.of("type", "module"));
   }
 
   private static String getEnvironmentVariable(String goEnvironmentVariables, String envName) {
@@ -482,7 +426,7 @@ public final class GoModulesProvider extends Provider {
     String parentVertex = getParentVertex(allModulesFlat[0]);
     PackageURL root = toPurl(parentVertex, "@", this.goEnvironmentVariableForPurl);
     // Get only direct dependencies of root package/module, and that's it.
-    List<String> deps = collectAllDirectDependencies(allModulesFlat, parentVertex);
+    List<String> deps = collectAllDirectDependencies(Arrays.asList(allModulesFlat), parentVertex);
 
     Sbom sbom = SbomFactory.newInstance(Sbom.BelongingCondition.PURL, "sensitive");
     sbom.addRoot(root);
@@ -569,6 +513,6 @@ public final class GoModulesProvider extends Provider {
   }
 
   private static String getDefaultMainModuleVersion() {
-    return defaultMainVersion;
+    return DEFAULT_MAIN_VERSION;
   }
 }

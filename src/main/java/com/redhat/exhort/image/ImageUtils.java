@@ -16,7 +16,6 @@
 package com.redhat.exhort.image;
 
 import static com.redhat.exhort.image.Platform.EMPTY_PLATFORM;
-import static com.redhat.exhort.impl.ExhortApi.getStringValueEnvironment;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -24,19 +23,17 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.databind.node.TextNode;
 import com.github.packageurl.MalformedPackageURLException;
-import com.redhat.exhort.logging.LoggersFactory;
 import com.redhat.exhort.tools.Operations;
+import com.redhat.exhort.utils.Environment;
 import java.io.File;
 import java.io.IOException;
 import java.util.AbstractMap;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.Supplier;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -58,8 +55,6 @@ public class ImageUtils {
       "application/vnd.oci.image.manifest.v1+json";
   private static final String MEDIA_TYPE_OCI1_MANIFEST_LIST =
       "application/vnd.oci.image.index.v1+json";
-
-  private static final Logger logger = LoggersFactory.getLogger(ImageUtils.class.getName());
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -95,7 +90,7 @@ public class ImageUtils {
           new AbstractMap.SimpleEntry<>("aarch64", "v8"));
 
   static String updatePATHEnv(String execPath) {
-    String path = System.getenv("PATH");
+    String path = Environment.get("PATH");
     if (path != null) {
       return String.format("PATH=%s%s%s", path, File.pathSeparator, execPath);
     } else {
@@ -133,8 +128,8 @@ public class ImageUtils {
     var docker = Operations.getCustomPathOrElse("docker");
     var podman = Operations.getCustomPathOrElse("podman");
 
-    var syftConfigPath = getStringValueEnvironment(EXHORT_SYFT_CONFIG_PATH, "");
-    var imageSource = getStringValueEnvironment(EXHORT_SYFT_IMAGE_SOURCE, "");
+    var syftConfigPath = Environment.get(EXHORT_SYFT_CONFIG_PATH, "");
+    var imageSource = Environment.get(EXHORT_SYFT_IMAGE_SOURCE, "");
     SyftImageSource.getImageSource(imageSource);
 
     var dockerPath =
@@ -199,29 +194,23 @@ public class ImageUtils {
     } else if (!podmanPath.isEmpty()) {
       path = podmanPath;
     }
-    var envPath = path != null ? updatePATHEnv(path) : null;
-
-    List<String> envs = new ArrayList<>(1);
-    if (envPath != null) {
-      envs.add(envPath);
-    }
-    return envs;
+    return path != null ? List.of(updatePATHEnv(path)) : Collections.emptyList();
   }
 
   public static Platform getImagePlatform() {
-    var platform = getStringValueEnvironment(EXHORT_IMAGE_PLATFORM, "");
+    var platform = Environment.get(EXHORT_IMAGE_PLATFORM, "");
     if (!platform.isEmpty()) {
       return new Platform(platform);
     }
 
-    var imageSource = getStringValueEnvironment(EXHORT_SYFT_IMAGE_SOURCE, "");
+    var imageSource = Environment.get(EXHORT_SYFT_IMAGE_SOURCE, "");
     SyftImageSource source = SyftImageSource.getImageSource(imageSource);
 
-    var os = getStringValueEnvironment(EXHORT_IMAGE_OS, "");
+    var os = Environment.get(EXHORT_IMAGE_OS, "");
     if (os.isEmpty()) {
       os = source.getOs();
     }
-    var arch = getStringValueEnvironment(EXHORT_IMAGE_ARCH, "");
+    var arch = Environment.get(EXHORT_IMAGE_ARCH, "");
     if (arch.isEmpty()) {
       arch = source.getArch();
     }
@@ -230,7 +219,7 @@ public class ImageUtils {
         return new Platform(os, arch, null);
       }
 
-      var variant = getStringValueEnvironment(EXHORT_IMAGE_VARIANT, "");
+      var variant = Environment.get(EXHORT_IMAGE_VARIANT, "");
       if (variant.isEmpty()) {
         variant = source.getVariant();
       }
@@ -429,8 +418,8 @@ public class ImageUtils {
   static Operations.ProcessExecOutput execSkopeoInspect(ImageRef imageRef, boolean raw) {
     var skopeo = Operations.getCustomPathOrElse("skopeo");
 
-    var configPath = getStringValueEnvironment(EXHORT_SKOPEO_CONFIG_PATH, "");
-    var daemonHost = getStringValueEnvironment(EXHORT_IMAGE_SERVICE_ENDPOINT, "");
+    var configPath = Environment.get(EXHORT_SKOPEO_CONFIG_PATH, "");
+    var daemonHost = Environment.get(EXHORT_IMAGE_SERVICE_ENDPOINT, "");
 
     String[] cmd;
     if (daemonHost.isEmpty()) {

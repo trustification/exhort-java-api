@@ -25,6 +25,9 @@ import java.nio.file.Path;
  * manifest type for constructing backend requests.
  */
 public abstract class Provider {
+
+  public static final String PROP_MATCH_MANIFEST_VERSIONS = "MATCH_MANIFEST_VERSIONS";
+
   /**
    * Content is used to aggregate a content buffer and a content type. These will be used to
    * construct the backend API request.
@@ -42,29 +45,32 @@ public abstract class Provider {
   /** The ecosystem of this provider, i.e. maven. */
   public final Ecosystem.Type ecosystem;
 
+  public final Path manifest;
+
   protected final ObjectMapper objectMapper = new ObjectMapper();
 
-  protected Provider(Ecosystem.Type ecosystem) {
+  protected Provider(Ecosystem.Type ecosystem, Path manifest) {
     this.ecosystem = ecosystem;
+    this.manifest = manifest;
   }
 
   /**
    * Use for providing content for a stack analysis request.
    *
-   * @param manifestPath the Path for the manifest file
    * @return A Content record aggregating the body content and content type
    * @throws IOException when failed to load the manifest file
    */
-  public abstract Content provideStack(Path manifestPath) throws IOException;
+  public abstract Content provideStack() throws IOException;
 
   /**
    * Use for providing content for a component analysis request.
    *
-   * @param manifestContent the content of the manifest file
    * @return A Content record aggregating the body content and content type
    * @throws IOException when failed to load the manifest content
    */
-  public abstract Content provideComponent(byte[] manifestContent) throws IOException;
+  public abstract Content provideComponent() throws IOException;
 
-  public abstract Content provideComponent(Path manifestPath) throws IOException;
+  public boolean validateLockFile(Path lockFile) {
+    return true;
+  }
 }

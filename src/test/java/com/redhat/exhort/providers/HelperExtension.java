@@ -15,29 +15,28 @@
  */
 package com.redhat.exhort.providers;
 
-import java.util.List;
-import org.junit.jupiter.api.extension.*;
+import com.redhat.exhort.impl.ExhortApi;
+import com.redhat.exhort.logging.LoggersFactory;
+import java.util.logging.Logger;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
 
 public class HelperExtension
     implements BeforeAllCallback, AfterAllCallback, BeforeEachCallback, AfterEachCallback {
 
-  private System.Logger log = System.getLogger(this.getClass().getName());
-
-  //  public PythonEnvironmentExtension(List<String> requirementsFiles) {
-  //    this.requirementsFiles = requirementsFiles;
-  //  }
-
-  private List<String> requirementsFiles;
+  private static final Logger LOG = LoggersFactory.getLogger(ExhortApi.class.getName());
 
   @Override
   public void afterAll(ExtensionContext extensionContext) throws Exception {
-    log.log(System.Logger.Level.INFO, "Finished all tests!!");
+    LOG.info("Finished all tests!!");
   }
 
   @Override
   public void afterEach(ExtensionContext extensionContext) throws Exception {
-    log.log(
-        System.Logger.Level.INFO,
+    LOG.info(
         String.format(
             "Finished Test Method: %s_%s",
             extensionContext.getRequiredTestMethod().getName(), extensionContext.getDisplayName()));
@@ -46,13 +45,12 @@ public class HelperExtension
   @Override
   public void beforeAll(ExtensionContext extensionContext) throws Exception {
 
-    log.log(System.Logger.Level.INFO, "Before all tests");
+    LOG.info("Before all tests");
   }
 
   @Override
   public void beforeEach(ExtensionContext extensionContext) throws Exception {
-    log.log(
-        System.Logger.Level.INFO,
+    LOG.info(
         String.format(
             "Started Test Method: %s_%s",
             extensionContext.getRequiredTestMethod().getName(), extensionContext.getDisplayName()));

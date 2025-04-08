@@ -91,11 +91,14 @@ public class GitVersionControlSystemImpl implements VersionControlSystem {
 
   @Override
   public boolean isDirectoryRepo(Path repoLocation) {
-
-    String resultFromInvocation =
-        Operations.runProcessGetOutput(
-            repoLocation, gitBinary, "rev-parse", "--is-inside-work-tree");
-    return resultFromInvocation.trim().equals("true");
+    try {
+      String resultFromInvocation =
+          Operations.runProcessGetOutput(
+              repoLocation, gitBinary, "rev-parse", "--is-inside-work-tree");
+      return resultFromInvocation.trim().equals("true");
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   @Override

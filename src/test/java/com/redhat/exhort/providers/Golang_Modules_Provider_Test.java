@@ -15,10 +15,10 @@
  */
 package com.redhat.exhort.providers;
 
+import static com.redhat.exhort.Provider.PROP_MATCH_MANIFEST_VERSIONS;
 import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.Api;
 import com.redhat.exhort.ExhortTest;
 import java.io.IOException;
@@ -56,7 +56,7 @@ class Golang_Modules_Provider_Test extends ExhortTest {
     var tmpGolangFile = Files.createFile(tmpGoModulesDir.resolve("go.mod"));
     try (var is =
         getResourceAsStreamDecision(
-            this.getClass(), new String[] {"tst_manifests", "golang", testFolder, "go.mod"})) {
+            this.getClass(), String.format("tst_manifests/golang/%s/go.mod", testFolder))) {
       Files.write(tmpGolangFile, is.readAllBytes());
     }
     // load expected SBOM
@@ -64,13 +64,12 @@ class Golang_Modules_Provider_Test extends ExhortTest {
     try (var is =
         getResourceAsStreamDecision(
             this.getClass(),
-            new String[] {
-              "tst_manifests", "golang", testFolder, "expected_sbom_stack_analysis.json"
-            })) {
+            String.format(
+                "tst_manifests/golang/%s/expected_sbom_stack_analysis.json", testFolder))) {
       expectedSbom = new String(is.readAllBytes());
     }
     // when providing stack content for our pom
-    var content = new GoModulesProvider().provideStack(tmpGolangFile);
+    var content = new GoModulesProvider(tmpGolangFile).provideStack();
     // cleanup
     Files.deleteIfExists(tmpGolangFile);
     // verify expected SBOM is returned
@@ -81,25 +80,27 @@ class Golang_Modules_Provider_Test extends ExhortTest {
   @ParameterizedTest
   @MethodSource("testFolders")
   void test_the_provideComponent(String testFolder) throws IOException, InterruptedException {
-    // load the pom target pom file
-    byte[] targetPom;
+    // create temp file hosting our sut package.json
+    var tmpGoModulesDir = Files.createTempDirectory("exhort_test_");
+    var tmpGolangFile = Files.createFile(tmpGoModulesDir.resolve("go.mod"));
     try (var is =
         getResourceAsStreamDecision(
-            this.getClass(), new String[] {"tst_manifests", "golang", testFolder, "go.mod"})) {
-      targetPom = is.readAllBytes();
+            this.getClass(), String.format("tst_manifests/golang/%s/go.mod", testFolder))) {
+      Files.write(tmpGolangFile, is.readAllBytes());
     }
     // load expected SBOM
     String expectedSbom = "";
     try (var is =
         getResourceAsStreamDecision(
             this.getClass(),
-            new String[] {
-              "tst_manifests", "golang", testFolder, "expected_sbom_component_analysis.json"
-            })) {
+            String.format(
+                "tst_manifests/golang/%s/expected_sbom_component_analysis.json", testFolder))) {
       expectedSbom = new String(is.readAllBytes());
     }
     // when providing component content for our pom
-    var content = new GoModulesProvider().provideComponent(targetPom);
+    var content = new GoModulesProvider(tmpGolangFile).provideComponent();
+    // cleanup
+    Files.deleteIfExists(tmpGolangFile);
     // verify expected SBOM is returned
     assertThat(content.type).isEqualTo(Api.CYCLONEDX_MEDIA_TYPE);
     assertThat(dropIgnored(new String(content.buffer))).isEqualTo(dropIgnored(expectedSbom));
@@ -108,25 +109,22 @@ class Golang_Modules_Provider_Test extends ExhortTest {
   @Test
   void Test_The_ProvideComponent_Path_Should_Throw_Exception() {
 
-    GoModulesProvider goModulesProvider = new GoModulesProvider();
+    GoModulesProvider goModulesProvider = new GoModulesProvider(Path.of("."));
     assertThatIllegalArgumentException()
         .isThrownBy(
             () -> {
-              goModulesProvider.provideComponent(Path.of("."));
-            })
-        .withMessage(
-            "provideComponent with file system path for GoModules package manager not implemented"
-                + " yet");
+              goModulesProvider.provideComponent();
+            });
   }
 
   @ParameterizedTest
   @ValueSource(booleans = {true, false})
   void Test_Golang_Modules_with_Match_Manifest_Version(boolean MatchManifestVersionsEnabled) {
-    String goModPath = getFileFromResource("go.mod", "msc", "golang", "go.mod");
-    GoModulesProvider goModulesProvider = new GoModulesProvider();
+    String goModPath = getFileFromResource("go.mod", "msc/golang/go.mod");
+    GoModulesProvider goModulesProvider = new GoModulesProvider(Path.of(goModPath));
 
     if (MatchManifestVersionsEnabled) {
-      System.setProperty("MATCH_MANIFEST_VERSIONS", "true");
+      System.setProperty(PROP_MATCH_MANIFEST_VERSIONS, "true");
       RuntimeException runtimeException =
           assertThrows(
               RuntimeException.class,
@@ -140,7 +138,7 @@ class Golang_Modules_Provider_Test extends ExhortTest {
                   "Can't continue with analysis - versions mismatch for dependency"
                       + " name=github.com/google/uuid, manifest version=v1.1.0, installed"
                       + " Version=v1.1.1"));
-      System.clearProperty("MATCH_MANIFEST_VERSIONS");
+      System.clearProperty(PROP_MATCH_MANIFEST_VERSIONS);
     } else {
       String sbomString =
           assertDoesNotThrow(
@@ -150,8 +148,7 @@ class Golang_Modules_Provider_Test extends ExhortTest {
                       .getAsJsonString());
       String actualSbomWithTSStripped = dropIgnoredKeepFormat(sbomString);
       assertEquals(
-          getStringFromFile("msc", "golang", "expected_sbom_ca.json").trim(),
-          actualSbomWithTSStripped);
+          getStringFromFile("msc/golang/expected_sbom_ca.json").trim(), actualSbomWithTSStripped);
 
       System.out.println(sbomString);
     }
@@ -159,15 +156,14 @@ class Golang_Modules_Provider_Test extends ExhortTest {
 
   @Test
   void Test_Golang_MvS_Logic_Enabled() throws IOException {
-    ObjectMapper om = new ObjectMapper();
-    System.setProperty("EXHORT_GO_MVS_LOGIC_ENABLED", "true");
-    String goModPath = getFileFromResource("go.mod", "msc", "golang", "mvs_logic", "go.mod");
-    GoModulesProvider goModulesProvider = new GoModulesProvider();
+    System.setProperty(GoModulesProvider.PROP_EXHORT_GO_MVS_LOGIC_ENABLED, "true");
+    String goModPath = getFileFromResource("go.mod", "msc/golang/mvs_logic/go.mod");
+    GoModulesProvider goModulesProvider = new GoModulesProvider(Path.of(goModPath));
     String resultSbom =
         dropIgnoredKeepFormat(
             goModulesProvider.getDependenciesSbom(Path.of(goModPath), true).getAsJsonString());
     String expectedSbom =
-        getStringFromFile("msc", "golang", "mvs_logic", "expected_sbom_stack_analysis.json").trim();
+        getStringFromFile("msc/golang/mvs_logic/expected_sbom_stack_analysis.json").trim();
 
     assertEquals(expectedSbom, resultSbom);
 
@@ -179,7 +175,7 @@ class Golang_Modules_Provider_Test extends ExhortTest {
                 .count()
             == 1);
 
-    System.clearProperty("EXHORT_GO_MVS_LOGIC_ENABLED");
+    System.clearProperty(GoModulesProvider.PROP_EXHORT_GO_MVS_LOGIC_ENABLED);
 
     resultSbom =
         dropIgnoredKeepFormat(
