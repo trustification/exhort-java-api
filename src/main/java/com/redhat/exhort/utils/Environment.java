@@ -31,11 +31,11 @@ public final class Environment {
     return get(name, null);
   }
 
-  public static final boolean getBoolean(String key, Boolean defaultValue) {
+  public static final boolean getBoolean(String key, boolean defaultValue) {
     var val = get(key);
     if (val != null) {
       return Boolean.parseBoolean(val.trim().toLowerCase());
     }
-    return defaultValue != null ? defaultValue : false;
+    return defaultValue;
   }
 }
