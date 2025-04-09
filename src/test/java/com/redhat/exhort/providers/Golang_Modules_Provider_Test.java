@@ -147,10 +147,9 @@ class Golang_Modules_Provider_Test extends ExhortTest {
                       .getDependenciesSbom(Path.of(goModPath), false)
                       .getAsJsonString());
       String actualSbomWithTSStripped = dropIgnoredKeepFormat(sbomString);
+
       assertEquals(
           getStringFromFile("msc/golang/expected_sbom_ca.json").trim(), actualSbomWithTSStripped);
-
-      System.out.println(sbomString);
     }
   }
 
@@ -164,7 +163,6 @@ class Golang_Modules_Provider_Test extends ExhortTest {
             goModulesProvider.getDependenciesSbom(Path.of(goModPath), true).getAsJsonString());
     String expectedSbom =
         getStringFromFile("msc/golang/mvs_logic/expected_sbom_stack_analysis.json").trim();
-
     assertEquals(expectedSbom, resultSbom);
 
     // check that only one version of package golang/go.opencensus.io is in sbom for

@@ -23,7 +23,7 @@ import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.redhat.exhort.Api;
 import com.redhat.exhort.Provider;
-import com.redhat.exhort.api.AnalysisReport;
+import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.image.ImageRef;
 import com.redhat.exhort.image.ImageUtils;
 import com.redhat.exhort.logging.LoggersFactory;

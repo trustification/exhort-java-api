@@ -3,48 +3,48 @@
   "specVersion" : "1.4",
   "version" : 1,
   "metadata" : {
-    "timestamp" : "2023-08-26T18:33:52Z",
+    "timestamp" : "2025-04-09T14:09:50Z",
     "component" : {
+      "type" : "application",
+      "bom-ref" : "pkg:golang/golang.org/x/example@v0.0.0",
       "group" : "golang.org/x",
       "name" : "example",
       "version" : "v0.0.0",
-      "purl" : "pkg:golang/golang.org/x/example@v0.0.0",
-      "type" : "application",
-      "bom-ref" : "pkg:golang/golang.org/x/example@v0.0.0"
+      "purl" : "pkg:golang/golang.org/x/example@v0.0.0?goarch=amd64&goos=linux&type=module"
     }
   },
   "components" : [
     {
+      "type" : "application",
+      "bom-ref" : "pkg:golang/golang.org/x/example@v0.0.0",
       "group" : "golang.org/x",
       "name" : "example",
       "version" : "v0.0.0",
-      "purl" : "pkg:golang/golang.org/x/example@v0.0.0",
-      "type" : "application",
-      "bom-ref" : "pkg:golang/golang.org/x/example@v0.0.0"
+      "purl" : "pkg:golang/golang.org/x/example@v0.0.0?goarch=amd64&goos=linux&type=module"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:golang/github.com/spf13/cobra@v0.0.5",
       "group" : "github.com/spf13",
       "name" : "cobra",
       "version" : "v0.0.5",
-      "purl" : "pkg:golang/github.com/spf13/cobra@v0.0.5",
-      "type" : "library",
-      "bom-ref" : "pkg:golang/github.com/spf13/cobra@v0.0.5"
+      "purl" : "pkg:golang/github.com/spf13/cobra@v0.0.5?goarch=amd64&goos=linux&type=module"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:golang/golang.org/x/tools@v0.0.0-20210112183307-1e6ecd4bf1b0",
       "group" : "golang.org/x",
       "name" : "tools",
       "version" : "v0.0.0-20210112183307-1e6ecd4bf1b0",
-      "purl" : "pkg:golang/golang.org/x/tools@v0.0.0-20210112183307-1e6ecd4bf1b0",
-      "type" : "library",
-      "bom-ref" : "pkg:golang/golang.org/x/tools@v0.0.0-20210112183307-1e6ecd4bf1b0"
+      "purl" : "pkg:golang/golang.org/x/tools@v0.0.0-20210112183307-1e6ecd4bf1b0?goarch=amd64&goos=linux&type=module"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:golang/gopkg.in/yaml.v3@v3.0.1",
       "group" : "gopkg.in",
       "name" : "yaml.v3",
       "version" : "v3.0.1",
-      "purl" : "pkg:golang/gopkg.in/yaml.v3@v3.0.1",
-      "type" : "library",
-      "bom-ref" : "pkg:golang/gopkg.in/yaml.v3@v3.0.1"
+      "purl" : "pkg:golang/gopkg.in/yaml.v3@v3.0.1?goarch=amd64&goos=linux&type=module"
     }
   ],
   "dependencies" : [

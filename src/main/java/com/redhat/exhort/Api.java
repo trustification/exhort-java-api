@@ -15,7 +15,7 @@
  */
 package com.redhat.exhort;
 
-import com.redhat.exhort.api.AnalysisReport;
+import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.image.ImageRef;
 import java.io.IOException;
 import java.util.Arrays;

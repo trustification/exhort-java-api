@@ -26,8 +26,9 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
-import org.cyclonedx.BomGeneratorFactory;
-import org.cyclonedx.CycloneDxSchema.Version;
+import org.cyclonedx.Version;
+import org.cyclonedx.exception.GeneratorException;
+import org.cyclonedx.generators.BomGeneratorFactory;
 import org.cyclonedx.model.Bom;
 import org.cyclonedx.model.Component;
 import org.cyclonedx.model.Component.Type;
@@ -244,11 +245,15 @@ public class CycloneDXSbom implements Sbom {
 
   @Override
   public String getAsJsonString() {
-    String jsonString = BomGeneratorFactory.createJson(VERSION, bom).toJsonString();
-    if (debugLoggingIsNeeded()) {
-      log.info("Generated Sbom Json:" + System.lineSeparator() + jsonString);
+    try {
+      var jsonString = BomGeneratorFactory.createJson(VERSION, bom).toJsonString();
+      if (debugLoggingIsNeeded()) {
+        log.info("Generated Sbom Json:" + System.lineSeparator() + jsonString);
+      }
+      return jsonString;
+    } catch (GeneratorException e) {
+      throw new RuntimeException("Unable to genenerate JSON from SBOM", e);
     }
-    return jsonString;
   }
 
   @Override
