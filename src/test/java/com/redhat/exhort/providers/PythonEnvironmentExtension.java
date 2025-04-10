@@ -18,7 +18,6 @@ package com.redhat.exhort.providers;
 import com.redhat.exhort.tools.Operations;
 import com.redhat.exhort.utils.PythonControllerBase;
 import com.redhat.exhort.utils.PythonControllerTestEnv;
-import java.util.List;
 import org.junit.jupiter.api.extension.*;
 
 public class PythonEnvironmentExtension
@@ -33,12 +32,6 @@ public class PythonEnvironmentExtension
       new PythonControllerTestEnv(
           Operations.getCustomPathOrElse("python3"), Operations.getCustomPathOrElse("pip3"));
   private System.Logger log = System.getLogger(this.getClass().getName());
-
-  //  public PythonEnvironmentExtension(List<String> requirementsFiles) {
-  //    this.requirementsFiles = requirementsFiles;
-  //  }
-
-  private List<String> requirementsFiles;
 
   @Override
   public void afterAll(ExtensionContext extensionContext) throws Exception {

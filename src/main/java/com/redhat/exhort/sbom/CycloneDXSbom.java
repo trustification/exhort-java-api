@@ -44,7 +44,7 @@ public class CycloneDXSbom implements Sbom {
   private Bom bom;
   private PackageURL root;
 
-  private BiPredicate<Collection, Component> belongingCriteriaBinaryAlgorithm;
+  private BiPredicate<Collection<?>, Component> belongingCriteriaBinaryAlgorithm;
 
   private <X, Y> Predicate<Y> genericComparator(
       BiPredicate<X, Y> binaryBelongingCriteriaAlgorithm, X container) {
@@ -63,7 +63,7 @@ public class CycloneDXSbom implements Sbom {
     this.exhortIgnoreMethod = "insensitive";
   }
 
-  private static BiPredicate<Collection, Component> getBelongingConditionByName() {
+  private static BiPredicate<Collection<?>, Component> getBelongingConditionByName() {
     return (collection, component) -> collection.contains(component.getName());
   }
 
@@ -82,7 +82,7 @@ public class CycloneDXSbom implements Sbom {
     this.exhortIgnoreMethod = exhortIgnoreMethod;
   }
 
-  private BiPredicate<Collection, Component> getBelongingConditionByPurl() {
+  private BiPredicate<Collection<?>, Component> getBelongingConditionByPurl() {
     return (collection, component) ->
         collection.contains(componentToPurl(component).getCoordinates());
   }
@@ -201,7 +201,7 @@ public class CycloneDXSbom implements Sbom {
     List<String> result = new ArrayList<>(toIgnore);
     for (Dependency dep : deps) {
       if (toIgnore.contains(dep.getRef()) && dep.getDependencies() != null) {
-        List collected =
+        List<String> collected =
             dep.getDependencies().stream().map(p -> p.getRef()).collect(Collectors.toList());
         result.addAll(collected);
         if (dep.getDependencies().stream().filter(p -> p != null).count() > 0) {

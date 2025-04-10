@@ -104,7 +104,7 @@ public interface Api {
    * @return the deserialized Json report as an AnalysisReport wrapped in a CompletableFuture
    * @throws IOException when failed to load the manifest content
    */
-  CompletableFuture<AnalysisReport> componentAnalysis(String manifest, byte[] manifestContet)
+  CompletableFuture<AnalysisReport> componentAnalysis(String manifest, byte[] manifestContent)
       throws IOException;
 
   CompletableFuture<AnalysisReport> componentAnalysis(String manifest) throws IOException;

@@ -15,13 +15,13 @@
  */
 package com.redhat.exhort.providers;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.redhat.exhort.tools.Operations;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.regex.Pattern;
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.*;
 
@@ -93,9 +93,7 @@ class GoModulesMainModuleVersionTest {
     gitCommit("sample-2");
 
     goModulesProvider.determineMainModuleVersion(testGitRepo);
-    assertTrue(
-        Pattern.matches(
-            "v1.0.1-0.[0-9]{14}-[a-f0-9]{12}", goModulesProvider.getMainModuleVersion()));
+    assertThat(goModulesProvider.getMainModuleVersion()).matches("v1.0.1-0.[0-9]{14}-[a-f0-9]{12}");
   }
 
   private void gitInit() {

@@ -37,7 +37,7 @@ class PythonControllerBaseTest extends ExhortTest {
         // in order to let
         // custom ArgumentMatcher work correctly.
         @Override
-        public Class type() {
+        public Class<?> type() {
           return String[].class;
         }
       };
@@ -50,7 +50,7 @@ class PythonControllerBaseTest extends ExhortTest {
         }
 
         @Override
-        public Class type() {
+        public Class<?> type() {
           return String[].class;
         }
       };
