@@ -17,6 +17,7 @@ package com.redhat.exhort.tools;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.redhat.exhort.providers.JavaMavenProvider;
 import java.nio.file.Path;
@@ -35,5 +36,11 @@ class Ecosystem_Test {
   void get_a_provider_for_a_pom_xml_file_should_return_java_maven_manifest() {
     var manifestPath = Path.of("/supported/manifest/pom.xml");
     assertThat(Ecosystem.getProvider(manifestPath)).isInstanceOf(JavaMavenProvider.class);
+  }
+
+  @Test
+  void get_a_provider_with_missing_lock_file() {
+    var manifestPath = Path.of("src/test/resources/tst_manifests/npm/empty/package.json");
+    assertThrows(IllegalStateException.class, () -> Ecosystem.getProvider(manifestPath));
   }
 }
