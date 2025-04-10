@@ -28,7 +28,6 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mockStatic;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.Api;
 import com.redhat.exhort.ExhortTest;
 import com.redhat.exhort.api.v4.AnalysisReport;
@@ -337,13 +336,11 @@ class ExhortApiIT extends ExhortTest {
   }
 
   private void handleHtmlResponse(String analysisReportHtml) throws JsonProcessingException {
-    ObjectMapper om = new ObjectMapper();
     assertThat(analysisReportHtml).contains("svg", "html");
   }
 
   private void handleHtmlResponseForImage(String analysisReportHtml)
       throws JsonProcessingException {
-    ObjectMapper om = new ObjectMapper();
     assertThat(analysisReportHtml).contains("svg", "html");
   }
 
