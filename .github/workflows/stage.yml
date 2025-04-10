@@ -57,14 +57,28 @@ jobs:
       - name: Check for existing ${{ needs.deploy.outputs.project_version }} release
         id: existing_release
         uses: actions/github-script@v6
+        env:
+          PROJECT_VERSION: ${{ needs.deploy.outputs.project_version }}
         continue-on-error: true
         with:
           github-token: ${{ secrets.STAGING_PAT }}
           script: |
-            const repo_name = context.payload.repository.full_name
-            var response = await github.request('GET /repos/' + repo_name + '/releases/tags/${{ needs.deploy.outputs.project_version }}')
-            // if the request fails (ie 404) the next steps will not occur and the output will not be set
-            core.setOutput('id', response.data.id)
+            const repo = context.repo;
+            const tag = process.env.PROJECT_VERSION;
+            try {
+              const response = await github.rest.repos.getReleaseByTag({
+                owner: repo.owner,
+                repo: repo.repo,
+                tag: tag
+              });
+              core.setOutput('id', response.data.id);
+            } catch (error) {
+              if (error.status === 404) {
+                core.info(`Release for tag '${tag}' not found.`);
+              } else {
+                throw error;
+              }
+            }
 
       - name: Checkout sources
         uses: actions/checkout@v3
@@ -72,32 +86,48 @@ jobs:
       - name: Delete ${{ needs.deploy.outputs.project_version }} release if exists
         if: ${{ steps.existing_release.outputs.id }}
         uses: actions/github-script@v6
+        env:
+          RELEASE_ID: ${{ steps.existing_release.outputs.id }}
         with:
           github-token: ${{ secrets.STAGING_PAT }}
           script: |
-            const repo_name = context.payload.repository.full_name
-            await github.request('DELETE /repos/' + repo_name + '/releases/' + ${{ steps.existing_release.outputs.id }})
+            const repo = context.repo;
+            const releaseId = process.env.RELEASE_ID;
+            await github.rest.repos.deleteRelease({
+              owner: repo.owner,
+              repo: repo.repo,
+              release_id: releaseId
+            });
 
       - name: Delete ${{ needs.deploy.outputs.project_version }} tag if exists
         continue-on-error: true
         run: git push --delete origin ${{ needs.deploy.outputs.project_version }}
 
-      # a little pause between deleting the release and creating a new one
-      # without it, the new release might be a weird release, i.e. a draft release
-      - name: Sleep 5
+      # Workaround for GitHub release cache issue — avoids ghost "draft" releases
+      - name: Sleep to allow release deletion to propagate
         run: sleep 5
 
       - name: Create new ${{ needs.deploy.outputs.project_version }} release
         uses: actions/github-script@v6
+        env:
+          PROJECT_VERSION: ${{ needs.deploy.outputs.project_version }}
         with:
           github-token: ${{ secrets.STAGING_PAT }}
           script: |
-            const repo_name = context.payload.repository.full_name
-            const response = await github.request('POST /repos/' + repo_name + '/releases', {
-              tag_name: '${{ needs.deploy.outputs.project_version }}',
-              name: '${{ needs.deploy.outputs.project_version }}',
+            const repo = context.repo;
+            const tag = process.env.PROJECT_VERSION;
+
+            console.log(`Creating release for tag: ${tag}`);
+
+            const response = await github.rest.repos.createRelease({
+              owner: repo.owner,
+              repo: repo.repo,
+              tag_name: tag,
+              name: tag,
               draft: false,
               prerelease: true,
               generate_release_notes: true,
-              make_latest: 'false'
-            })
+              make_latest: false,
+            });
+
+            console.log(`Release created: ${response.data.html_url}`);
