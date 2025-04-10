@@ -3,104 +3,104 @@
   "specVersion" : "1.4",
   "version" : 1,
   "metadata" : {
-    "timestamp" : "2024-07-29T07:49:36Z",
+    "timestamp" : "2025-04-09T12:29:26Z",
     "component" : {
+      "type" : "application",
+      "bom-ref" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT",
       "group" : "org.acme.dbaas",
       "name" : "postgresql-orm-quarkus",
       "version" : "1.0.0-SNAPSHOT",
-      "purl" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT",
-      "type" : "application",
-      "bom-ref" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT"
+      "purl" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT"
     }
   },
   "components" : [
     {
+      "type" : "application",
+      "bom-ref" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT",
       "group" : "org.acme.dbaas",
       "name" : "postgresql-orm-quarkus",
       "version" : "1.0.0-SNAPSHOT",
-      "purl" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT",
-      "type" : "application",
-      "bom-ref" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT"
+      "purl" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-hibernate-orm",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-hibernate-orm@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-agroal@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-agroal",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-agroal@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-agroal@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-agroal@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-resteasy@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-resteasy",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-resteasy@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-resteasy@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-resteasy@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-resteasy-jackson@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-resteasy-jackson",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-resteasy-jackson@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-resteasy-jackson@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-resteasy-jackson@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-jdbc-postgresql",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-jdbc-postgresql@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-kubernetes-service-binding@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-kubernetes-service-binding",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-kubernetes-service-binding@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-kubernetes-service-binding@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-kubernetes-service-binding@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-container-image-docker@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-container-image-docker",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-container-image-docker@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-container-image-docker@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-container-image-docker@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/jakarta.validation/jakarta.validation-api@2.0.2",
       "group" : "jakarta.validation",
       "name" : "jakarta.validation-api",
       "version" : "2.0.2",
-      "purl" : "pkg:maven/jakarta.validation/jakarta.validation-api@2.0.2",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/jakarta.validation/jakarta.validation-api@2.0.2"
+      "purl" : "pkg:maven/jakarta.validation/jakarta.validation-api@2.0.2?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-vertx-http",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-hibernate-orm-deployment@2.0.2.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-hibernate-orm-deployment",
       "version" : "2.0.2.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-hibernate-orm-deployment@2.0.2.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-hibernate-orm-deployment@2.0.2.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-hibernate-orm-deployment@2.0.2.Final?scope=compile"
     }
   ],
   "dependencies" : [

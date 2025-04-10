@@ -1,7 +1,7 @@
 # CodeReady Dependency Analytics Java API<br/>![latest-no-snapshot][0] ![latest-snapshot][1]
 
-* Looking for our JavaScript/TypeScript API? Try [Exhort JavaScript API](https://github.com/RHEcosystemAppEng/exhort-javascript-api).
-* Looking for our Backend implementation? Try [Exhort](https://github.com/RHEcosystemAppEng/exhort).
+* Looking for our JavaScript/TypeScript API? Try [Exhort JavaScript API](https://github.com/trustification/exhort-javascript-api).
+* Looking for our Backend implementation? Try [Exhort](https://github.com/trustification/exhort).
 
 The _Exhort Java API_ module is deployed to _GitHub Package Registry_.
 
@@ -69,7 +69,7 @@ encrypted-token-will-appear-here
     ...
     <repository>
       <id>github</id>
-      <url>https://maven.pkg.github.com/RHEcosystemAppEng/exhort-java-api</url>
+      <url>https://maven.pkg.github.com/trustification/exhort-java-api</url>
     </repository>
     ...
   </repositories>
@@ -83,7 +83,7 @@ encrypted-token-will-appear-here
 repositories {
     ...
     maven {
-        url 'https://maven.pkg.github.com/RHEcosystemAppEng/exhort-java-api'
+        url 'https://maven.pkg.github.com/trustification/exhort-java-api'
         credentials {
             username System.getenv("GITHUB_USERNAME")
             password System.getenv("GITHUB_TOKEN")
@@ -551,5 +551,5 @@ Customize image analysis optionally by using *Environment Variables* or *Java Pr
 
 
 <!-- Badge links -->
-[0]: https://img.shields.io/github/v/release/RHEcosystemAppEng/exhort-java-api?color=green&label=latest
-[1]: https://img.shields.io/github/v/release/RHEcosystemAppEng/exhort-java-api?color=yellow&include_prereleases&label=snapshot
+[0]: https://img.shields.io/github/v/release/trustification/exhort-java-api?color=green&label=latest
+[1]: https://img.shields.io/github/v/release/trustification/exhort-java-api?color=yellow&include_prereleases&label=snapshot

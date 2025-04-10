@@ -40,7 +40,7 @@ import com.github.packageurl.PackageURL;
 import com.redhat.exhort.Api;
 import com.redhat.exhort.ExhortTest;
 import com.redhat.exhort.Provider;
-import com.redhat.exhort.api.AnalysisReport;
+import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.image.ImageRef;
 import com.redhat.exhort.tools.Ecosystem;
 import com.redhat.exhort.tools.Operations;

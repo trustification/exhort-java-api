@@ -47,13 +47,11 @@
 
 ### OpenAPI Specifications
 
-We use our [Backend's OpenAPI spec file][1] for generating types used for deserialization of the Backend's
+We use the Java generated library for the [Exhort OpenAPI spec][1] for deserialization of the Backend's
 API responses.<br/>
-The generated classes target package is the `com.redhat.exhort.api`. It is skipped when calculating coverage
-thresholds. **Avoid writing code in this package.**<br/> 
-When the [Backend's spec file][1] is modified, we need to **manually** copy it here in
-[src/main/resources/exhort](src/main/resources/exhort/openapi.yaml),
-for the *openapi-generator-maven-plugin* to pick it up at **build time**.
+
+When the [Backend's spec file][1] is modified, a new
+version of the Java library should be used.
 
 ### Modular (JPMS)
 
@@ -116,7 +114,7 @@ contribution. See the [DCO](DCO) file for details.
 
 <!-- Real links -->
 [0]: https://www.conventionalcommits.org/en/v1.0.0/
-[1]: https://github.com/RHEcosystemAppEng/exhort/blob/main/src/main/resources/META-INF/openapi.yaml
+[1]: https://github.com/trustification/exhort-api-spec/blob/main/api/v4/openapi.yaml
 
 <!-- Badge links -->
 [10]: https://badgen.net/badge/Java%20Version/11/5382a1

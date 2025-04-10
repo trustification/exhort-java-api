@@ -3,32 +3,32 @@
   "specVersion" : "1.4",
   "version" : 1,
   "metadata" : {
-    "timestamp" : "2024-05-01T22:57:54Z",
+    "timestamp" : "2025-04-09T12:30:16Z",
     "component" : {
+      "type" : "application",
+      "bom-ref" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT",
       "group" : "org.acme.dbaas",
       "name" : "postgresql-orm-quarkus",
       "version" : "1.0.0-SNAPSHOT",
-      "purl" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT",
-      "type" : "application",
-      "bom-ref" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT"
+      "purl" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT"
     }
   },
   "components" : [
     {
+      "type" : "application",
+      "bom-ref" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT",
       "group" : "org.acme.dbaas",
       "name" : "postgresql-orm-quarkus",
       "version" : "1.0.0-SNAPSHOT",
-      "purl" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT",
-      "type" : "application",
-      "bom-ref" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT"
+      "purl" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/log4j/log4j@1.2.17",
       "group" : "log4j",
       "name" : "log4j",
       "version" : "1.2.17",
-      "purl" : "pkg:maven/log4j/log4j@1.2.17",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/log4j/log4j@1.2.17"
+      "purl" : "pkg:maven/log4j/log4j@1.2.17?scope=compile"
     }
   ],
   "dependencies" : [

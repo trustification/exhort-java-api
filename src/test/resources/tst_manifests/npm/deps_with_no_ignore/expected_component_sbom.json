@@ -3,86 +3,86 @@
   "specVersion" : "1.4",
   "version" : 1,
   "metadata" : {
-    "timestamp" : "2023-11-01T11:28:37Z",
+    "timestamp" : "2025-04-09T12:31:19Z",
     "component" : {
+      "type" : "application",
+      "bom-ref" : "pkg:npm/backend@1.0.0",
       "name" : "backend",
       "version" : "1.0.0",
-      "purl" : "pkg:npm/backend@1.0.0",
-      "type" : "application",
-      "bom-ref" : "pkg:npm/backend@1.0.0"
+      "purl" : "pkg:npm/backend@1.0.0"
     }
   },
   "components" : [
     {
+      "type" : "application",
+      "bom-ref" : "pkg:npm/backend@1.0.0",
       "name" : "backend",
       "version" : "1.0.0",
-      "purl" : "pkg:npm/backend@1.0.0",
-      "type" : "application",
-      "bom-ref" : "pkg:npm/backend@1.0.0"
+      "purl" : "pkg:npm/backend@1.0.0"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:npm/%40hapi/joi@17.1.1",
       "group" : "@hapi",
       "name" : "joi",
       "version" : "17.1.1",
-      "purl" : "pkg:npm/%40hapi/joi@17.1.1",
-      "type" : "library",
-      "bom-ref" : "pkg:npm/%40hapi/joi@17.1.1"
+      "purl" : "pkg:npm/%40hapi/joi@17.1.1"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:npm/axios@0.19.2",
       "name" : "axios",
       "version" : "0.19.2",
-      "purl" : "pkg:npm/axios@0.19.2",
-      "type" : "library",
-      "bom-ref" : "pkg:npm/axios@0.19.2"
+      "purl" : "pkg:npm/axios@0.19.2"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:npm/backend@0.0.0",
       "name" : "backend",
       "version" : "0.0.0",
-      "purl" : "pkg:npm/backend@0.0.0",
-      "type" : "library",
-      "bom-ref" : "pkg:npm/backend@0.0.0"
+      "purl" : "pkg:npm/backend@0.0.0"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:npm/bcryptjs@2.4.3",
       "name" : "bcryptjs",
       "version" : "2.4.3",
-      "purl" : "pkg:npm/bcryptjs@2.4.3",
-      "type" : "library",
-      "bom-ref" : "pkg:npm/bcryptjs@2.4.3"
+      "purl" : "pkg:npm/bcryptjs@2.4.3"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:npm/dotenv@8.6.0",
       "name" : "dotenv",
       "version" : "8.6.0",
-      "purl" : "pkg:npm/dotenv@8.6.0",
-      "type" : "library",
-      "bom-ref" : "pkg:npm/dotenv@8.6.0"
+      "purl" : "pkg:npm/dotenv@8.6.0"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:npm/express@4.18.2",
       "name" : "express",
       "version" : "4.18.2",
-      "purl" : "pkg:npm/express@4.18.2",
-      "type" : "library",
-      "bom-ref" : "pkg:npm/express@4.18.2"
+      "purl" : "pkg:npm/express@4.18.2"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:npm/jsonwebtoken@8.5.1",
       "name" : "jsonwebtoken",
       "version" : "8.5.1",
-      "purl" : "pkg:npm/jsonwebtoken@8.5.1",
-      "type" : "library",
-      "bom-ref" : "pkg:npm/jsonwebtoken@8.5.1"
+      "purl" : "pkg:npm/jsonwebtoken@8.5.1"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:npm/mongoose@5.13.20",
       "name" : "mongoose",
       "version" : "5.13.20",
-      "purl" : "pkg:npm/mongoose@5.13.20",
-      "type" : "library",
-      "bom-ref" : "pkg:npm/mongoose@5.13.20"
+      "purl" : "pkg:npm/mongoose@5.13.20"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:npm/nodemon@2.0.22",
       "name" : "nodemon",
       "version" : "2.0.22",
-      "purl" : "pkg:npm/nodemon@2.0.22",
-      "type" : "library",
-      "bom-ref" : "pkg:npm/nodemon@2.0.22"
+      "purl" : "pkg:npm/nodemon@2.0.22"
     }
   ],
   "dependencies" : [

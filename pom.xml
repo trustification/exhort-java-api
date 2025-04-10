@@ -8,7 +8,7 @@
   <version>0.0.8-SNAPSHOT</version>
   <name>Exhort Java API</name>
   <description>Exhort Java API</description>
-  <url>https://github.com/RHEcosystemAppEng/exhort-java-api#readme</url>
+  <url>https://github.com/trustification/exhort-java-api#readme</url>
   <inceptionYear>2023</inceptionYear>
 
   <properties>
@@ -18,10 +18,11 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <maven.compiler.release>11</maven.compiler.release>
     <!-- Dependencies -->
+    <exhort-api.version>1.0.6</exhort-api.version>
     <jackson.version>2.15.0</jackson.version>
     <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
     <jakarta.mail.version>2.0.2</jakarta.mail.version>
-    <cyclonedx.version>7.3.2</cyclonedx.version>
+    <cyclonedx.version>10.2.1</cyclonedx.version>
     <!-- Testing Dependencies -->
     <assertj.version>3.27.3</assertj.version>
     <junit-jupiter.version>5.10.5</junit-jupiter.version>
@@ -49,12 +50,19 @@
     <jacoco-maven-plugin.version>0.8.10</jacoco-maven-plugin.version>
     <junit-platform-maven-plugin.version>1.1.8</junit-platform-maven-plugin.version>
     <license-maven-plugin.version>4.1</license-maven-plugin.version>
-    <openapi-generator-maven-plugin.version>6.6.0</openapi-generator-maven-plugin.version>
     <pitest-maven.version>1.13.2</pitest-maven.version>
     <pitest-junit5-plugin.version>1.1.2</pitest-junit5-plugin.version>
     <versions-maven-plugin.version>2.15.0</versions-maven-plugin.version>
     <maven-failsafe-plugin.version>3.5.3</maven-failsafe-plugin.version>
+    <spotless-maven-plugin.version>2.44.4</spotless-maven-plugin.version>
   </properties>
+
+  <repositories>
+    <repository>
+      <id>github</id>
+      <url>https://maven.pkg.github.com/trustification/exhort-api-spec</url>
+    </repository>
+  </repositories>
 
   <licenses>
     <license>
@@ -78,24 +86,29 @@
 
   <issueManagement>
     <system>GitHub Issues</system>
-    <url>https://github.com/RHEcosystemAppEng/exhort-java-api/issues</url>
+    <url>https://github.com/trustification/exhort-java-api/issues</url>
   </issueManagement>
 
   <scm>
-    <url>https://github.com/RHEcosystemAppEng/exhort-java-api</url>
-    <connection>scm:git:git@github.com:RHEcosystemAppEng/exhort-java-api.git</connection>
-    <developerConnection>scm:git:git@github.com:RHEcosystemAppEng/exhort-java-api.git</developerConnection>
+    <url>https://github.com/trustification/exhort-java-api</url>
+    <connection>scm:git:git@github.com:trustification/exhort-java-api.git</connection>
+    <developerConnection>scm:git:git@github.com:trustification/exhort-java-api.git</developerConnection>
     <tag>HEAD</tag>
   </scm>
 
   <ciManagement>
     <system>GitHub Workflows</system>
-    <url>https://github.com/RHEcosystemAppEng/exhort-java-api/actions</url>
+    <url>https://github.com/trustification/exhort-java-api/actions</url>
   </ciManagement>
 
   <dependencyManagement>
     <dependencies>
       <!-- Dependencies -->
+      <dependency>
+        <groupId>com.redhat.ecosystemappeng</groupId>
+        <artifactId>exhort-api-spec</artifactId>
+        <version>${exhort-api.version}</version>
+      </dependency>
       <dependency>
         <groupId>org.tomlj</groupId>
         <artifactId>tomlj</artifactId>
@@ -172,6 +185,10 @@
 
   <dependencies>
     <!-- Dependencies -->
+    <dependency>
+      <groupId>com.redhat.ecosystemappeng</groupId>
+      <artifactId>exhort-api-spec</artifactId>
+    </dependency>
     <dependency>
       <groupId>org.tomlj</groupId>
       <artifactId>tomlj</artifactId>
@@ -408,11 +425,6 @@ limitations under the License.]]>
           </configuration>
         </plugin>
         <plugin>
-          <groupId>org.openapitools</groupId>
-          <artifactId>openapi-generator-maven-plugin</artifactId>
-          <version>${openapi-generator-maven-plugin.version}</version>
-        </plugin>
-        <plugin>
           <groupId>org.pitest</groupId>
           <artifactId>pitest-maven</artifactId>
           <version>${pitest-maven.version}</version>
@@ -425,9 +437,6 @@ limitations under the License.]]>
           </dependencies>
           <configuration>
             <exportLineCoverage>true</exportLineCoverage>
-            <excludedClasses>
-              <excludedClass>com.redhat.exhort.api.*</excludedClass>
-            </excludedClasses>
             <mutationThreshold>${mutation.coverage.threshold}</mutationThreshold>
             <mutators>
               <mutator>STRONGER</mutator>
@@ -439,6 +448,11 @@ limitations under the License.]]>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-failsafe-plugin</artifactId>
           <version>${maven-failsafe-plugin.version}</version>
+        </plugin>
+        <plugin>
+          <groupId>com.diffplug.spotless</groupId>
+          <artifactId>spotless-maven-plugin</artifactId>
+          <version>${spotless-maven-plugin.version}</version>
         </plugin>
       </plugins>
     </pluginManagement>
@@ -637,45 +651,6 @@ limitations under the License.]]>
           </execution>
         </executions>
       </plugin>
-
-      <!-- openapi-generator-maven-plugin:generate is bound to the generate-sources phase and will generate sources from exhort spec -->
-      <plugin>
-        <groupId>org.openapitools</groupId>
-        <artifactId>openapi-generator-maven-plugin</artifactId>
-        <executions>
-          <execution>
-            <goals>
-              <goal>generate</goal>
-            </goals>
-            <configuration>
-              <inputSpec>${project.basedir}/src/main/resources/exhort/openapi.yaml</inputSpec>
-              <generatorName>java</generatorName>
-              <modelPackage>com.redhat.exhort.api</modelPackage>
-              <output>${project.build.directory}</output>
-              <configOptions>
-                <documentationProvider>none</documentationProvider>
-                <hideGenerationTimestamp>true</hideGenerationTimestamp>
-                <serializableModel>true</serializableModel>
-                <serializationLibrary>jackson</serializationLibrary>
-                <sourceFolder>generated-sources</sourceFolder>
-                <useJakartaEe>true</useJakartaEe>
-              </configOptions>
-              <library>native</library>
-              <!--<generateModels>false</generateModels>-->
-              <generateApis>false</generateApis>
-              <generateSupportingFiles>false</generateSupportingFiles>
-              <generateModelTests>false</generateModelTests>
-              <generateModelDocumentation>false</generateModelDocumentation>
-              <generateApiTests>false</generateApiTests>
-              <addCompileSourceRoot>false</addCompileSourceRoot>
-              <addTestCompileSourceRoot>false</addTestCompileSourceRoot>
-              <inlineSchemaNameMappings>analysis_200_response=AnalysisResponse</inlineSchemaNameMappings>
-                <schemaMappings>PackageRef=com.redhat.exhort.api.PackageRef</schemaMappings>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
@@ -826,11 +801,11 @@ limitations under the License.]]>
       <distributionManagement>
         <repository>
           <id>github</id>
-          <url>https://maven.pkg.github.com/RHEcosystemAppEng/exhort-java-api</url>
+          <url>https://maven.pkg.github.com/trustification/exhort-java-api</url>
         </repository>
         <snapshotRepository>
           <id>github</id>
-          <url>https://maven.pkg.github.com/RHEcosystemAppEng/exhort-java-api</url>
+          <url>https://maven.pkg.github.com/trustification/exhort-java-api</url>
         </snapshotRepository>
       </distributionManagement>
       <build>

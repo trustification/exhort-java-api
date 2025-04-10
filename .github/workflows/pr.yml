@@ -49,6 +49,7 @@ jobs:
       env:
         EXHORT_PYTHON3_PATH: "${{steps.python-location.outputs.python-bin-location}}/python3"
         EXHORT_PIP3_PATH: "${{steps.python-location.outputs.python-bin-location}}/pip3"
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         mvn verify -Pits,cov -B -ff
 
@@ -60,8 +61,6 @@ jobs:
         files: |
           ./target/surefire-reports/*.xml
           ./target/junit-platform/TEST-junit-jupiter.xml
-
-
 
     - name: Upload coverage reports
       if: ${{ matrix.java == env.MAIN_JAVA_VER }}

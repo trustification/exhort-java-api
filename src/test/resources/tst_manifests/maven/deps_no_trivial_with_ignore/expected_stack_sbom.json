@@ -3,1064 +3,1064 @@
   "specVersion" : "1.4",
   "version" : 1,
   "metadata" : {
-    "timestamp" : "2023-10-17T09:00:56Z",
+    "timestamp" : "2025-04-09T12:14:35Z",
     "component" : {
+      "type" : "application",
+      "bom-ref" : "pkg:maven/pom-no-trivial-with-deps-and-ignore/demo@0.0.1",
       "group" : "pom-no-trivial-with-deps-and-ignore",
       "name" : "demo",
       "version" : "0.0.1",
-      "purl" : "pkg:maven/pom-no-trivial-with-deps-and-ignore/demo@0.0.1",
-      "type" : "application",
-      "bom-ref" : "pkg:maven/pom-no-trivial-with-deps-and-ignore/demo@0.0.1"
+      "purl" : "pkg:maven/pom-no-trivial-with-deps-and-ignore/demo@0.0.1"
     }
   },
   "components" : [
     {
+      "type" : "application",
+      "bom-ref" : "pkg:maven/pom-no-trivial-with-deps-and-ignore/demo@0.0.1",
       "group" : "pom-no-trivial-with-deps-and-ignore",
       "name" : "demo",
       "version" : "0.0.1",
-      "purl" : "pkg:maven/pom-no-trivial-with-deps-and-ignore/demo@0.0.1",
-      "type" : "application",
-      "bom-ref" : "pkg:maven/pom-no-trivial-with-deps-and-ignore/demo@0.0.1"
+      "purl" : "pkg:maven/pom-no-trivial-with-deps-and-ignore/demo@0.0.1"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.springframework.boot/spring-boot-starter-web@3.1.3",
       "group" : "org.springframework.boot",
       "name" : "spring-boot-starter-web",
       "version" : "3.1.3",
-      "purl" : "pkg:maven/org.springframework.boot/spring-boot-starter-web@3.1.3",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.springframework.boot/spring-boot-starter-web@3.1.3"
+      "purl" : "pkg:maven/org.springframework.boot/spring-boot-starter-web@3.1.3?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.springframework.boot/spring-boot-starter@3.1.3",
       "group" : "org.springframework.boot",
       "name" : "spring-boot-starter",
       "version" : "3.1.3",
-      "purl" : "pkg:maven/org.springframework.boot/spring-boot-starter@3.1.3",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.springframework.boot/spring-boot-starter@3.1.3"
+      "purl" : "pkg:maven/org.springframework.boot/spring-boot-starter@3.1.3?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.springframework.boot/spring-boot@3.1.3",
       "group" : "org.springframework.boot",
       "name" : "spring-boot",
       "version" : "3.1.3",
-      "purl" : "pkg:maven/org.springframework.boot/spring-boot@3.1.3",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.springframework.boot/spring-boot@3.1.3"
+      "purl" : "pkg:maven/org.springframework.boot/spring-boot@3.1.3?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.springframework/spring-core@6.0.11",
       "group" : "org.springframework",
       "name" : "spring-core",
       "version" : "6.0.11",
-      "purl" : "pkg:maven/org.springframework/spring-core@6.0.11",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.springframework/spring-core@6.0.11"
+      "purl" : "pkg:maven/org.springframework/spring-core@6.0.11?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.springframework/spring-context@6.0.11",
       "group" : "org.springframework",
       "name" : "spring-context",
       "version" : "6.0.11",
-      "purl" : "pkg:maven/org.springframework/spring-context@6.0.11",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.springframework/spring-context@6.0.11"
+      "purl" : "pkg:maven/org.springframework/spring-context@6.0.11?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.springframework.boot/spring-boot-autoconfigure@3.1.3",
       "group" : "org.springframework.boot",
       "name" : "spring-boot-autoconfigure",
       "version" : "3.1.3",
-      "purl" : "pkg:maven/org.springframework.boot/spring-boot-autoconfigure@3.1.3",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.springframework.boot/spring-boot-autoconfigure@3.1.3"
+      "purl" : "pkg:maven/org.springframework.boot/spring-boot-autoconfigure@3.1.3?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.springframework.boot/spring-boot-starter-logging@3.1.3",
       "group" : "org.springframework.boot",
       "name" : "spring-boot-starter-logging",
       "version" : "3.1.3",
-      "purl" : "pkg:maven/org.springframework.boot/spring-boot-starter-logging@3.1.3",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.springframework.boot/spring-boot-starter-logging@3.1.3"
+      "purl" : "pkg:maven/org.springframework.boot/spring-boot-starter-logging@3.1.3?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/ch.qos.logback/logback-classic@1.4.11",
       "group" : "ch.qos.logback",
       "name" : "logback-classic",
       "version" : "1.4.11",
-      "purl" : "pkg:maven/ch.qos.logback/logback-classic@1.4.11",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/ch.qos.logback/logback-classic@1.4.11"
+      "purl" : "pkg:maven/ch.qos.logback/logback-classic@1.4.11?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/ch.qos.logback/logback-core@1.4.11",
       "group" : "ch.qos.logback",
       "name" : "logback-core",
       "version" : "1.4.11",
-      "purl" : "pkg:maven/ch.qos.logback/logback-core@1.4.11",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/ch.qos.logback/logback-core@1.4.11"
+      "purl" : "pkg:maven/ch.qos.logback/logback-core@1.4.11?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.slf4j/slf4j-api@1.7.36",
       "group" : "org.slf4j",
       "name" : "slf4j-api",
       "version" : "1.7.36",
-      "purl" : "pkg:maven/org.slf4j/slf4j-api@1.7.36",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.slf4j/slf4j-api@1.7.36"
+      "purl" : "pkg:maven/org.slf4j/slf4j-api@1.7.36?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.apache.logging.log4j/log4j-to-slf4j@2.20.0",
       "group" : "org.apache.logging.log4j",
       "name" : "log4j-to-slf4j",
       "version" : "2.20.0",
-      "purl" : "pkg:maven/org.apache.logging.log4j/log4j-to-slf4j@2.20.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.apache.logging.log4j/log4j-to-slf4j@2.20.0"
+      "purl" : "pkg:maven/org.apache.logging.log4j/log4j-to-slf4j@2.20.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.apache.logging.log4j/log4j-api@2.20.0",
       "group" : "org.apache.logging.log4j",
       "name" : "log4j-api",
       "version" : "2.20.0",
-      "purl" : "pkg:maven/org.apache.logging.log4j/log4j-api@2.20.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.apache.logging.log4j/log4j-api@2.20.0"
+      "purl" : "pkg:maven/org.apache.logging.log4j/log4j-api@2.20.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.slf4j/jul-to-slf4j@2.0.7",
       "group" : "org.slf4j",
       "name" : "jul-to-slf4j",
       "version" : "2.0.7",
-      "purl" : "pkg:maven/org.slf4j/jul-to-slf4j@2.0.7",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.slf4j/jul-to-slf4j@2.0.7"
+      "purl" : "pkg:maven/org.slf4j/jul-to-slf4j@2.0.7?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/jakarta.annotation/jakarta.annotation-api@2.1.1",
       "group" : "jakarta.annotation",
       "name" : "jakarta.annotation-api",
       "version" : "2.1.1",
-      "purl" : "pkg:maven/jakarta.annotation/jakarta.annotation-api@2.1.1",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/jakarta.annotation/jakarta.annotation-api@2.1.1"
+      "purl" : "pkg:maven/jakarta.annotation/jakarta.annotation-api@2.1.1?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.yaml/snakeyaml@1.33",
       "group" : "org.yaml",
       "name" : "snakeyaml",
       "version" : "1.33",
-      "purl" : "pkg:maven/org.yaml/snakeyaml@1.33",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.yaml/snakeyaml@1.33"
+      "purl" : "pkg:maven/org.yaml/snakeyaml@1.33?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.springframework.boot/spring-boot-starter-json@3.1.3",
       "group" : "org.springframework.boot",
       "name" : "spring-boot-starter-json",
       "version" : "3.1.3",
-      "purl" : "pkg:maven/org.springframework.boot/spring-boot-starter-json@3.1.3",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.springframework.boot/spring-boot-starter-json@3.1.3"
+      "purl" : "pkg:maven/org.springframework.boot/spring-boot-starter-json@3.1.3?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.springframework/spring-web@6.0.11",
       "group" : "org.springframework",
       "name" : "spring-web",
       "version" : "6.0.11",
-      "purl" : "pkg:maven/org.springframework/spring-web@6.0.11",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.springframework/spring-web@6.0.11"
+      "purl" : "pkg:maven/org.springframework/spring-web@6.0.11?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.15.2",
       "group" : "com.fasterxml.jackson.core",
       "name" : "jackson-databind",
       "version" : "2.15.2",
-      "purl" : "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.15.2",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.15.2"
+      "purl" : "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.15.2?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.15.2",
       "group" : "com.fasterxml.jackson.core",
       "name" : "jackson-annotations",
       "version" : "2.15.2",
-      "purl" : "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.15.2",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.15.2"
+      "purl" : "pkg:maven/com.fasterxml.jackson.core/jackson-annotations@2.15.2?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.15.2",
       "group" : "com.fasterxml.jackson.core",
       "name" : "jackson-core",
       "version" : "2.15.2",
-      "purl" : "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.15.2",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.15.2"
+      "purl" : "pkg:maven/com.fasterxml.jackson.core/jackson-core@2.15.2?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jdk8@2.15.2",
       "group" : "com.fasterxml.jackson.datatype",
       "name" : "jackson-datatype-jdk8",
       "version" : "2.15.2",
-      "purl" : "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jdk8@2.15.2",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jdk8@2.15.2"
+      "purl" : "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jdk8@2.15.2?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jsr310@2.15.2",
       "group" : "com.fasterxml.jackson.datatype",
       "name" : "jackson-datatype-jsr310",
       "version" : "2.15.2",
-      "purl" : "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jsr310@2.15.2",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jsr310@2.15.2"
+      "purl" : "pkg:maven/com.fasterxml.jackson.datatype/jackson-datatype-jsr310@2.15.2?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.fasterxml.jackson.module/jackson-module-parameter-names@2.15.2",
       "group" : "com.fasterxml.jackson.module",
       "name" : "jackson-module-parameter-names",
       "version" : "2.15.2",
-      "purl" : "pkg:maven/com.fasterxml.jackson.module/jackson-module-parameter-names@2.15.2",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/com.fasterxml.jackson.module/jackson-module-parameter-names@2.15.2"
+      "purl" : "pkg:maven/com.fasterxml.jackson.module/jackson-module-parameter-names@2.15.2?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.springframework.boot/spring-boot-starter-tomcat@3.1.3",
       "group" : "org.springframework.boot",
       "name" : "spring-boot-starter-tomcat",
       "version" : "3.1.3",
-      "purl" : "pkg:maven/org.springframework.boot/spring-boot-starter-tomcat@3.1.3",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.springframework.boot/spring-boot-starter-tomcat@3.1.3"
+      "purl" : "pkg:maven/org.springframework.boot/spring-boot-starter-tomcat@3.1.3?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@10.1.12",
       "group" : "org.apache.tomcat.embed",
       "name" : "tomcat-embed-core",
       "version" : "10.1.12",
-      "purl" : "pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@10.1.12",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@10.1.12"
+      "purl" : "pkg:maven/org.apache.tomcat.embed/tomcat-embed-core@10.1.12?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.apache.tomcat.embed/tomcat-embed-el@10.1.12",
       "group" : "org.apache.tomcat.embed",
       "name" : "tomcat-embed-el",
       "version" : "10.1.12",
-      "purl" : "pkg:maven/org.apache.tomcat.embed/tomcat-embed-el@10.1.12",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.apache.tomcat.embed/tomcat-embed-el@10.1.12"
+      "purl" : "pkg:maven/org.apache.tomcat.embed/tomcat-embed-el@10.1.12?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@10.1.12",
       "group" : "org.apache.tomcat.embed",
       "name" : "tomcat-embed-websocket",
       "version" : "10.1.12",
-      "purl" : "pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@10.1.12",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@10.1.12"
+      "purl" : "pkg:maven/org.apache.tomcat.embed/tomcat-embed-websocket@10.1.12?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.springframework/spring-beans@6.0.11",
       "group" : "org.springframework",
       "name" : "spring-beans",
       "version" : "6.0.11",
-      "purl" : "pkg:maven/org.springframework/spring-beans@6.0.11",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.springframework/spring-beans@6.0.11"
+      "purl" : "pkg:maven/org.springframework/spring-beans@6.0.11?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.micrometer/micrometer-observation@1.10.9",
       "group" : "io.micrometer",
       "name" : "micrometer-observation",
       "version" : "1.10.9",
-      "purl" : "pkg:maven/io.micrometer/micrometer-observation@1.10.9",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.micrometer/micrometer-observation@1.10.9"
+      "purl" : "pkg:maven/io.micrometer/micrometer-observation@1.10.9?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.micrometer/micrometer-commons@1.10.9",
       "group" : "io.micrometer",
       "name" : "micrometer-commons",
       "version" : "1.10.9",
-      "purl" : "pkg:maven/io.micrometer/micrometer-commons@1.10.9",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.micrometer/micrometer-commons@1.10.9"
+      "purl" : "pkg:maven/io.micrometer/micrometer-commons@1.10.9?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.springframework/spring-webmvc@6.0.11",
       "group" : "org.springframework",
       "name" : "spring-webmvc",
       "version" : "6.0.11",
-      "purl" : "pkg:maven/org.springframework/spring-webmvc@6.0.11",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.springframework/spring-webmvc@6.0.11"
+      "purl" : "pkg:maven/org.springframework/spring-webmvc@6.0.11?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.springframework/spring-aop@6.0.11",
       "group" : "org.springframework",
       "name" : "spring-aop",
       "version" : "6.0.11",
-      "purl" : "pkg:maven/org.springframework/spring-aop@6.0.11",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.springframework/spring-aop@6.0.11"
+      "purl" : "pkg:maven/org.springframework/spring-aop@6.0.11?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.springframework/spring-expression@6.0.11",
       "group" : "org.springframework",
       "name" : "spring-expression",
       "version" : "6.0.11",
-      "purl" : "pkg:maven/org.springframework/spring-expression@6.0.11",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.springframework/spring-expression@6.0.11"
+      "purl" : "pkg:maven/org.springframework/spring-expression@6.0.11?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-resteasy@2.7.7.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-resteasy",
       "version" : "2.7.7.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-resteasy@2.7.7.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-resteasy@2.7.7.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-resteasy@2.7.7.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-vertx-http",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-vertx-http@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-resteasy-server-common@2.7.7.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-resteasy-server-common",
       "version" : "2.7.7.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-resteasy-server-common@2.7.7.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-resteasy-server-common@2.7.7.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-resteasy-server-common@2.7.7.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-core@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-core",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-core@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-core@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-core@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-arc@2.13.6.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-arc",
       "version" : "2.13.6.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-arc@2.13.6.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-arc@2.13.6.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-arc@2.13.6.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-resteasy-common@2.7.7.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-resteasy-common",
       "version" : "2.7.7.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-resteasy-common@2.7.7.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-resteasy-common@2.7.7.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-resteasy-common@2.7.7.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.jboss.resteasy/resteasy-core@4.7.5.Final",
       "group" : "org.jboss.resteasy",
       "name" : "resteasy-core",
       "version" : "4.7.5.Final",
-      "purl" : "pkg:maven/org.jboss.resteasy/resteasy-core@4.7.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.jboss.resteasy/resteasy-core@4.7.5.Final"
+      "purl" : "pkg:maven/org.jboss.resteasy/resteasy-core@4.7.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.jboss.logging/jboss-logging@3.5.0.Final",
       "group" : "org.jboss.logging",
       "name" : "jboss-logging",
       "version" : "3.5.0.Final",
-      "purl" : "pkg:maven/org.jboss.logging/jboss-logging@3.5.0.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.jboss.logging/jboss-logging@3.5.0.Final"
+      "purl" : "pkg:maven/org.jboss.logging/jboss-logging@3.5.0.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.jboss.spec.javax.annotation/jboss-annotations-api_1.3_spec@2.0.1.Final",
       "group" : "org.jboss.spec.javax.annotation",
       "name" : "jboss-annotations-api_1.3_spec",
       "version" : "2.0.1.Final",
-      "purl" : "pkg:maven/org.jboss.spec.javax.annotation/jboss-annotations-api_1.3_spec@2.0.1.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.jboss.spec.javax.annotation/jboss-annotations-api_1.3_spec@2.0.1.Final"
+      "purl" : "pkg:maven/org.jboss.spec.javax.annotation/jboss-annotations-api_1.3_spec@2.0.1.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.jboss.spec.javax.ws.rs/jboss-jaxrs-api_2.1_spec@2.0.1.Final",
       "group" : "org.jboss.spec.javax.ws.rs",
       "name" : "jboss-jaxrs-api_2.1_spec",
       "version" : "2.0.1.Final",
-      "purl" : "pkg:maven/org.jboss.spec.javax.ws.rs/jboss-jaxrs-api_2.1_spec@2.0.1.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.jboss.spec.javax.ws.rs/jboss-jaxrs-api_2.1_spec@2.0.1.Final"
+      "purl" : "pkg:maven/org.jboss.spec.javax.ws.rs/jboss-jaxrs-api_2.1_spec@2.0.1.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.jboss.spec.javax.xml.bind/jboss-jaxb-api_2.3_spec@2.0.0.Final",
       "group" : "org.jboss.spec.javax.xml.bind",
       "name" : "jboss-jaxb-api_2.3_spec",
       "version" : "2.0.0.Final",
-      "purl" : "pkg:maven/org.jboss.spec.javax.xml.bind/jboss-jaxb-api_2.3_spec@2.0.0.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.jboss.spec.javax.xml.bind/jboss-jaxb-api_2.3_spec@2.0.0.Final"
+      "purl" : "pkg:maven/org.jboss.spec.javax.xml.bind/jboss-jaxb-api_2.3_spec@2.0.0.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.jboss.resteasy/resteasy-core-spi@4.7.5.Final",
       "group" : "org.jboss.resteasy",
       "name" : "resteasy-core-spi",
       "version" : "4.7.5.Final",
-      "purl" : "pkg:maven/org.jboss.resteasy/resteasy-core-spi@4.7.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.jboss.resteasy/resteasy-core-spi@4.7.5.Final"
+      "purl" : "pkg:maven/org.jboss.resteasy/resteasy-core-spi@4.7.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.reactivestreams/reactive-streams@1.0.3",
       "group" : "org.reactivestreams",
       "name" : "reactive-streams",
       "version" : "1.0.3",
-      "purl" : "pkg:maven/org.reactivestreams/reactive-streams@1.0.3",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.reactivestreams/reactive-streams@1.0.3"
+      "purl" : "pkg:maven/org.reactivestreams/reactive-streams@1.0.3?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/jakarta.validation/jakarta.validation-api@2.0.2",
       "group" : "jakarta.validation",
       "name" : "jakarta.validation-api",
       "version" : "2.0.2",
-      "purl" : "pkg:maven/jakarta.validation/jakarta.validation-api@2.0.2",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/jakarta.validation/jakarta.validation-api@2.0.2"
+      "purl" : "pkg:maven/jakarta.validation/jakarta.validation-api@2.0.2?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.ibm.async/asyncutil@0.1.0",
       "group" : "com.ibm.async",
       "name" : "asyncutil",
       "version" : "0.1.0",
-      "purl" : "pkg:maven/com.ibm.async/asyncutil@0.1.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/com.ibm.async/asyncutil@0.1.0"
+      "purl" : "pkg:maven/com.ibm.async/asyncutil@0.1.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.config/smallrye-config@2.12.0",
       "group" : "io.smallrye.config",
       "name" : "smallrye-config",
       "version" : "2.12.0",
-      "purl" : "pkg:maven/io.smallrye.config/smallrye-config@2.12.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.config/smallrye-config@2.12.0"
+      "purl" : "pkg:maven/io.smallrye.config/smallrye-config@2.12.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.sun.activation/jakarta.activation@1.2.1",
       "group" : "com.sun.activation",
       "name" : "jakarta.activation",
       "version" : "1.2.1",
-      "purl" : "pkg:maven/com.sun.activation/jakarta.activation@1.2.1",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/com.sun.activation/jakarta.activation@1.2.1"
+      "purl" : "pkg:maven/com.sun.activation/jakarta.activation@1.2.1?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.keycloak/keycloak-saml-core@1.8.1.Final",
       "group" : "org.keycloak",
       "name" : "keycloak-saml-core",
       "version" : "1.8.1.Final",
-      "purl" : "pkg:maven/org.keycloak/keycloak-saml-core@1.8.1.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.keycloak/keycloak-saml-core@1.8.1.Final"
+      "purl" : "pkg:maven/org.keycloak/keycloak-saml-core@1.8.1.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.apache.santuario/xmlsec@1.5.1",
       "group" : "org.apache.santuario",
       "name" : "xmlsec",
       "version" : "1.5.1",
-      "purl" : "pkg:maven/org.apache.santuario/xmlsec@1.5.1",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.apache.santuario/xmlsec@1.5.1"
+      "purl" : "pkg:maven/org.apache.santuario/xmlsec@1.5.1?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/commons-logging/commons-logging@1.1.1",
       "group" : "commons-logging",
       "name" : "commons-logging",
       "version" : "1.1.1",
-      "purl" : "pkg:maven/commons-logging/commons-logging@1.1.1",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/commons-logging/commons-logging@1.1.1"
+      "purl" : "pkg:maven/commons-logging/commons-logging@1.1.1?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/jakarta.enterprise/jakarta.enterprise.cdi-api@2.0.2",
       "group" : "jakarta.enterprise",
       "name" : "jakarta.enterprise.cdi-api",
       "version" : "2.0.2",
-      "purl" : "pkg:maven/jakarta.enterprise/jakarta.enterprise.cdi-api@2.0.2",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/jakarta.enterprise/jakarta.enterprise.cdi-api@2.0.2"
+      "purl" : "pkg:maven/jakarta.enterprise/jakarta.enterprise.cdi-api@2.0.2?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/jakarta.el/jakarta.el-api@3.0.3",
       "group" : "jakarta.el",
       "name" : "jakarta.el-api",
       "version" : "3.0.3",
-      "purl" : "pkg:maven/jakarta.el/jakarta.el-api@3.0.3",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/jakarta.el/jakarta.el-api@3.0.3"
+      "purl" : "pkg:maven/jakarta.el/jakarta.el-api@3.0.3?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/jakarta.interceptor/jakarta.interceptor-api@1.2.5",
       "group" : "jakarta.interceptor",
       "name" : "jakarta.interceptor-api",
       "version" : "1.2.5",
-      "purl" : "pkg:maven/jakarta.interceptor/jakarta.interceptor-api@1.2.5",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/jakarta.interceptor/jakarta.interceptor-api@1.2.5"
+      "purl" : "pkg:maven/jakarta.interceptor/jakarta.interceptor-api@1.2.5?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/jakarta.ejb/jakarta.ejb-api@3.2.6",
       "group" : "jakarta.ejb",
       "name" : "jakarta.ejb-api",
       "version" : "3.2.6",
-      "purl" : "pkg:maven/jakarta.ejb/jakarta.ejb-api@3.2.6",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/jakarta.ejb/jakarta.ejb-api@3.2.6"
+      "purl" : "pkg:maven/jakarta.ejb/jakarta.ejb-api@3.2.6?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/jakarta.transaction/jakarta.transaction-api@1.3.3",
       "group" : "jakarta.transaction",
       "name" : "jakarta.transaction-api",
       "version" : "1.3.3",
-      "purl" : "pkg:maven/jakarta.transaction/jakarta.transaction-api@1.3.3",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/jakarta.transaction/jakarta.transaction-api@1.3.3"
+      "purl" : "pkg:maven/jakarta.transaction/jakarta.transaction-api@1.3.3?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/jakarta.inject/jakarta.inject-api@1.0",
       "group" : "jakarta.inject",
       "name" : "jakarta.inject-api",
       "version" : "1.0",
-      "purl" : "pkg:maven/jakarta.inject/jakarta.inject-api@1.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/jakarta.inject/jakarta.inject-api@1.0"
+      "purl" : "pkg:maven/jakarta.inject/jakarta.inject-api@1.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-ide-launcher@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-ide-launcher",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-ide-launcher@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-ide-launcher@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-ide-launcher@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-development-mode-spi@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-development-mode-spi",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-development-mode-spi@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-development-mode-spi@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-development-mode-spi@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.config/smallrye-config-core@2.12.0",
       "group" : "io.smallrye.config",
       "name" : "smallrye-config-core",
       "version" : "2.12.0",
-      "purl" : "pkg:maven/io.smallrye.config/smallrye-config-core@2.12.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.config/smallrye-config-core@2.12.0"
+      "purl" : "pkg:maven/io.smallrye.config/smallrye-config-core@2.12.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.eclipse.microprofile.config/microprofile-config-api@2.0.1",
       "group" : "org.eclipse.microprofile.config",
       "name" : "microprofile-config-api",
       "version" : "2.0.1",
-      "purl" : "pkg:maven/org.eclipse.microprofile.config/microprofile-config-api@2.0.1",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.eclipse.microprofile.config/microprofile-config-api@2.0.1"
+      "purl" : "pkg:maven/org.eclipse.microprofile.config/microprofile-config-api@2.0.1?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.common/smallrye-common-annotation@1.13.1",
       "group" : "io.smallrye.common",
       "name" : "smallrye-common-annotation",
       "version" : "1.13.1",
-      "purl" : "pkg:maven/io.smallrye.common/smallrye-common-annotation@1.13.1",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.common/smallrye-common-annotation@1.13.1"
+      "purl" : "pkg:maven/io.smallrye.common/smallrye-common-annotation@1.13.1?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.common/smallrye-common-expression@1.13.1",
       "group" : "io.smallrye.common",
       "name" : "smallrye-common-expression",
       "version" : "1.13.1",
-      "purl" : "pkg:maven/io.smallrye.common/smallrye-common-expression@1.13.1",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.common/smallrye-common-expression@1.13.1"
+      "purl" : "pkg:maven/io.smallrye.common/smallrye-common-expression@1.13.1?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.common/smallrye-common-function@1.13.1",
       "group" : "io.smallrye.common",
       "name" : "smallrye-common-function",
       "version" : "1.13.1",
-      "purl" : "pkg:maven/io.smallrye.common/smallrye-common-function@1.13.1",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.common/smallrye-common-function@1.13.1"
+      "purl" : "pkg:maven/io.smallrye.common/smallrye-common-function@1.13.1?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.common/smallrye-common-constraint@1.13.1",
       "group" : "io.smallrye.common",
       "name" : "smallrye-common-constraint",
       "version" : "1.13.1",
-      "purl" : "pkg:maven/io.smallrye.common/smallrye-common-constraint@1.13.1",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.common/smallrye-common-constraint@1.13.1"
+      "purl" : "pkg:maven/io.smallrye.common/smallrye-common-constraint@1.13.1?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.common/smallrye-common-classloader@1.13.1",
       "group" : "io.smallrye.common",
       "name" : "smallrye-common-classloader",
       "version" : "1.13.1",
-      "purl" : "pkg:maven/io.smallrye.common/smallrye-common-classloader@1.13.1",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.common/smallrye-common-classloader@1.13.1"
+      "purl" : "pkg:maven/io.smallrye.common/smallrye-common-classloader@1.13.1?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.ow2.asm/asm@9.3",
       "group" : "org.ow2.asm",
       "name" : "asm",
       "version" : "9.3",
-      "purl" : "pkg:maven/org.ow2.asm/asm@9.3",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.ow2.asm/asm@9.3"
+      "purl" : "pkg:maven/org.ow2.asm/asm@9.3?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.config/smallrye-config-common@2.12.0",
       "group" : "io.smallrye.config",
       "name" : "smallrye-config-common",
       "version" : "2.12.0",
-      "purl" : "pkg:maven/io.smallrye.config/smallrye-config-common@2.12.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.config/smallrye-config-common@2.12.0"
+      "purl" : "pkg:maven/io.smallrye.config/smallrye-config-common@2.12.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.jboss.logmanager/jboss-logmanager-embedded@1.0.10",
       "group" : "org.jboss.logmanager",
       "name" : "jboss-logmanager-embedded",
       "version" : "1.0.10",
-      "purl" : "pkg:maven/org.jboss.logmanager/jboss-logmanager-embedded@1.0.10",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.jboss.logmanager/jboss-logmanager-embedded@1.0.10"
+      "purl" : "pkg:maven/org.jboss.logmanager/jboss-logmanager-embedded@1.0.10?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.wildfly.common/wildfly-common@1.5.4.Final-format-001",
       "group" : "org.wildfly.common",
       "name" : "wildfly-common",
       "version" : "1.5.4.Final-format-001",
-      "purl" : "pkg:maven/org.wildfly.common/wildfly-common@1.5.4.Final-format-001",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.wildfly.common/wildfly-common@1.5.4.Final-format-001"
+      "purl" : "pkg:maven/org.wildfly.common/wildfly-common@1.5.4.Final-format-001?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.jboss.logging/jboss-logging-annotations@2.2.1.Final",
       "group" : "org.jboss.logging",
       "name" : "jboss-logging-annotations",
       "version" : "2.2.1.Final",
-      "purl" : "pkg:maven/org.jboss.logging/jboss-logging-annotations@2.2.1.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.jboss.logging/jboss-logging-annotations@2.2.1.Final"
+      "purl" : "pkg:maven/org.jboss.logging/jboss-logging-annotations@2.2.1.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.jboss.threads/jboss-threads@3.4.3.Final",
       "group" : "org.jboss.threads",
       "name" : "jboss-threads",
       "version" : "3.4.3.Final",
-      "purl" : "pkg:maven/org.jboss.threads/jboss-threads@3.4.3.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.jboss.threads/jboss-threads@3.4.3.Final"
+      "purl" : "pkg:maven/org.jboss.threads/jboss-threads@3.4.3.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.jboss.slf4j/slf4j-jboss-logmanager@1.2.0.Final",
       "group" : "org.jboss.slf4j",
       "name" : "slf4j-jboss-logmanager",
       "version" : "1.2.0.Final",
-      "purl" : "pkg:maven/org.jboss.slf4j/slf4j-jboss-logmanager@1.2.0.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.jboss.slf4j/slf4j-jboss-logmanager@1.2.0.Final"
+      "purl" : "pkg:maven/org.jboss.slf4j/slf4j-jboss-logmanager@1.2.0.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.graalvm.sdk/graal-sdk@22.3.0",
       "group" : "org.graalvm.sdk",
       "name" : "graal-sdk",
       "version" : "22.3.0",
-      "purl" : "pkg:maven/org.graalvm.sdk/graal-sdk@22.3.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.graalvm.sdk/graal-sdk@22.3.0"
+      "purl" : "pkg:maven/org.graalvm.sdk/graal-sdk@22.3.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-bootstrap-runner@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-bootstrap-runner",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-bootstrap-runner@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-bootstrap-runner@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-bootstrap-runner@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.common/smallrye-common-io@1.13.1",
       "group" : "io.smallrye.common",
       "name" : "smallrye-common-io",
       "version" : "1.13.1",
-      "purl" : "pkg:maven/io.smallrye.common/smallrye-common-io@1.13.1",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.common/smallrye-common-io@1.13.1"
+      "purl" : "pkg:maven/io.smallrye.common/smallrye-common-io@1.13.1?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.github.crac/org-crac@0.1.1",
       "group" : "io.github.crac",
       "name" : "org-crac",
       "version" : "0.1.1",
-      "purl" : "pkg:maven/io.github.crac/org-crac@0.1.1",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.github.crac/org-crac@0.1.1"
+      "purl" : "pkg:maven/io.github.crac/org-crac@0.1.1?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-fs-util@0.0.9",
       "group" : "io.quarkus",
       "name" : "quarkus-fs-util",
       "version" : "0.0.9",
-      "purl" : "pkg:maven/io.quarkus/quarkus-fs-util@0.0.9",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-fs-util@0.0.9"
+      "purl" : "pkg:maven/io.quarkus/quarkus-fs-util@0.0.9?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-security-runtime-spi@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-security-runtime-spi",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-security-runtime-spi@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-security-runtime-spi@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-security-runtime-spi@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus.security/quarkus-security@1.1.4.Final",
       "group" : "io.quarkus.security",
       "name" : "quarkus-security",
       "version" : "1.1.4.Final",
-      "purl" : "pkg:maven/io.quarkus.security/quarkus-security@1.1.4.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus.security/quarkus-security@1.1.4.Final"
+      "purl" : "pkg:maven/io.quarkus.security/quarkus-security@1.1.4.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-credentials@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-credentials",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-credentials@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-credentials@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-credentials@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus.arc/arc@2.13.5.Final",
       "group" : "io.quarkus.arc",
       "name" : "arc",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus.arc/arc@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus.arc/arc@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus.arc/arc@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.reactive/mutiny@1.7.0",
       "group" : "io.smallrye.reactive",
       "name" : "mutiny",
       "version" : "1.7.0",
-      "purl" : "pkg:maven/io.smallrye.reactive/mutiny@1.7.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.reactive/mutiny@1.7.0"
+      "purl" : "pkg:maven/io.smallrye.reactive/mutiny@1.7.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-mutiny@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-mutiny",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-mutiny@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-mutiny@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-mutiny@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-smallrye-context-propagation@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-smallrye-context-propagation",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-smallrye-context-propagation@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-smallrye-context-propagation@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-smallrye-context-propagation@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye/smallrye-context-propagation@1.2.2",
       "group" : "io.smallrye",
       "name" : "smallrye-context-propagation",
       "version" : "1.2.2",
-      "purl" : "pkg:maven/io.smallrye/smallrye-context-propagation@1.2.2",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye/smallrye-context-propagation@1.2.2"
+      "purl" : "pkg:maven/io.smallrye/smallrye-context-propagation@1.2.2?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.eclipse.microprofile.context-propagation/microprofile-context-propagation-api@1.2",
       "group" : "org.eclipse.microprofile.context-propagation",
       "name" : "microprofile-context-propagation-api",
       "version" : "1.2",
-      "purl" : "pkg:maven/org.eclipse.microprofile.context-propagation/microprofile-context-propagation-api@1.2",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.eclipse.microprofile.context-propagation/microprofile-context-propagation-api@1.2"
+      "purl" : "pkg:maven/org.eclipse.microprofile.context-propagation/microprofile-context-propagation-api@1.2?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye/smallrye-context-propagation-api@1.2.2",
       "group" : "io.smallrye",
       "name" : "smallrye-context-propagation-api",
       "version" : "1.2.2",
-      "purl" : "pkg:maven/io.smallrye/smallrye-context-propagation-api@1.2.2",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye/smallrye-context-propagation-api@1.2.2"
+      "purl" : "pkg:maven/io.smallrye/smallrye-context-propagation-api@1.2.2?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye/smallrye-context-propagation-storage@1.2.2",
       "group" : "io.smallrye",
       "name" : "smallrye-context-propagation-storage",
       "version" : "1.2.2",
-      "purl" : "pkg:maven/io.smallrye/smallrye-context-propagation-storage@1.2.2",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye/smallrye-context-propagation-storage@1.2.2"
+      "purl" : "pkg:maven/io.smallrye/smallrye-context-propagation-storage@1.2.2?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.reactive/mutiny-smallrye-context-propagation@1.7.0",
       "group" : "io.smallrye.reactive",
       "name" : "mutiny-smallrye-context-propagation",
       "version" : "1.7.0",
-      "purl" : "pkg:maven/io.smallrye.reactive/mutiny-smallrye-context-propagation@1.7.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.reactive/mutiny-smallrye-context-propagation@1.7.0"
+      "purl" : "pkg:maven/io.smallrye.reactive/mutiny-smallrye-context-propagation@1.7.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.common/smallrye-common-vertx-context@1.13.1",
       "group" : "io.smallrye.common",
       "name" : "smallrye-common-vertx-context",
       "version" : "1.13.1",
-      "purl" : "pkg:maven/io.smallrye.common/smallrye-common-vertx-context@1.13.1",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.common/smallrye-common-vertx-context@1.13.1"
+      "purl" : "pkg:maven/io.smallrye.common/smallrye-common-vertx-context@1.13.1?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.vertx/vertx-core@4.3.3",
       "group" : "io.vertx",
       "name" : "vertx-core",
       "version" : "4.3.3",
-      "purl" : "pkg:maven/io.vertx/vertx-core@4.3.3",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.vertx/vertx-core@4.3.3"
+      "purl" : "pkg:maven/io.vertx/vertx-core@4.3.3?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.netty/netty-common@4.1.78.Final",
       "group" : "io.netty",
       "name" : "netty-common",
       "version" : "4.1.78.Final",
-      "purl" : "pkg:maven/io.netty/netty-common@4.1.78.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.netty/netty-common@4.1.78.Final"
+      "purl" : "pkg:maven/io.netty/netty-common@4.1.78.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.netty/netty-buffer@4.1.78.Final",
       "group" : "io.netty",
       "name" : "netty-buffer",
       "version" : "4.1.78.Final",
-      "purl" : "pkg:maven/io.netty/netty-buffer@4.1.78.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.netty/netty-buffer@4.1.78.Final"
+      "purl" : "pkg:maven/io.netty/netty-buffer@4.1.78.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.netty/netty-transport@4.1.78.Final",
       "group" : "io.netty",
       "name" : "netty-transport",
       "version" : "4.1.78.Final",
-      "purl" : "pkg:maven/io.netty/netty-transport@4.1.78.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.netty/netty-transport@4.1.78.Final"
+      "purl" : "pkg:maven/io.netty/netty-transport@4.1.78.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.netty/netty-resolver@4.1.78.Final",
       "group" : "io.netty",
       "name" : "netty-resolver",
       "version" : "4.1.78.Final",
-      "purl" : "pkg:maven/io.netty/netty-resolver@4.1.78.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.netty/netty-resolver@4.1.78.Final"
+      "purl" : "pkg:maven/io.netty/netty-resolver@4.1.78.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.netty/netty-handler@4.1.78.Final",
       "group" : "io.netty",
       "name" : "netty-handler",
       "version" : "4.1.78.Final",
-      "purl" : "pkg:maven/io.netty/netty-handler@4.1.78.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.netty/netty-handler@4.1.78.Final"
+      "purl" : "pkg:maven/io.netty/netty-handler@4.1.78.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.netty/netty-transport-native-unix-common@4.1.78.Final",
       "group" : "io.netty",
       "name" : "netty-transport-native-unix-common",
       "version" : "4.1.78.Final",
-      "purl" : "pkg:maven/io.netty/netty-transport-native-unix-common@4.1.78.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.netty/netty-transport-native-unix-common@4.1.78.Final"
+      "purl" : "pkg:maven/io.netty/netty-transport-native-unix-common@4.1.78.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.netty/netty-codec@4.1.82.Final",
       "group" : "io.netty",
       "name" : "netty-codec",
       "version" : "4.1.82.Final",
-      "purl" : "pkg:maven/io.netty/netty-codec@4.1.82.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.netty/netty-codec@4.1.82.Final"
+      "purl" : "pkg:maven/io.netty/netty-codec@4.1.82.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.netty/netty-handler-proxy@4.1.78.Final",
       "group" : "io.netty",
       "name" : "netty-handler-proxy",
       "version" : "4.1.78.Final",
-      "purl" : "pkg:maven/io.netty/netty-handler-proxy@4.1.78.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.netty/netty-handler-proxy@4.1.78.Final"
+      "purl" : "pkg:maven/io.netty/netty-handler-proxy@4.1.78.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.netty/netty-codec-socks@4.1.78.Final",
       "group" : "io.netty",
       "name" : "netty-codec-socks",
       "version" : "4.1.78.Final",
-      "purl" : "pkg:maven/io.netty/netty-codec-socks@4.1.78.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.netty/netty-codec-socks@4.1.78.Final"
+      "purl" : "pkg:maven/io.netty/netty-codec-socks@4.1.78.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.netty/netty-codec-http@4.1.78.Final",
       "group" : "io.netty",
       "name" : "netty-codec-http",
       "version" : "4.1.78.Final",
-      "purl" : "pkg:maven/io.netty/netty-codec-http@4.1.78.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.netty/netty-codec-http@4.1.78.Final"
+      "purl" : "pkg:maven/io.netty/netty-codec-http@4.1.78.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.78.Final",
       "group" : "io.netty",
       "name" : "netty-codec-http2",
       "version" : "4.1.78.Final",
-      "purl" : "pkg:maven/io.netty/netty-codec-http2@4.1.78.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.netty/netty-codec-http2@4.1.78.Final"
+      "purl" : "pkg:maven/io.netty/netty-codec-http2@4.1.78.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.netty/netty-resolver-dns@4.1.78.Final",
       "group" : "io.netty",
       "name" : "netty-resolver-dns",
       "version" : "4.1.78.Final",
-      "purl" : "pkg:maven/io.netty/netty-resolver-dns@4.1.78.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.netty/netty-resolver-dns@4.1.78.Final"
+      "purl" : "pkg:maven/io.netty/netty-resolver-dns@4.1.78.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.netty/netty-codec-dns@4.1.78.Final",
       "group" : "io.netty",
       "name" : "netty-codec-dns",
       "version" : "4.1.78.Final",
-      "purl" : "pkg:maven/io.netty/netty-codec-dns@4.1.78.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.netty/netty-codec-dns@4.1.78.Final"
+      "purl" : "pkg:maven/io.netty/netty-codec-dns@4.1.78.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-vertx-http-dev-console-runtime-spi@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-vertx-http-dev-console-runtime-spi",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-vertx-http-dev-console-runtime-spi@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-vertx-http-dev-console-runtime-spi@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-vertx-http-dev-console-runtime-spi@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.vertx/vertx-web@4.3.4",
       "group" : "io.vertx",
       "name" : "vertx-web",
       "version" : "4.3.4",
-      "purl" : "pkg:maven/io.vertx/vertx-web@4.3.4",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.vertx/vertx-web@4.3.4"
+      "purl" : "pkg:maven/io.vertx/vertx-web@4.3.4?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-vertx@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-vertx",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-vertx@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-vertx@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-vertx@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-netty@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-netty",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-netty@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-netty@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-netty@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.aayushatharva.brotli4j/brotli4j@1.7.1",
       "group" : "com.aayushatharva.brotli4j",
       "name" : "brotli4j",
       "version" : "1.7.1",
-      "purl" : "pkg:maven/com.aayushatharva.brotli4j/brotli4j@1.7.1",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/com.aayushatharva.brotli4j/brotli4j@1.7.1"
+      "purl" : "pkg:maven/com.aayushatharva.brotli4j/brotli4j@1.7.1?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/com.aayushatharva.brotli4j/native-linux-x86_64@1.7.1",
       "group" : "com.aayushatharva.brotli4j",
       "name" : "native-linux-x86_64",
       "version" : "1.7.1",
-      "purl" : "pkg:maven/com.aayushatharva.brotli4j/native-linux-x86_64@1.7.1",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/com.aayushatharva.brotli4j/native-linux-x86_64@1.7.1"
+      "purl" : "pkg:maven/com.aayushatharva.brotli4j/native-linux-x86_64@1.7.1?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.netty/netty-codec-haproxy@4.1.82.Final",
       "group" : "io.netty",
       "name" : "netty-codec-haproxy",
       "version" : "4.1.82.Final",
-      "purl" : "pkg:maven/io.netty/netty-codec-haproxy@4.1.82.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.netty/netty-codec-haproxy@4.1.82.Final"
+      "purl" : "pkg:maven/io.netty/netty-codec-haproxy@4.1.82.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.quarkus/quarkus-vertx-latebound-mdc-provider@2.13.5.Final",
       "group" : "io.quarkus",
       "name" : "quarkus-vertx-latebound-mdc-provider",
       "version" : "2.13.5.Final",
-      "purl" : "pkg:maven/io.quarkus/quarkus-vertx-latebound-mdc-provider@2.13.5.Final",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.quarkus/quarkus-vertx-latebound-mdc-provider@2.13.5.Final"
+      "purl" : "pkg:maven/io.quarkus/quarkus-vertx-latebound-mdc-provider@2.13.5.Final?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-core@2.27.0",
       "group" : "io.smallrye.reactive",
       "name" : "smallrye-mutiny-vertx-core",
       "version" : "2.27.0",
-      "purl" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-core@2.27.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-core@2.27.0"
+      "purl" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-core@2.27.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-runtime@2.27.0",
       "group" : "io.smallrye.reactive",
       "name" : "smallrye-mutiny-vertx-runtime",
       "version" : "2.27.0",
-      "purl" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-runtime@2.27.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-runtime@2.27.0"
+      "purl" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-runtime@2.27.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.reactive/vertx-mutiny-generator@2.27.0",
       "group" : "io.smallrye.reactive",
       "name" : "vertx-mutiny-generator",
       "version" : "2.27.0",
-      "purl" : "pkg:maven/io.smallrye.reactive/vertx-mutiny-generator@2.27.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.reactive/vertx-mutiny-generator@2.27.0"
+      "purl" : "pkg:maven/io.smallrye.reactive/vertx-mutiny-generator@2.27.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.vertx/vertx-codegen@4.3.4",
       "group" : "io.vertx",
       "name" : "vertx-codegen",
       "version" : "4.3.4",
-      "purl" : "pkg:maven/io.vertx/vertx-codegen@4.3.4",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.vertx/vertx-codegen@4.3.4"
+      "purl" : "pkg:maven/io.vertx/vertx-codegen@4.3.4?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye/smallrye-fault-tolerance-vertx@5.5.0",
       "group" : "io.smallrye",
       "name" : "smallrye-fault-tolerance-vertx",
       "version" : "5.5.0",
-      "purl" : "pkg:maven/io.smallrye/smallrye-fault-tolerance-vertx@5.5.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye/smallrye-fault-tolerance-vertx@5.5.0"
+      "purl" : "pkg:maven/io.smallrye/smallrye-fault-tolerance-vertx@5.5.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-web@2.27.0",
       "group" : "io.smallrye.reactive",
       "name" : "smallrye-mutiny-vertx-web",
       "version" : "2.27.0",
-      "purl" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-web@2.27.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-web@2.27.0"
+      "purl" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-web@2.27.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-web-common@2.27.0",
       "group" : "io.smallrye.reactive",
       "name" : "smallrye-mutiny-vertx-web-common",
       "version" : "2.27.0",
-      "purl" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-web-common@2.27.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-web-common@2.27.0"
+      "purl" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-web-common@2.27.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.vertx/vertx-web-common@4.3.4",
       "group" : "io.vertx",
       "name" : "vertx-web-common",
       "version" : "4.3.4",
-      "purl" : "pkg:maven/io.vertx/vertx-web-common@4.3.4",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.vertx/vertx-web-common@4.3.4"
+      "purl" : "pkg:maven/io.vertx/vertx-web-common@4.3.4?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-auth-common@2.27.0",
       "group" : "io.smallrye.reactive",
       "name" : "smallrye-mutiny-vertx-auth-common",
       "version" : "2.27.0",
-      "purl" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-auth-common@2.27.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-auth-common@2.27.0"
+      "purl" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-auth-common@2.27.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.vertx/vertx-auth-common@4.3.4",
       "group" : "io.vertx",
       "name" : "vertx-auth-common",
       "version" : "4.3.4",
-      "purl" : "pkg:maven/io.vertx/vertx-auth-common@4.3.4",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.vertx/vertx-auth-common@4.3.4"
+      "purl" : "pkg:maven/io.vertx/vertx-auth-common@4.3.4?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-bridge-common@2.27.0",
       "group" : "io.smallrye.reactive",
       "name" : "smallrye-mutiny-vertx-bridge-common",
       "version" : "2.27.0",
-      "purl" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-bridge-common@2.27.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-bridge-common@2.27.0"
+      "purl" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-bridge-common@2.27.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.vertx/vertx-bridge-common@4.3.4",
       "group" : "io.vertx",
       "name" : "vertx-bridge-common",
       "version" : "4.3.4",
-      "purl" : "pkg:maven/io.vertx/vertx-bridge-common@4.3.4",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.vertx/vertx-bridge-common@4.3.4"
+      "purl" : "pkg:maven/io.vertx/vertx-bridge-common@4.3.4?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-uri-template@2.27.0",
       "group" : "io.smallrye.reactive",
       "name" : "smallrye-mutiny-vertx-uri-template",
       "version" : "2.27.0",
-      "purl" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-uri-template@2.27.0",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-uri-template@2.27.0"
+      "purl" : "pkg:maven/io.smallrye.reactive/smallrye-mutiny-vertx-uri-template@2.27.0?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/io.vertx/vertx-uri-template@4.3.4",
       "group" : "io.vertx",
       "name" : "vertx-uri-template",
       "version" : "4.3.4",
-      "purl" : "pkg:maven/io.vertx/vertx-uri-template@4.3.4",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/io.vertx/vertx-uri-template@4.3.4"
+      "purl" : "pkg:maven/io.vertx/vertx-uri-template@4.3.4?scope=compile"
     },
     {
+      "type" : "library",
+      "bom-ref" : "pkg:maven/org.postgresql/postgresql@42.5.1",
       "group" : "org.postgresql",
       "name" : "postgresql",
       "version" : "42.5.1",
-      "purl" : "pkg:maven/org.postgresql/postgresql@42.5.1",
-      "type" : "library",
-      "bom-ref" : "pkg:maven/org.postgresql/postgresql@42.5.1"
+      "purl" : "pkg:maven/org.postgresql/postgresql@42.5.1?scope=compile"
     }
   ],
   "dependencies" : [
