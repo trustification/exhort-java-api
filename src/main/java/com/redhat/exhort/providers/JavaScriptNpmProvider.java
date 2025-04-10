@@ -232,4 +232,12 @@ public final class JavaScriptNpmProvider extends Provider {
     }
     return null;
   }
+
+  @Override
+  public void validateLockFile(Path lockFileDir) {
+    if (!Files.isRegularFile(lockFileDir.resolve("package-lock.json"))) {
+      throw new IllegalStateException(
+          "Lock file does not exist or is not supported. Execute 'npm install' to generate it.");
+    }
+  }
 }

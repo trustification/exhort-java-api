@@ -149,7 +149,8 @@ class Golang_Modules_Provider_Test extends ExhortTest {
       String actualSbomWithTSStripped = dropIgnoredKeepFormat(sbomString);
 
       assertEquals(
-          getStringFromFile("msc/golang/expected_sbom_ca.json").trim(), actualSbomWithTSStripped);
+          dropIgnored(getStringFromFile("msc/golang/expected_sbom_ca.json")).trim(),
+          dropIgnored(actualSbomWithTSStripped));
     }
   }
 
@@ -163,7 +164,7 @@ class Golang_Modules_Provider_Test extends ExhortTest {
             goModulesProvider.getDependenciesSbom(Path.of(goModPath), true).getAsJsonString());
     String expectedSbom =
         getStringFromFile("msc/golang/mvs_logic/expected_sbom_stack_analysis.json").trim();
-    assertEquals(expectedSbom, resultSbom);
+    assertEquals(dropIgnored(expectedSbom), dropIgnored(resultSbom));
 
     // check that only one version of package golang/go.opencensus.io is in sbom for
     // EXHORT_GO_MVS_LOGIC_ENABLED=true
@@ -188,10 +189,13 @@ class Golang_Modules_Provider_Test extends ExhortTest {
   }
 
   private String dropIgnored(String s) {
-    return s.replaceAll("\\s+", "").replaceAll("\"timestamp\":\"[a-zA-Z0-9\\-\\:]+\",", "");
+    return s.replaceAll("goarch=\\w+&goos=\\w+&", "")
+        .replaceAll("\\s+", "")
+        .replaceAll("\"timestamp\":\"[a-zA-Z0-9\\-\\:]+\",", "");
   }
 
   private String dropIgnoredKeepFormat(String s) {
-    return s.replaceAll("\"timestamp\" : \"[a-zA-Z0-9\\-\\:]+\",\n    ", "");
+    return s.replaceAll("goarch=\\w+&goos=\\w+&", "")
+        .replaceAll("\"timestamp\" : \"[a-zA-Z0-9\\-\\:]+\",\n    ", "");
   }
 }

@@ -70,7 +70,12 @@ public abstract class Provider {
    */
   public abstract Content provideComponent() throws IOException;
 
-  public boolean validateLockFile(Path lockFile) {
-    return true;
+  /**
+   * If a package manager requires having a lock file it must exist in the provided path
+   *
+   * @param lockFileDir Path to the directory where the lock file must exist
+   */
+  public void validateLockFile(Path lockFileDir) {
+    // Default implementation. Do not require a lock file.
   }
 }

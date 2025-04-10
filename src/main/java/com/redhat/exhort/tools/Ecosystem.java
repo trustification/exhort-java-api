@@ -56,10 +56,7 @@ public final class Ecosystem {
    */
   public static Provider getProvider(final Path manifestPath) {
     var provider = resolveProvider(manifestPath);
-    if (!provider.validateLockFile(manifestPath)) {
-      throw new IllegalStateException(
-          "Missing lock file for manifest file: " + manifestPath.toString());
-    }
+    provider.validateLockFile(manifestPath.getParent());
     return provider;
   }
 
