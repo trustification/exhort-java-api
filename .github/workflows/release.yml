@@ -78,7 +78,7 @@ jobs:
     steps:
 
       - name: Create release notes for ${{ needs.deploy.outputs.project_version }} release
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         id: release-notes
         with:
           github-token: ${{ secrets.STAGING_PAT }}
@@ -91,7 +91,7 @@ jobs:
             return response.data.body
 
       - name: Create new ${{ needs.deploy.outputs.project_version }} release
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.STAGING_PAT }}
           script: |
