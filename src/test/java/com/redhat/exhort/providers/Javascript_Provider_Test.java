@@ -92,12 +92,14 @@ class Javascript_Provider_Test extends ExhortTest {
       listingStack = new String(is.readAllBytes());
     }
 
-    ArgumentMatcher<Path> matchPath = path -> path == null;
     try (MockedStatic<Operations> mockedOperations = mockStatic(Operations.class)) {
+      mockedOperations
+          .when(() -> Operations.getCustomPathOrElse(eq(pkgManager)))
+          .thenReturn(pkgManager);
       mockedOperations
           .when(
               () ->
-                  Operations.runProcessGetOutput(argThat(matchPath), any(String[].class), isNull()))
+                  Operations.runProcessGetOutput(isNull(Path.class), any(String[].class), isNull()))
           .thenReturn(listingStack);
       // when providing stack content for our pom
       var content = JavaScriptProviderFactory.create(tmpFile).provideStack();
@@ -139,22 +141,12 @@ class Javascript_Provider_Test extends ExhortTest {
 
     try (MockedStatic<Operations> mockedOperations = mockStatic(Operations.class)) {
       mockedOperations
-          .when(() -> Operations.runProcess(any(), any()))
-          .thenAnswer(
-              (invocationOnMock) -> {
-                String[] commandParts = (String[]) invocationOnMock.getRawArguments()[0];
-                int lastElementIsDir = commandParts.length - 1;
-                String packageLockJson =
-                    commandParts[lastElementIsDir] + "/" + getLockFile(pkgManager);
-
-                return packageLockJson;
-              });
-      ArgumentMatcher<Path> matchPath = path -> path == null;
-
+          .when(() -> Operations.getCustomPathOrElse(eq(pkgManager)))
+          .thenReturn(pkgManager);
       mockedOperations
           .when(
               () ->
-                  Operations.runProcessGetOutput(argThat(matchPath), any(String[].class), isNull()))
+                  Operations.runProcessGetOutput(isNull(Path.class), any(String[].class), isNull()))
           .thenReturn(listingComponent);
       // when providing component content for our pom
       var content = JavaScriptProviderFactory.create(Path.of(targetPom)).provideComponent();
@@ -202,15 +194,16 @@ class Javascript_Provider_Test extends ExhortTest {
                 "tst_manifests/%s/%s/%s-ls-component.json", pkgManager, testFolder, pkgManager))) {
       listingComponent = new String(is.readAllBytes());
     }
-    ArgumentMatcher<Path> matchPath = path -> path == null;
     try (MockedStatic<Operations> mockedOperations = mockStatic(Operations.class)) {
       mockedOperations
-          .when(
-              () ->
-                  Operations.runProcessGetOutput(argThat(matchPath), any(String[].class), isNull()))
+          .when(() -> Operations.getCustomPathOrElse(eq(pkgManager)))
+          .thenReturn(pkgManager);
+      mockedOperations
+          .when(() -> Operations.runProcessGetOutput(isNull(), any(String[].class), isNull()))
           .thenReturn(listingComponent);
       // when providing component content for our pom
-      var content = JavaScriptProviderFactory.create(tmpFile).provideComponent();
+      var provider = JavaScriptProviderFactory.create(tmpFile);
+      var content = provider.provideComponent();
       // verify expected SBOM is returned
       assertThat(content.type).isEqualTo(Api.CYCLONEDX_MEDIA_TYPE);
       assertThat(dropIgnored(new String(content.buffer))).isEqualTo(dropIgnored(expectedSbom));
@@ -224,9 +217,9 @@ class Javascript_Provider_Test extends ExhortTest {
   private String getLockFile(String pkgManager) {
     switch (Ecosystem.Type.valueOf(pkgManager.toUpperCase())) {
       case NPM:
-        return "package-lock.json";
+        return JavaScriptNpmProvider.LOCK_FILE;
       case PNPM:
-        return "pnpm-lock.yaml";
+        return JavaScriptPnpmProvider.LOCK_FILE;
       default:
         fail("Unexpected pkg manager: " + pkgManager);
         return null;

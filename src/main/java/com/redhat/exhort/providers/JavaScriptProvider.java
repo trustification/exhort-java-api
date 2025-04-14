@@ -121,8 +121,8 @@ public abstract class JavaScriptProvider extends Provider {
   }
 
   private Sbom getDependencySbom(Path manifestPath, boolean includeTransitive) throws IOException {
-    var npmListResult = buildDependencyTree(manifestPath, includeTransitive);
-    var sbom = buildSbom(npmListResult);
+    var depTree = buildDependencyTree(manifestPath, includeTransitive);
+    var sbom = buildSbom(depTree);
     sbom.filterIgnoredDeps(getIgnoredDeps(manifestPath));
     return sbom;
   }
@@ -165,8 +165,7 @@ public abstract class JavaScriptProvider extends Provider {
     if (debugLoggingIsNeeded()) {
       log.log(
           System.Logger.Level.INFO,
-          String.format(
-              "Npm Listed Install Pacakges in Json : %s %s", System.lineSeparator(), output));
+          String.format("Listed Install Packages in Json : %s %s", System.lineSeparator(), output));
     }
     return objectMapper.readTree(output);
   }
