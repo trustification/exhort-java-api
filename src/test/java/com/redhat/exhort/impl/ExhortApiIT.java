@@ -95,6 +95,8 @@ class ExhortApiIT extends ExhortTest {
             new SimpleEntry<>("pom.xml", Optional.empty()),
             "npm",
             new SimpleEntry<>("package.json", Optional.of("package-lock.json")),
+            "pnpm",
+            new SimpleEntry<>("package.json", Optional.of("pnpm-lock.yaml")),
             "pypi",
             new SimpleEntry<>("requirements.txt", Optional.empty()),
             "gradle-groovy",
@@ -211,7 +213,7 @@ class ExhortApiIT extends ExhortTest {
   @RestoreSystemProperties
   @EnumSource(
       value = Ecosystem.Type.class,
-      names = {"GOLANG", "MAVEN", "NPM", "PYTHON"})
+      names = {"GOLANG", "MAVEN", "NPM", "PNPM", "PYTHON"})
   void Integration_Test_End_To_End_Component_Analysis(Ecosystem.Type packageManager)
       throws IOException, ExecutionException, InterruptedException {
     String manifestFileName = ecoSystemsManifestNames.get(packageManager.getType()).getKey();

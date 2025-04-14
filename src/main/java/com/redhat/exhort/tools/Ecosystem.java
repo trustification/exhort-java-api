@@ -19,7 +19,7 @@ import com.redhat.exhort.Provider;
 import com.redhat.exhort.providers.GoModulesProvider;
 import com.redhat.exhort.providers.GradleProvider;
 import com.redhat.exhort.providers.JavaMavenProvider;
-import com.redhat.exhort.providers.JavaScriptNpmProvider;
+import com.redhat.exhort.providers.JavaScriptProviderFactory;
 import com.redhat.exhort.providers.PythonPipProvider;
 import java.nio.file.Path;
 
@@ -29,6 +29,7 @@ public final class Ecosystem {
   public enum Type {
     MAVEN("maven"),
     NPM("npm"),
+    PNPM("pnpm"),
     GOLANG("golang"),
     PYTHON("pypi"),
     GRADLE("gradle");
@@ -66,7 +67,7 @@ public final class Ecosystem {
       case "pom.xml":
         return new JavaMavenProvider(manifestPath);
       case "package.json":
-        return new JavaScriptNpmProvider(manifestPath);
+        return JavaScriptProviderFactory.create(manifestPath);
       case "go.mod":
         return new GoModulesProvider(manifestPath);
       case "requirements.txt":

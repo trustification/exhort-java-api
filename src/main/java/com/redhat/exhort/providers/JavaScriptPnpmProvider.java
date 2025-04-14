@@ -15,21 +15,24 @@
  */
 package com.redhat.exhort.providers;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.redhat.exhort.tools.Ecosystem;
 import java.nio.file.Path;
 
 /**
  * Concrete implementation of the {@link JavaScriptProvider} used for converting dependency trees
- * for npm projects (package.json) into a SBOM content for Stack analysis or Component analysis.
+ * for pnpm projects (package.json) into a SBOM content for Stack analysis or Component analysis.
  */
-public final class JavaScriptNpmProvider extends JavaScriptProvider {
+public final class JavaScriptPnpmProvider extends JavaScriptProvider {
 
-  public static final String LOCK_FILE = "package-lock.json";
-  public static final String CMD_NAME = "npm";
-  public static final String ENV_NODE_HOME = "NODE_HOME";
+  public static final String LOCK_FILE = "pnpm-lock.yaml";
+  public static final String CMD_NAME = "pnpm";
+  public static final String ENV_PNPM_HOME = "PNPM_HOME";
 
-  public JavaScriptNpmProvider(Path manifest) {
-    super(manifest, Ecosystem.Type.NPM, CMD_NAME);
+  public JavaScriptPnpmProvider(Path manifest) {
+    super(manifest, Ecosystem.Type.PNPM, CMD_NAME);
   }
 
   @Override
@@ -39,13 +42,13 @@ public final class JavaScriptNpmProvider extends JavaScriptProvider {
 
   @Override
   protected String pathEnv() {
-    return ENV_NODE_HOME;
+    return ENV_PNPM_HOME;
   }
 
   @Override
   protected String[] updateLockFileCmd(Path manifestDir) {
     return new String[] {
-      packageManager(), "i", "--package-lock-only", "--prefix", manifestDir.toString()
+      packageManager(), "install", "--frozen-lockfile", "--dir", manifestDir.toString()
     };
   }
 
@@ -55,21 +58,22 @@ public final class JavaScriptNpmProvider extends JavaScriptProvider {
       return new String[] {
         packageManager(),
         "ls",
-        includeTransitive ? "--all" : "--depth=0",
-        "--omit=dev",
-        "--package-lock-only",
-        "--json",
-        "--prefix",
-        manifestDir.toString()
+        "--dir",
+        manifestDir.toString(),
+        includeTransitive ? "--depth=Infinity" : "--depth=0",
+        "--prod",
+        "--json"
       };
     }
     return new String[] {
-      packageManager(),
-      "ls",
-      includeTransitive ? "--all" : "--depth=0",
-      "--omit=dev",
-      "--package-lock-only",
-      "--json"
+      packageManager(), "list", includeTransitive ? "--depth=-1" : "--depth=0", "--prod", "--json"
     };
+  }
+
+  @Override
+  protected JsonNode buildDependencyTree(Path manifestPath, boolean includeTransitive)
+      throws JsonMappingException, JsonProcessingException {
+    var depTree = super.buildDependencyTree(manifestPath, includeTransitive);
+    return depTree.get(0);
   }
 }
