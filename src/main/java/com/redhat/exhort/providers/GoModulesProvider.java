@@ -68,7 +68,7 @@ public final class GoModulesProvider extends Provider {
 
   @Override
   public Content provideStack() throws IOException {
-    // check for custom npm executable
+    // check for custom executable
     Sbom sbom = getDependenciesSbom(manifest, true);
     return new Content(
         sbom.getAsJsonString().getBytes(StandardCharsets.UTF_8), Api.CYCLONEDX_MEDIA_TYPE);

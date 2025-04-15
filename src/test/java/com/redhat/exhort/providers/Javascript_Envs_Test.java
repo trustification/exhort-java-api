@@ -32,7 +32,7 @@ public class Javascript_Envs_Test {
   @SetSystemProperty(key = "NODE_HOME", value = "test-node-home")
   @SetSystemProperty(key = "PATH", value = "test-path")
   void test_javascript_get_envs() {
-    var envs = new JavaScriptNpmProvider(null).getNpmExecEnv();
+    var envs = new JavaScriptNpmProvider(null).getExecEnv();
     assertEquals(
         Collections.singletonMap("PATH", "test-path" + File.pathSeparator + "test-node-home"),
         envs);
@@ -44,7 +44,7 @@ public class Javascript_Envs_Test {
     try (MockedStatic<Environment> mockEnv =
         Mockito.mockStatic(Environment.class, Mockito.CALLS_REAL_METHODS)) {
       mockEnv.when(() -> Environment.get("PATH")).thenReturn(null);
-      var envs = new JavaScriptNpmProvider(null).getNpmExecEnv();
+      var envs = new JavaScriptNpmProvider(null).getExecEnv();
       assertEquals(Collections.singletonMap("PATH", "test-node-home"), envs);
     }
   }
@@ -53,7 +53,7 @@ public class Javascript_Envs_Test {
   @SetSystemProperty(key = "NODE_HOME", value = "")
   @SetSystemProperty(key = "PATH", value = "test-path")
   void test_javascript_get_envs_empty_java_home() {
-    var envs = new JavaScriptNpmProvider(null).getNpmExecEnv();
+    var envs = new JavaScriptNpmProvider(null).getExecEnv();
     assertNull(envs);
   }
 
@@ -61,7 +61,7 @@ public class Javascript_Envs_Test {
   @ClearSystemProperty(key = "NODE_HOME")
   @SetSystemProperty(key = "PATH", value = "test-path")
   void test_javascript_get_envs_no_java_home() {
-    var envs = new JavaScriptNpmProvider(null).getNpmExecEnv();
+    var envs = new JavaScriptNpmProvider(null).getExecEnv();
     assertNull(envs);
   }
 }
