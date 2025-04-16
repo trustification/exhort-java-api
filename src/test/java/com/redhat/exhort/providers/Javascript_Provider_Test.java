@@ -45,7 +45,8 @@ class Javascript_Provider_Test extends ExhortTest {
   }
 
   static Stream<String> providers() {
-    return Stream.of(Ecosystem.Type.NPM.getType(), Ecosystem.Type.PNPM.getType());
+    return Stream.of(
+        Ecosystem.Type.NPM.getType(), Ecosystem.Type.PNPM.getType(), "yarn-classic", "yarn-berry");
   }
 
   static Stream<Arguments> testCases() {
@@ -92,15 +93,8 @@ class Javascript_Provider_Test extends ExhortTest {
       listingStack = new String(is.readAllBytes());
     }
 
-    try (MockedStatic<Operations> mockedOperations = mockStatic(Operations.class)) {
-      mockedOperations
-          .when(() -> Operations.getCustomPathOrElse(eq(pkgManager)))
-          .thenReturn(pkgManager);
-      mockedOperations
-          .when(
-              () ->
-                  Operations.runProcessGetOutput(isNull(Path.class), any(String[].class), isNull()))
-          .thenReturn(listingStack);
+    try (MockedStatic<Operations> mockedOperations =
+        mockOperations(pkgManager, listingStack, false)) {
       // when providing stack content for our pom
       var content = JavaScriptProviderFactory.create(tmpFile).provideStack();
       // cleanup
@@ -127,7 +121,7 @@ class Javascript_Provider_Test extends ExhortTest {
         getResourceAsStreamDecision(
             this.getClass(),
             String.format(
-                "tst_manifests/%s/%s/expected_component_sbom.json", pkgManager, testFolder))) {
+                "tst_manifests/npm/common/%s/expected_component_sbom.json", testFolder))) {
       expectedSbom = new String(is.readAllBytes());
     }
     String listingComponent;
@@ -139,15 +133,8 @@ class Javascript_Provider_Test extends ExhortTest {
       listingComponent = new String(is.readAllBytes());
     }
 
-    try (MockedStatic<Operations> mockedOperations = mockStatic(Operations.class)) {
-      mockedOperations
-          .when(() -> Operations.getCustomPathOrElse(eq(pkgManager)))
-          .thenReturn(pkgManager);
-      mockedOperations
-          .when(
-              () ->
-                  Operations.runProcessGetOutput(isNull(Path.class), any(String[].class), isNull()))
-          .thenReturn(listingComponent);
+    try (MockedStatic<Operations> mockedOperations =
+        mockOperations(pkgManager, listingComponent, false)) {
       // when providing component content for our pom
       var content = JavaScriptProviderFactory.create(Path.of(targetPom)).provideComponent();
       // verify expected SBOM is returned
@@ -183,7 +170,7 @@ class Javascript_Provider_Test extends ExhortTest {
         getResourceAsStreamDecision(
             this.getClass(),
             String.format(
-                "tst_manifests/%s/%s/expected_component_sbom.json", pkgManager, testFolder))) {
+                "tst_manifests/npm/common/%s/expected_component_sbom.json", testFolder))) {
       expectedSbom = new String(is.readAllBytes());
     }
     String listingComponent;
@@ -194,13 +181,8 @@ class Javascript_Provider_Test extends ExhortTest {
                 "tst_manifests/%s/%s/%s-ls-component.json", pkgManager, testFolder, pkgManager))) {
       listingComponent = new String(is.readAllBytes());
     }
-    try (MockedStatic<Operations> mockedOperations = mockStatic(Operations.class)) {
-      mockedOperations
-          .when(() -> Operations.getCustomPathOrElse(eq(pkgManager)))
-          .thenReturn(pkgManager);
-      mockedOperations
-          .when(() -> Operations.runProcessGetOutput(isNull(), any(String[].class), isNull()))
-          .thenReturn(listingComponent);
+    try (MockedStatic<Operations> mockedOperations =
+        mockOperations(pkgManager, listingComponent, true)) {
       // when providing component content for our pom
       var provider = JavaScriptProviderFactory.create(tmpFile);
       var content = provider.provideComponent();
@@ -215,14 +197,45 @@ class Javascript_Provider_Test extends ExhortTest {
   }
 
   private String getLockFile(String pkgManager) {
-    switch (Ecosystem.Type.valueOf(pkgManager.toUpperCase())) {
+    Ecosystem.Type mgr = null;
+    if (pkgManager.startsWith(Ecosystem.Type.YARN.getType().toLowerCase())) {
+      mgr = Ecosystem.Type.YARN;
+    } else {
+      mgr = Ecosystem.Type.valueOf(pkgManager.toUpperCase());
+    }
+    switch (mgr) {
       case NPM:
         return JavaScriptNpmProvider.LOCK_FILE;
       case PNPM:
         return JavaScriptPnpmProvider.LOCK_FILE;
+      case YARN:
+        return JavaScriptYarnProvider.LOCK_FILE;
       default:
         fail("Unexpected pkg manager: " + pkgManager);
         return null;
     }
+  }
+
+  private MockedStatic<Operations> mockOperations(
+      String pkgManager, String listResult, boolean withPath) {
+    var mockedOperations = mockStatic(Operations.class);
+    if (pkgManager.equalsIgnoreCase("yarn-classic")) {
+      mockedOperations
+          .when(() -> Operations.runProcessGetOutput(any(), any(), isNull()))
+          .thenReturn("1.22.22", listResult);
+    } else if (pkgManager.equalsIgnoreCase("yarn-berry")) {
+      mockedOperations
+          .when(() -> Operations.runProcessGetOutput(any(), any(), isNull()))
+          .thenReturn("4.9.1", listResult);
+    } else {
+      mockedOperations
+          .when(() -> Operations.runProcessGetOutput(any(), any(), isNull()))
+          .thenReturn(listResult);
+    }
+
+    mockedOperations
+        .when(() -> Operations.getCustomPathOrElse(eq(pkgManager)))
+        .thenReturn(pkgManager);
+    return mockedOperations;
   }
 }

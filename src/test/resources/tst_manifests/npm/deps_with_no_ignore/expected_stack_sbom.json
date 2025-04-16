@@ -3,7 +3,7 @@
   "specVersion" : "1.4",
   "version" : 1,
   "metadata" : {
-    "timestamp" : "2025-04-14T11:42:17Z",
+    "timestamp" : "2025-04-16T14:36:51Z",
     "component" : {
       "type" : "application",
       "bom-ref" : "pkg:npm/backend@1.0.0",

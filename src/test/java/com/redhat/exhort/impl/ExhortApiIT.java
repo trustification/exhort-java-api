@@ -34,6 +34,9 @@ import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.api.v4.ProviderReport;
 import com.redhat.exhort.image.ImageRef;
 import com.redhat.exhort.providers.HelperExtension;
+import com.redhat.exhort.providers.JavaScriptNpmProvider;
+import com.redhat.exhort.providers.JavaScriptPnpmProvider;
+import com.redhat.exhort.providers.JavaScriptYarnProvider;
 import com.redhat.exhort.tools.Ecosystem;
 import com.redhat.exhort.tools.Operations;
 import java.io.BufferedReader;
@@ -94,9 +97,11 @@ class ExhortApiIT extends ExhortTest {
             "maven",
             new SimpleEntry<>("pom.xml", Optional.empty()),
             "npm",
-            new SimpleEntry<>("package.json", Optional.of("package-lock.json")),
+            new SimpleEntry<>("package.json", Optional.of(JavaScriptNpmProvider.LOCK_FILE)),
             "pnpm",
-            new SimpleEntry<>("package.json", Optional.of("pnpm-lock.yaml")),
+            new SimpleEntry<>("package.json", Optional.of(JavaScriptPnpmProvider.LOCK_FILE)),
+            "yarn",
+            new SimpleEntry<>("package.json", Optional.of(JavaScriptYarnProvider.LOCK_FILE)),
             "pypi",
             new SimpleEntry<>("requirements.txt", Optional.empty()),
             "gradle-groovy",
@@ -213,7 +218,7 @@ class ExhortApiIT extends ExhortTest {
   @RestoreSystemProperties
   @EnumSource(
       value = Ecosystem.Type.class,
-      names = {"GOLANG", "MAVEN", "NPM", "PNPM", "PYTHON"})
+      names = {"GOLANG", "MAVEN", "NPM", "PNPM", "YARN", "PYTHON"})
   void Integration_Test_End_To_End_Component_Analysis(Ecosystem.Type packageManager)
       throws IOException, ExecutionException, InterruptedException {
     String manifestFileName = ecoSystemsManifestNames.get(packageManager.getType()).getKey();

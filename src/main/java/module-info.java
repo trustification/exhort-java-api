@@ -29,6 +29,7 @@ module com.redhat.exhort {
       packageurl.java;
 
   exports com.redhat.exhort.providers;
+  exports com.redhat.exhort.providers.javascript.model;
   exports com.redhat.exhort.logging;
   exports com.redhat.exhort.image;
 

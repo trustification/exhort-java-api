@@ -71,9 +71,9 @@ public final class JavaScriptPnpmProvider extends JavaScriptProvider {
   }
 
   @Override
-  protected JsonNode buildDependencyTree(Path manifestPath, boolean includeTransitive)
+  protected JsonNode buildDependencyTree(boolean includeTransitive)
       throws JsonMappingException, JsonProcessingException {
-    var depTree = super.buildDependencyTree(manifestPath, includeTransitive);
+    var depTree = super.buildDependencyTree(includeTransitive);
     return depTree.get(0);
   }
 }

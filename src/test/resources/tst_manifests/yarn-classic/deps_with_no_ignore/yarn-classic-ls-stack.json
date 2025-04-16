@@ -1,0 +1,2341 @@
+{
+  "type": "tree",
+  "data": {
+    "type": "list",
+    "trees": [
+      {
+        "name": "bson@1.1.6",
+        "children": [],
+        "hint": null,
+        "color": "bold",
+        "depth": 0
+      },
+      {
+        "name": "debug@2.6.9",
+        "children": [
+          {
+            "name": "ms@2.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "ms@2.0.0",
+            "children": [],
+            "hint": null,
+            "color": "bold",
+            "depth": 0
+          }
+        ],
+        "hint": null,
+        "color": "bold",
+        "depth": 0
+      },
+      {
+        "name": "encodeurl@2.0.0",
+        "children": [],
+        "hint": null,
+        "color": "bold",
+        "depth": 0
+      },
+      {
+        "name": "ms@2.1.3",
+        "children": [],
+        "hint": null,
+        "color": "bold",
+        "depth": 0
+      },
+      {
+        "name": "safe-buffer@5.2.1",
+        "children": [],
+        "hint": null,
+        "color": "bold",
+        "depth": 0
+      },
+      {
+        "name": "semver@5.7.2",
+        "children": [],
+        "hint": null,
+        "color": "bold",
+        "depth": 0
+      },
+      {
+        "name": "@hapi/joi@17.1.1",
+        "children": [
+          {
+            "name": "@hapi/address@^4.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "@hapi/formula@^2.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "@hapi/hoek@^9.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "@hapi/pinpoint@^2.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "@hapi/topo@^5.0.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": "bold",
+        "depth": 0
+      },
+      {
+        "name": "backend@0.0.0",
+        "children": [],
+        "hint": null,
+        "color": "bold",
+        "depth": 0
+      },
+      {
+        "name": "bcryptjs@2.4.3",
+        "children": [],
+        "hint": null,
+        "color": "bold",
+        "depth": 0
+      },
+      {
+        "name": "dotenv@8.6.0",
+        "children": [],
+        "hint": null,
+        "color": "bold",
+        "depth": 0
+      },
+      {
+        "name": "express@4.21.2",
+        "children": [
+          {
+            "name": "accepts@~1.3.8",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "array-flatten@1.1.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "body-parser@1.20.3",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "content-disposition@0.5.4",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "content-type@~1.0.4",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "cookie@0.7.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "cookie-signature@1.0.6",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "debug@2.6.9",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "depd@2.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "encodeurl@~2.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "escape-html@~1.0.3",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "etag@~1.8.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "finalhandler@1.3.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "fresh@0.5.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "http-errors@2.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "merge-descriptors@1.0.3",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "methods@~1.1.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "on-finished@2.4.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "parseurl@~1.3.3",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "path-to-regexp@0.1.12",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "proxy-addr@~2.0.7",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "qs@6.13.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "range-parser@~1.2.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "safe-buffer@5.2.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "send@0.19.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "serve-static@1.16.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "setprototypeof@1.2.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "statuses@2.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "type-is@~1.6.18",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "utils-merge@1.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "vary@~1.1.2",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": "bold",
+        "depth": 0
+      },
+      {
+        "name": "jsonwebtoken@8.5.1",
+        "children": [
+          {
+            "name": "jws@^3.2.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "lodash.includes@^4.3.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "lodash.isboolean@^3.0.3",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "lodash.isinteger@^4.0.4",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "lodash.isnumber@^3.0.3",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "lodash.isplainobject@^4.0.6",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "lodash.isstring@^4.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "lodash.once@^4.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "ms@^2.1.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "semver@^5.6.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": "bold",
+        "depth": 0
+      },
+      {
+        "name": "mongoose@5.13.23",
+        "children": [
+          {
+            "name": "@types/bson@1.x || 4.0.x",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "@types/mongodb@^3.5.27",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "bson@^1.1.4",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "kareem@2.3.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "mongodb@3.7.4",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "mongoose-legacy-pluralize@1.0.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "mpath@0.8.4",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "mquery@3.2.5",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "ms@2.1.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "optional-require@1.0.x",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "regexp-clone@1.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "safe-buffer@5.2.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "sift@13.5.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "sliced@1.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "ms@2.1.2",
+            "children": [],
+            "hint": null,
+            "color": "bold",
+            "depth": 0
+          }
+        ],
+        "hint": null,
+        "color": "bold",
+        "depth": 0
+      },
+      {
+        "name": "nodemon@2.0.22",
+        "children": [
+          {
+            "name": "chokidar@^3.5.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "debug@^3.2.7",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "ignore-by-default@^1.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "minimatch@^3.1.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "pstree.remy@^1.1.8",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "semver@^5.7.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "simple-update-notifier@^1.0.7",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "supports-color@^5.5.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "touch@^3.1.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "undefsafe@^2.0.5",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "debug@3.2.7",
+            "children": [
+              {
+                "name": "ms@^2.1.1",
+                "color": "dim",
+                "shadow": true
+              }
+            ],
+            "hint": null,
+            "color": "bold",
+            "depth": 0
+          }
+        ],
+        "hint": null,
+        "color": "bold",
+        "depth": 0
+      },
+      {
+        "name": "axios@0.19.2",
+        "children": [
+          {
+            "name": "follow-redirects@1.5.10",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": "bold",
+        "depth": 0
+      },
+      {
+        "name": "@hapi/address@4.1.0",
+        "children": [
+          {
+            "name": "@hapi/hoek@^9.0.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "@hapi/formula@2.0.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "@hapi/hoek@9.3.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "@hapi/pinpoint@2.0.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "@hapi/topo@5.1.0",
+        "children": [
+          {
+            "name": "@hapi/hoek@^9.0.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "@types/bson@4.0.5",
+        "children": [
+          {
+            "name": "@types/node@*",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "@types/mongodb@3.6.20",
+        "children": [
+          {
+            "name": "@types/bson@*",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "@types/node@*",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "@types/bson@4.2.4",
+            "children": [
+              {
+                "name": "bson@*",
+                "color": "dim",
+                "shadow": true
+              }
+            ],
+            "hint": null,
+            "color": "bold",
+            "depth": 0
+          },
+          {
+            "name": "bson@6.10.3",
+            "children": [],
+            "hint": null,
+            "color": null,
+            "depth": 0
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "accepts@1.3.8",
+        "children": [
+          {
+            "name": "mime-types@~2.1.34",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "negotiator@0.6.3",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "array-flatten@1.1.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "body-parser@1.20.3",
+        "children": [
+          {
+            "name": "bytes@3.1.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "content-type@~1.0.5",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "debug@2.6.9",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "depd@2.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "destroy@1.2.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "http-errors@2.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "iconv-lite@0.4.24",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "on-finished@2.4.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "qs@6.13.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "raw-body@2.5.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "type-is@~1.6.18",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "unpipe@1.0.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "chokidar@3.6.0",
+        "children": [
+          {
+            "name": "anymatch@~3.1.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "braces@~3.0.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "glob-parent@~5.1.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "is-binary-path@~2.1.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "is-glob@~4.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "normalize-path@~3.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "readdirp@~3.6.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "fsevents@~2.3.2",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "content-disposition@0.5.4",
+        "children": [
+          {
+            "name": "safe-buffer@5.2.1",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "content-type@1.0.5",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "cookie-signature@1.0.6",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "cookie@0.7.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "depd@2.0.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "escape-html@1.0.3",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "etag@1.8.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "finalhandler@1.3.1",
+        "children": [
+          {
+            "name": "debug@2.6.9",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "encodeurl@~2.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "escape-html@~1.0.3",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "on-finished@2.4.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "parseurl@~1.3.3",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "statuses@2.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "unpipe@~1.0.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "follow-redirects@1.5.10",
+        "children": [
+          {
+            "name": "debug@=3.1.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "debug@3.1.0",
+            "children": [
+              {
+                "name": "ms@2.0.0",
+                "color": "dim",
+                "shadow": true
+              }
+            ],
+            "hint": null,
+            "color": "bold",
+            "depth": 0
+          },
+          {
+            "name": "ms@2.0.0",
+            "children": [],
+            "hint": null,
+            "color": null,
+            "depth": 0
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "fresh@0.5.2",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "http-errors@2.0.0",
+        "children": [
+          {
+            "name": "depd@2.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "inherits@2.0.4",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "setprototypeof@1.2.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "statuses@2.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "toidentifier@1.0.1",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "ignore-by-default@1.0.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "jws@3.2.2",
+        "children": [
+          {
+            "name": "jwa@^1.4.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "safe-buffer@^5.0.1",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "kareem@2.3.2",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "lodash.includes@4.3.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "lodash.isboolean@3.0.3",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "lodash.isinteger@4.0.4",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "lodash.isnumber@3.0.3",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "lodash.isplainobject@4.0.6",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "lodash.isstring@4.0.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "lodash.once@4.1.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "merge-descriptors@1.0.3",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "methods@1.1.2",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "minimatch@3.1.2",
+        "children": [
+          {
+            "name": "brace-expansion@^1.1.7",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "mongodb@3.7.4",
+        "children": [
+          {
+            "name": "bl@^2.2.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "bson@^1.1.4",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "denque@^1.4.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "optional-require@^1.1.8",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "safe-buffer@^5.1.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "saslprep@^1.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "optional-require@1.1.8",
+            "children": [
+              {
+                "name": "require-at@^1.0.6",
+                "color": "dim",
+                "shadow": true
+              }
+            ],
+            "hint": null,
+            "color": "bold",
+            "depth": 0
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "mongoose-legacy-pluralize@1.0.2",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "mpath@0.8.4",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "mquery@3.2.5",
+        "children": [
+          {
+            "name": "bluebird@3.5.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "debug@3.1.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "regexp-clone@^1.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "safe-buffer@5.1.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "sliced@1.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "debug@3.1.0",
+            "children": [
+              {
+                "name": "ms@2.0.0",
+                "color": "dim",
+                "shadow": true
+              }
+            ],
+            "hint": null,
+            "color": "bold",
+            "depth": 0
+          },
+          {
+            "name": "safe-buffer@5.1.2",
+            "children": [],
+            "hint": null,
+            "color": "bold",
+            "depth": 0
+          },
+          {
+            "name": "ms@2.0.0",
+            "children": [],
+            "hint": null,
+            "color": null,
+            "depth": 0
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "on-finished@2.4.1",
+        "children": [
+          {
+            "name": "ee-first@1.1.1",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "optional-require@1.0.3",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "parseurl@1.3.3",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "path-to-regexp@0.1.12",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "proxy-addr@2.0.7",
+        "children": [
+          {
+            "name": "forwarded@0.2.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "ipaddr.js@1.9.1",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "pstree.remy@1.1.8",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "qs@6.13.0",
+        "children": [
+          {
+            "name": "side-channel@^1.0.6",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "range-parser@1.2.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "regexp-clone@1.0.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "send@0.19.0",
+        "children": [
+          {
+            "name": "debug@2.6.9",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "depd@2.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "destroy@1.2.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "encodeurl@~1.0.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "escape-html@~1.0.3",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "etag@~1.8.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "fresh@0.5.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "http-errors@2.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "mime@1.6.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "ms@2.1.3",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "on-finished@2.4.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "range-parser@~1.2.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "statuses@2.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "encodeurl@1.0.2",
+            "children": [],
+            "hint": null,
+            "color": "bold",
+            "depth": 0
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "serve-static@1.16.2",
+        "children": [
+          {
+            "name": "encodeurl@~2.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "escape-html@~1.0.3",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "parseurl@~1.3.3",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "send@0.19.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "setprototypeof@1.2.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "sift@13.5.2",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "simple-update-notifier@1.1.0",
+        "children": [
+          {
+            "name": "semver@~7.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "semver@7.0.0",
+            "children": [],
+            "hint": null,
+            "color": "bold",
+            "depth": 0
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "sliced@1.0.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "statuses@2.0.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "supports-color@5.5.0",
+        "children": [
+          {
+            "name": "has-flag@^3.0.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "touch@3.1.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "type-is@1.6.18",
+        "children": [
+          {
+            "name": "media-typer@0.3.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "mime-types@~2.1.24",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "undefsafe@2.0.5",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "utils-merge@1.0.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "vary@1.1.2",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "@types/node@22.14.1",
+        "children": [
+          {
+            "name": "undici-types@~6.21.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "anymatch@3.1.3",
+        "children": [
+          {
+            "name": "normalize-path@^3.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "picomatch@^2.0.4",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "bl@2.2.1",
+        "children": [
+          {
+            "name": "readable-stream@^2.3.5",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "safe-buffer@^5.1.1",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "bluebird@3.5.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "brace-expansion@1.1.11",
+        "children": [
+          {
+            "name": "balanced-match@^1.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "concat-map@0.0.1",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "braces@3.0.3",
+        "children": [
+          {
+            "name": "fill-range@^7.1.1",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "bytes@3.1.2",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "denque@1.5.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "destroy@1.2.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "ee-first@1.1.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "forwarded@0.2.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "fsevents@2.3.3",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "glob-parent@5.1.2",
+        "children": [
+          {
+            "name": "is-glob@^4.0.1",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "has-flag@3.0.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "iconv-lite@0.4.24",
+        "children": [
+          {
+            "name": "safer-buffer@>= 2.1.2 < 3",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "inherits@2.0.4",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "ipaddr.js@1.9.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "is-binary-path@2.1.0",
+        "children": [
+          {
+            "name": "binary-extensions@^2.0.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "is-glob@4.0.3",
+        "children": [
+          {
+            "name": "is-extglob@^2.1.1",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "jwa@1.4.1",
+        "children": [
+          {
+            "name": "buffer-equal-constant-time@1.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "ecdsa-sig-formatter@1.0.11",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "safe-buffer@^5.0.1",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "media-typer@0.3.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "mime-types@2.1.35",
+        "children": [
+          {
+            "name": "mime-db@1.52.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "mime@1.6.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "negotiator@0.6.3",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "normalize-path@3.0.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "raw-body@2.5.2",
+        "children": [
+          {
+            "name": "bytes@3.1.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "http-errors@2.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "iconv-lite@0.4.24",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "unpipe@1.0.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "readdirp@3.6.0",
+        "children": [
+          {
+            "name": "picomatch@^2.2.1",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "saslprep@1.0.3",
+        "children": [
+          {
+            "name": "sparse-bitfield@^3.0.3",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "side-channel@1.1.0",
+        "children": [
+          {
+            "name": "es-errors@^1.3.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "object-inspect@^1.13.3",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "side-channel-list@^1.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "side-channel-map@^1.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "side-channel-weakmap@^1.0.2",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "toidentifier@1.0.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "unpipe@1.0.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "balanced-match@1.0.2",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "binary-extensions@2.3.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "buffer-equal-constant-time@1.0.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "concat-map@0.0.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "ecdsa-sig-formatter@1.0.11",
+        "children": [
+          {
+            "name": "safe-buffer@^5.0.1",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "es-errors@1.3.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "fill-range@7.1.1",
+        "children": [
+          {
+            "name": "to-regex-range@^5.0.1",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "is-extglob@2.1.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "mime-db@1.52.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "object-inspect@1.13.4",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "picomatch@2.3.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "readable-stream@2.3.8",
+        "children": [
+          {
+            "name": "core-util-is@~1.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "inherits@~2.0.3",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "isarray@~1.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "process-nextick-args@~2.0.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "safe-buffer@~5.1.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "string_decoder@~1.1.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "util-deprecate@~1.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "safe-buffer@5.1.2",
+            "children": [],
+            "hint": null,
+            "color": "bold",
+            "depth": 0
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "require-at@1.0.6",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "safer-buffer@2.1.2",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "side-channel-list@1.0.0",
+        "children": [
+          {
+            "name": "es-errors@^1.3.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "object-inspect@^1.13.3",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "side-channel-map@1.0.1",
+        "children": [
+          {
+            "name": "call-bound@^1.0.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "es-errors@^1.3.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "get-intrinsic@^1.2.5",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "object-inspect@^1.13.3",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "side-channel-weakmap@1.0.2",
+        "children": [
+          {
+            "name": "call-bound@^1.0.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "es-errors@^1.3.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "get-intrinsic@^1.2.5",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "object-inspect@^1.13.3",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "side-channel-map@^1.0.1",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "sparse-bitfield@3.0.3",
+        "children": [
+          {
+            "name": "memory-pager@^1.0.2",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "undici-types@6.21.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "call-bound@1.0.4",
+        "children": [
+          {
+            "name": "call-bind-apply-helpers@^1.0.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "get-intrinsic@^1.3.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "core-util-is@1.0.3",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "get-intrinsic@1.3.0",
+        "children": [
+          {
+            "name": "call-bind-apply-helpers@^1.0.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "es-define-property@^1.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "es-errors@^1.3.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "es-object-atoms@^1.1.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "function-bind@^1.1.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "get-proto@^1.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "gopd@^1.2.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "has-symbols@^1.1.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "hasown@^2.0.2",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "math-intrinsics@^1.1.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "isarray@1.0.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "memory-pager@1.5.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "process-nextick-args@2.0.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "string_decoder@1.1.1",
+        "children": [
+          {
+            "name": "safe-buffer@~5.1.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "safe-buffer@5.1.2",
+            "children": [],
+            "hint": null,
+            "color": "bold",
+            "depth": 0
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "to-regex-range@5.0.1",
+        "children": [
+          {
+            "name": "is-number@^7.0.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "util-deprecate@1.0.2",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "call-bind-apply-helpers@1.0.2",
+        "children": [
+          {
+            "name": "es-errors@^1.3.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "function-bind@^1.1.2",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "es-define-property@1.0.1",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "es-object-atoms@1.1.1",
+        "children": [
+          {
+            "name": "es-errors@^1.3.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "function-bind@1.1.2",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "get-proto@1.0.1",
+        "children": [
+          {
+            "name": "dunder-proto@^1.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "es-object-atoms@^1.0.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "gopd@1.2.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "has-symbols@1.1.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "hasown@2.0.2",
+        "children": [
+          {
+            "name": "function-bind@^1.1.2",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "is-number@7.0.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "math-intrinsics@1.1.0",
+        "children": [],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      },
+      {
+        "name": "dunder-proto@1.0.1",
+        "children": [
+          {
+            "name": "call-bind-apply-helpers@^1.0.1",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "es-errors@^1.3.0",
+            "color": "dim",
+            "shadow": true
+          },
+          {
+            "name": "gopd@^1.2.0",
+            "color": "dim",
+            "shadow": true
+          }
+        ],
+        "hint": null,
+        "color": null,
+        "depth": 0
+      }
+    ]
+  }
+}
