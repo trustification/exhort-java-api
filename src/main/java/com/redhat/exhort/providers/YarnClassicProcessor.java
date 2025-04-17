@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-/** Concrete implementation of a Yarn processor for V1 Classic */
+/** Concrete implementation of the Yarn Classic processor, supporting Yarn 1.x */
 public final class YarnClassicProcessor extends YarnProcessor {
 
   public YarnClassicProcessor(String packageManager, Manifest manifest) {
