@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 import com.redhat.exhort.utils.Environment;
 import java.io.File;
+import java.nio.file.Path;
 import java.util.Collections;
 import org.junit.jupiter.api.Test;
 import org.junitpioneer.jupiter.ClearSystemProperty;
@@ -28,11 +29,15 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 public class Javascript_Envs_Test {
+
+  private static final Path MANIFEST_PATH =
+      Path.of("src/test/resources/tst_manifests/npm/empty/package.json");
+
   @Test
   @SetSystemProperty(key = "NODE_HOME", value = "test-node-home")
   @SetSystemProperty(key = "PATH", value = "test-path")
   void test_javascript_get_envs() {
-    var envs = new JavaScriptNpmProvider(null).getExecEnv();
+    var envs = new JavaScriptNpmProvider(MANIFEST_PATH).getExecEnv();
     assertEquals(
         Collections.singletonMap("PATH", "test-path" + File.pathSeparator + "test-node-home"),
         envs);
@@ -44,7 +49,7 @@ public class Javascript_Envs_Test {
     try (MockedStatic<Environment> mockEnv =
         Mockito.mockStatic(Environment.class, Mockito.CALLS_REAL_METHODS)) {
       mockEnv.when(() -> Environment.get("PATH")).thenReturn(null);
-      var envs = new JavaScriptNpmProvider(null).getExecEnv();
+      var envs = new JavaScriptNpmProvider(MANIFEST_PATH).getExecEnv();
       assertEquals(Collections.singletonMap("PATH", "test-node-home"), envs);
     }
   }
@@ -53,7 +58,7 @@ public class Javascript_Envs_Test {
   @SetSystemProperty(key = "NODE_HOME", value = "")
   @SetSystemProperty(key = "PATH", value = "test-path")
   void test_javascript_get_envs_empty_java_home() {
-    var envs = new JavaScriptNpmProvider(null).getExecEnv();
+    var envs = new JavaScriptNpmProvider(MANIFEST_PATH).getExecEnv();
     assertNull(envs);
   }
 
@@ -61,7 +66,7 @@ public class Javascript_Envs_Test {
   @ClearSystemProperty(key = "NODE_HOME")
   @SetSystemProperty(key = "PATH", value = "test-path")
   void test_javascript_get_envs_no_java_home() {
-    var envs = new JavaScriptNpmProvider(null).getExecEnv();
+    var envs = new JavaScriptNpmProvider(MANIFEST_PATH).getExecEnv();
     assertNull(envs);
   }
 }

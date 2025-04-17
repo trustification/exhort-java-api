@@ -20,11 +20,11 @@ import static com.redhat.exhort.impl.ExhortApi.debugLoggingIsNeeded;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.redhat.exhort.Api;
 import com.redhat.exhort.Provider;
+import com.redhat.exhort.providers.javascript.model.Manifest;
 import com.redhat.exhort.sbom.Sbom;
 import com.redhat.exhort.sbom.SbomFactory;
 import com.redhat.exhort.tools.Ecosystem;
@@ -41,6 +41,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.TreeMap;
 
 /**
  * Abstract implementation of the {@link Provider} used for converting dependency trees for
@@ -54,10 +55,16 @@ public abstract class JavaScriptProvider extends Provider {
   private System.Logger log = System.getLogger(this.getClass().getName());
 
   protected final String cmd;
+  protected final Manifest manifest;
 
   public JavaScriptProvider(Path manifest, Ecosystem.Type ecosystem, String cmd) {
     super(ecosystem, manifest);
     this.cmd = Operations.getCustomPathOrElse(cmd);
+    try {
+      this.manifest = new Manifest(manifest);
+    } catch (IOException e) {
+      throw new RuntimeException("Unable to process package.json file", e);
+    }
   }
 
   protected final String packageManager() {
@@ -74,8 +81,7 @@ public abstract class JavaScriptProvider extends Provider {
 
   @Override
   public Content provideStack() throws IOException {
-    // check for custom npm executable
-    Sbom sbom = getDependencySbom(manifest, true);
+    Sbom sbom = getDependencySbom();
     return new Content(
         sbom.getAsJsonString().getBytes(StandardCharsets.UTF_8), Api.CYCLONEDX_MEDIA_TYPE);
   }
@@ -83,25 +89,36 @@ public abstract class JavaScriptProvider extends Provider {
   @Override
   public Content provideComponent() throws IOException {
     return new Content(
-        getDependencySbom(manifest, false).getAsJsonString().getBytes(StandardCharsets.UTF_8),
+        getDirectDependencySbom().getAsJsonString().getBytes(StandardCharsets.UTF_8),
         Api.CYCLONEDX_MEDIA_TYPE);
   }
 
-  private PackageURL getRoot(JsonNode jsonDependenciesNpm) throws MalformedPackageURLException {
-    return toPurl(
-        jsonDependenciesNpm.get("name").asText(), jsonDependenciesNpm.get("version").asText());
-  }
-
-  private PackageURL toPurl(String name, String version) throws MalformedPackageURLException {
-    String[] parts = name.split("/");
-    if (parts.length == 2) {
-      return new PackageURL(Ecosystem.Type.NPM.getType(), parts[0], parts[1], version, null, null);
+  public static final PackageURL toPurl(String name, String version) {
+    try {
+      String[] parts = name.split("/");
+      if (parts.length == 2) {
+        return new PackageURL(
+            Ecosystem.Type.NPM.getType(), parts[0], parts[1], version, null, null);
+      }
+      return new PackageURL(Ecosystem.Type.NPM.getType(), null, parts[0], version, null, null);
+    } catch (MalformedPackageURLException e) {
+      throw new IllegalArgumentException("Unable to parse PackageURL", e);
     }
-    return new PackageURL(Ecosystem.Type.NPM.getType(), null, parts[0], version, null, null);
   }
 
-  private void addDependenciesOf(Sbom sbom, PackageURL from, JsonNode dependencies)
-      throws MalformedPackageURLException {
+  public static final PackageURL toPurl(String name) {
+    try {
+      return new PackageURL(String.format("pkg:%s/%s", Ecosystem.Type.NPM.getType(), name));
+    } catch (MalformedPackageURLException e) {
+      throw new IllegalArgumentException("Unable to parse PackageURL", e);
+    }
+  }
+
+  private void addDependenciesOf(Sbom sbom, PackageURL from, JsonNode node) {
+    var dependencies = node.get("dependencies");
+    if (dependencies == null) {
+      return;
+    }
     Iterator<Entry<String, JsonNode>> fields = dependencies.fields();
     while (fields.hasNext()) {
       Entry<String, JsonNode> e = fields.next();
@@ -113,80 +130,123 @@ public abstract class JavaScriptProvider extends Provider {
       String version = versionNode.asText();
       PackageURL purl = toPurl(name, version);
       sbom.addDependency(from, purl);
-      JsonNode transitiveDeps = e.getValue().findValue("dependencies");
-      if (transitiveDeps != null) {
-        addDependenciesOf(sbom, purl, transitiveDeps);
-      }
+      addDependenciesOf(sbom, purl, e.getValue());
     }
   }
 
-  private Sbom getDependencySbom(Path manifestPath, boolean includeTransitive) throws IOException {
-    var depTree = buildDependencyTree(manifestPath, includeTransitive);
-    var sbom = buildSbom(depTree);
-    sbom.filterIgnoredDeps(getIgnoredDeps(manifestPath));
+  protected final String[] getExecEnvAsArgs() {
+    String[] envs = null;
+    if (getExecEnv() != null) {
+      envs =
+          getExecEnv().entrySet().stream()
+              .map(e -> e.getKey() + "=" + e.getValue())
+              .toArray(String[]::new);
+    }
+    return envs;
+  }
+
+  private Sbom getDependencySbom() throws IOException {
+    var depTree = buildDependencyTree(true);
+    var sbom = SbomFactory.newInstance();
+    sbom.addRoot(manifest.root);
+    addDependenciesToSbom(sbom, depTree);
+    sbom.filterIgnoredDeps(manifest.ignored);
     return sbom;
   }
 
-  protected JsonNode buildDependencyTree(Path manifestPath, boolean includeTransitive)
+  protected void addDependenciesToSbom(Sbom sbom, JsonNode depTree) {
+    var deps = depTree.get("dependencies");
+    if (deps == null) {
+      return;
+    }
+    deps.fields()
+        .forEachRemaining(
+            e -> {
+              var version = e.getValue().get("version").asText();
+              var target = toPurl(e.getKey(), version);
+              sbom.addDependency(manifest.root, target);
+              addDependenciesOf(sbom, target, e.getValue());
+            });
+  }
+
+  private Sbom getDirectDependencySbom() throws IOException {
+    var depTree = buildDependencyTree(false);
+    var sbom = SbomFactory.newInstance();
+    sbom.addRoot(manifest.root);
+    // include only production dependencies for component analysis
+    getRootDependencies(depTree).entrySet().stream()
+        .filter(e -> manifest.dependencies.contains(e.getKey()))
+        .map(Entry::getValue)
+        .forEach(p -> sbom.addDependency(manifest.root, p));
+    sbom.filterIgnoredDeps(manifest.ignored);
+    return sbom;
+  }
+
+  // Returns the dependencies a the base level of the dependency tree in a name -> purl format.
+  // axios -> pkg:npm/axios@0.19.2
+  protected Map<String, PackageURL> getRootDependencies(JsonNode depTree) {
+    Map<String, PackageURL> direct = new TreeMap<>();
+    depTree
+        .get("dependencies")
+        .fields()
+        .forEachRemaining(
+            e -> {
+              String name = e.getKey();
+              JsonNode versionNode = e.getValue().get("version");
+              if (versionNode != null) {
+                String version = versionNode.asText();
+                PackageURL purl = toPurl(name, version);
+                direct.put(name, purl);
+              }
+            });
+    return direct;
+  }
+
+  protected JsonNode buildDependencyTree(boolean includeTransitive)
       throws JsonMappingException, JsonProcessingException {
-    var mgrEnvs = getExecEnv();
     // clean command used to clean build target
     Path manifestDir = null;
     try {
-      // MacOS requires resolving to the CanonicalPath to avoid problems with /var being a symlink
+      // MacOS requires resolving to the CanonicalPath to avoid problems with /var
+      // being a symlink
       // of /private/var
-      manifestDir = Path.of(manifestPath.getParent().toFile().getCanonicalPath());
+      manifestDir = Path.of(manifest.path.getParent().toFile().getCanonicalPath());
     } catch (IOException e) {
       throw new RuntimeException(
           String.format(
               "Unable to resolve manifest directory %s, got %s",
-              manifestPath.getParent(), e.getMessage()));
+              manifest.path.getParent(), e.getMessage()));
     }
     var createPackageLock = updateLockFileCmd(manifestDir);
     // execute the clean command
-    Operations.runProcess(createPackageLock, mgrEnvs);
+    Operations.runProcess(createPackageLock, getExecEnv());
     String[] allDeps;
     Path workDir = null;
-    if (!manifestPath.getParent().toString().trim().contains(" ")) {
+    if (!manifest.path.getParent().toString().trim().contains(" ")) {
       allDeps = listDepsCmd(includeTransitive, manifestDir);
     } else {
       allDeps = listDepsCmd(includeTransitive, null);
-      workDir = manifestPath.getParent();
+      workDir = manifest.path.getParent();
     }
     // execute the clean command
-    String[] envs = null;
-    if (mgrEnvs != null) {
-      envs =
-          mgrEnvs.entrySet().stream()
-              .map(e -> e.getKey() + "=" + e.getValue())
-              .toArray(String[]::new);
-    }
-    String output = Operations.runProcessGetOutput(workDir, allDeps, envs);
+    String output = Operations.runProcessGetOutput(workDir, allDeps, getExecEnvAsArgs());
     if (debugLoggingIsNeeded()) {
       log.log(
           System.Logger.Level.INFO,
           String.format("Listed Install Packages in Json : %s %s", System.lineSeparator(), output));
     }
+    output = parseDepTreeOutput(output);
     return objectMapper.readTree(output);
   }
 
-  private Sbom buildSbom(JsonNode npmListResult) {
-    Sbom sbom = SbomFactory.newInstance();
-    try {
-      PackageURL root = getRoot(npmListResult);
-      sbom.addRoot(root);
-      JsonNode dependencies = npmListResult.get("dependencies");
-      addDependenciesOf(sbom, root, dependencies);
-    } catch (MalformedPackageURLException e) {
-      throw new IllegalArgumentException("Unable to parse NPM Json", e);
-    }
-    return sbom;
+  protected String parseDepTreeOutput(String output) {
+    // Do nothing by default
+    return output;
   }
 
-  private List<String> getIgnoredDeps(Path manifestPath) throws IOException {
+  protected List<String> getIgnoredDeps(JsonNode manifest) throws IOException {
     var ignored = new ArrayList<String>();
-    var root = new ObjectMapper().readTree(Files.newInputStream(manifestPath));
-    var ignoredNode = root.withArray("exhortignore");
+    var ignoredNode = manifest.withArray("exhortignore");
     if (ignoredNode == null) {
       return ignored;
     }

@@ -318,6 +318,7 @@ There are 2 approaches for customizing <em>Exhort Java API</em>. Using <em>Envir
 System.setProperty("EXHORT_MVN_PATH", "/path/to/custom/mvn");
 System.setProperty("EXHORT_NPM_PATH", "/path/to/custom/npm");
 System.setProperty("EXHORT_PNPM_PATH", "/path/to/custom/pnpm");
+System.setProperty("EXHORT_YARN_PATH", "/path/to/custom/yarn");
 System.setProperty("EXHORT_GO_PATH", "/path/to/custom/go");
 System.setProperty("EXHORT_GRADLE_PATH", "/path/to/custom/gradle");
 //python - python3, pip3 take precedence if python version > 3 installed
@@ -374,9 +375,14 @@ following keys for setting custom paths for the said executables.
 <td>EXHORT_NPM_PATH</td>
 </tr>
 <tr>
-<td><a href="https://pnpm.io//">pnPM</a></td>
+<td><a href="https://pnpm.io/">pnpm</a></td>
 <td><em>pnpm</em></td>
 <td>EXHORT_PNPM_PATH</td>
+</tr>
+<tr>
+<td><a href="https://classic.yarnpkg.com/">Yarn (Classic)</a> / <a href="https://yarnpkg.com/">Yarn (Berry)</a></td>
+<td><em>yarn</em></td>
+<td>EXHORT_YARN_PATH</td>
 </tr>
 <tr>
 <td><a href="https://go.dev/blog/using-go-modules/">Go Modules</a></td>

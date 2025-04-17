@@ -1,0 +1,518 @@
+{
+  "value": "@hapi/joi@npm:17.1.1",
+  "children": {
+    "Version": "17.1.1",
+    "Dependencies": [
+      {
+        "descriptor": "@hapi/address@npm:^4.0.1",
+        "locator": "@hapi/address@npm:4.1.0"
+      },
+      {
+        "descriptor": "@hapi/formula@npm:^2.0.0",
+        "locator": "@hapi/formula@npm:2.0.0"
+      },
+      {
+        "descriptor": "@hapi/hoek@npm:^9.0.0",
+        "locator": "@hapi/hoek@npm:9.3.0"
+      },
+      {
+        "descriptor": "@hapi/pinpoint@npm:^2.0.0",
+        "locator": "@hapi/pinpoint@npm:2.0.1"
+      },
+      {
+        "descriptor": "@hapi/topo@npm:^5.0.0",
+        "locator": "@hapi/topo@npm:5.1.0"
+      }
+    ]
+  }
+}
+{
+  "value": "axios@npm:0.19.2",
+  "children": {
+    "Version": "0.19.2",
+    "Dependencies": [
+      {
+        "descriptor": "follow-redirects@npm:1.5.10",
+        "locator": "follow-redirects@npm:1.5.10"
+      }
+    ]
+  }
+}
+{
+  "value": "backend@npm:0.0.0",
+  "children": {
+    "Version": "0.0.0"
+  }
+}
+{
+  "value": "backend@workspace:.",
+  "children": {
+    "Version": "1.0.0",
+    "Dependencies": [
+      {
+        "descriptor": "@hapi/joi@npm:^17.1.1",
+        "locator": "@hapi/joi@npm:17.1.1"
+      },
+      {
+        "descriptor": "axios@npm:^0.19.0",
+        "locator": "axios@npm:0.19.2"
+      },
+      {
+        "descriptor": "backend@npm:^0.0.0",
+        "locator": "backend@npm:0.0.0"
+      },
+      {
+        "descriptor": "bcryptjs@npm:^2.4.3",
+        "locator": "bcryptjs@npm:2.4.3"
+      },
+      {
+        "descriptor": "dotenv@npm:^8.2.0",
+        "locator": "dotenv@npm:8.6.0"
+      },
+      {
+        "descriptor": "express@npm:^4.17.1",
+        "locator": "express@npm:4.21.2"
+      },
+      {
+        "descriptor": "jsdom@virtual:f5126a6c59718fab632a5fe9c89dad727d14c0854924da0278c36945a50e100550614ee30506e48e5221c7c36dc5ebab4a104a63756e8b71f6e37453259fec8c#npm:^19.0.0",
+        "locator": "jsdom@virtual:f5126a6c59718fab632a5fe9c89dad727d14c0854924da0278c36945a50e100550614ee30506e48e5221c7c36dc5ebab4a104a63756e8b71f6e37453259fec8c#npm:19.0.0"
+      },
+      {
+        "descriptor": "jsonwebtoken@npm:^8.5.1",
+        "locator": "jsonwebtoken@npm:8.5.1"
+      },
+      {
+        "descriptor": "mongoose@npm:^5.9.18",
+        "locator": "mongoose@npm:5.13.23"
+      },
+      {
+        "descriptor": "nodemon@npm:^2.0.4",
+        "locator": "nodemon@npm:2.0.22"
+      }
+    ]
+  }
+}
+{
+  "value": "bcryptjs@npm:2.4.3",
+  "children": {
+    "Version": "2.4.3"
+  }
+}
+{
+  "value": "dotenv@npm:8.6.0",
+  "children": {
+    "Version": "8.6.0"
+  }
+}
+{
+  "value": "express@npm:4.21.2",
+  "children": {
+    "Version": "4.21.2",
+    "Dependencies": [
+      {
+        "descriptor": "accepts@npm:~1.3.8",
+        "locator": "accepts@npm:1.3.8"
+      },
+      {
+        "descriptor": "array-flatten@npm:1.1.1",
+        "locator": "array-flatten@npm:1.1.1"
+      },
+      {
+        "descriptor": "body-parser@npm:1.20.3",
+        "locator": "body-parser@npm:1.20.3"
+      },
+      {
+        "descriptor": "content-disposition@npm:0.5.4",
+        "locator": "content-disposition@npm:0.5.4"
+      },
+      {
+        "descriptor": "content-type@npm:~1.0.4",
+        "locator": "content-type@npm:1.0.5"
+      },
+      {
+        "descriptor": "cookie-signature@npm:1.0.6",
+        "locator": "cookie-signature@npm:1.0.6"
+      },
+      {
+        "descriptor": "cookie@npm:0.7.1",
+        "locator": "cookie@npm:0.7.1"
+      },
+      {
+        "descriptor": "debug@virtual:9b3bd32250f628e8456a07850d79a34700c520c7e60f0cb18539707050de679043dc652d45e22274471ab3b63764df4401010ee17aaa6a3f8282b6abfa614e53#npm:2.6.9",
+        "locator": "debug@virtual:c7b184cd14c02e3ce555ab1875e60cf5033c617e17d82c4c02ea822101d3c817f48bf25a766b4d4335742dc5c9c14c2e88a57ed955a56c4ad0613899f82f5618#npm:2.6.9"
+      },
+      {
+        "descriptor": "depd@npm:2.0.0",
+        "locator": "depd@npm:2.0.0"
+      },
+      {
+        "descriptor": "encodeurl@npm:~2.0.0",
+        "locator": "encodeurl@npm:2.0.0"
+      },
+      {
+        "descriptor": "escape-html@npm:~1.0.3",
+        "locator": "escape-html@npm:1.0.3"
+      },
+      {
+        "descriptor": "etag@npm:~1.8.1",
+        "locator": "etag@npm:1.8.1"
+      },
+      {
+        "descriptor": "finalhandler@npm:1.3.1",
+        "locator": "finalhandler@npm:1.3.1"
+      },
+      {
+        "descriptor": "fresh@npm:0.5.2",
+        "locator": "fresh@npm:0.5.2"
+      },
+      {
+        "descriptor": "http-errors@npm:2.0.0",
+        "locator": "http-errors@npm:2.0.0"
+      },
+      {
+        "descriptor": "merge-descriptors@npm:1.0.3",
+        "locator": "merge-descriptors@npm:1.0.3"
+      },
+      {
+        "descriptor": "methods@npm:~1.1.2",
+        "locator": "methods@npm:1.1.2"
+      },
+      {
+        "descriptor": "on-finished@npm:2.4.1",
+        "locator": "on-finished@npm:2.4.1"
+      },
+      {
+        "descriptor": "parseurl@npm:~1.3.3",
+        "locator": "parseurl@npm:1.3.3"
+      },
+      {
+        "descriptor": "path-to-regexp@npm:0.1.12",
+        "locator": "path-to-regexp@npm:0.1.12"
+      },
+      {
+        "descriptor": "proxy-addr@npm:~2.0.7",
+        "locator": "proxy-addr@npm:2.0.7"
+      },
+      {
+        "descriptor": "qs@npm:6.13.0",
+        "locator": "qs@npm:6.13.0"
+      },
+      {
+        "descriptor": "range-parser@npm:~1.2.1",
+        "locator": "range-parser@npm:1.2.1"
+      },
+      {
+        "descriptor": "safe-buffer@npm:5.2.1",
+        "locator": "safe-buffer@npm:5.2.1"
+      },
+      {
+        "descriptor": "send@npm:0.19.0",
+        "locator": "send@npm:0.19.0"
+      },
+      {
+        "descriptor": "serve-static@npm:1.16.2",
+        "locator": "serve-static@npm:1.16.2"
+      },
+      {
+        "descriptor": "setprototypeof@npm:1.2.0",
+        "locator": "setprototypeof@npm:1.2.0"
+      },
+      {
+        "descriptor": "statuses@npm:2.0.1",
+        "locator": "statuses@npm:2.0.1"
+      },
+      {
+        "descriptor": "type-is@npm:~1.6.18",
+        "locator": "type-is@npm:1.6.18"
+      },
+      {
+        "descriptor": "utils-merge@npm:1.0.1",
+        "locator": "utils-merge@npm:1.0.1"
+      },
+      {
+        "descriptor": "vary@npm:~1.1.2",
+        "locator": "vary@npm:1.1.2"
+      }
+    ]
+  }
+}
+{
+  "value": "jsdom@npm:19.0.0",
+  "children": {
+    "Instances": 1,
+    "Version": "19.0.0",
+    "Dependencies": [
+      {
+        "descriptor": "abab@npm:^2.0.5",
+        "locator": "abab@npm:2.0.6"
+      },
+      {
+        "descriptor": "acorn-globals@npm:^6.0.0",
+        "locator": "acorn-globals@npm:6.0.0"
+      },
+      {
+        "descriptor": "acorn@npm:^8.5.0",
+        "locator": "acorn@npm:8.14.1"
+      },
+      {
+        "descriptor": "cssom@npm:^0.5.0",
+        "locator": "cssom@npm:0.5.0"
+      },
+      {
+        "descriptor": "cssstyle@npm:^2.3.0",
+        "locator": "cssstyle@npm:2.3.0"
+      },
+      {
+        "descriptor": "data-urls@npm:^3.0.1",
+        "locator": "data-urls@npm:3.0.2"
+      },
+      {
+        "descriptor": "decimal.js@npm:^10.3.1",
+        "locator": "decimal.js@npm:10.5.0"
+      },
+      {
+        "descriptor": "domexception@npm:^4.0.0",
+        "locator": "domexception@npm:4.0.0"
+      },
+      {
+        "descriptor": "escodegen@npm:^2.0.0",
+        "locator": "escodegen@npm:2.1.0"
+      },
+      {
+        "descriptor": "form-data@npm:^4.0.0",
+        "locator": "form-data@npm:4.0.2"
+      },
+      {
+        "descriptor": "html-encoding-sniffer@npm:^3.0.0",
+        "locator": "html-encoding-sniffer@npm:3.0.0"
+      },
+      {
+        "descriptor": "http-proxy-agent@npm:^5.0.0",
+        "locator": "http-proxy-agent@npm:5.0.0"
+      },
+      {
+        "descriptor": "https-proxy-agent@npm:^5.0.0",
+        "locator": "https-proxy-agent@npm:5.0.1"
+      },
+      {
+        "descriptor": "is-potential-custom-element-name@npm:^1.0.1",
+        "locator": "is-potential-custom-element-name@npm:1.0.1"
+      },
+      {
+        "descriptor": "nwsapi@npm:^2.2.0",
+        "locator": "nwsapi@npm:2.2.20"
+      },
+      {
+        "descriptor": "parse5@npm:6.0.1",
+        "locator": "parse5@npm:6.0.1"
+      },
+      {
+        "descriptor": "saxes@npm:^5.0.1",
+        "locator": "saxes@npm:5.0.1"
+      },
+      {
+        "descriptor": "symbol-tree@npm:^3.2.4",
+        "locator": "symbol-tree@npm:3.2.4"
+      },
+      {
+        "descriptor": "tough-cookie@npm:^4.0.0",
+        "locator": "tough-cookie@npm:4.1.4"
+      },
+      {
+        "descriptor": "w3c-hr-time@npm:^1.0.2",
+        "locator": "w3c-hr-time@npm:1.0.2"
+      },
+      {
+        "descriptor": "w3c-xmlserializer@npm:^3.0.0",
+        "locator": "w3c-xmlserializer@npm:3.0.0"
+      },
+      {
+        "descriptor": "webidl-conversions@npm:^7.0.0",
+        "locator": "webidl-conversions@npm:7.0.0"
+      },
+      {
+        "descriptor": "whatwg-encoding@npm:^2.0.0",
+        "locator": "whatwg-encoding@npm:2.0.0"
+      },
+      {
+        "descriptor": "whatwg-mimetype@npm:^3.0.0",
+        "locator": "whatwg-mimetype@npm:3.0.0"
+      },
+      {
+        "descriptor": "whatwg-url@npm:^10.0.0",
+        "locator": "whatwg-url@npm:10.0.0"
+      },
+      {
+        "descriptor": "ws@npm:^8.2.3",
+        "locator": "ws@npm:8.18.1"
+      },
+      {
+        "descriptor": "xml-name-validator@npm:^4.0.0",
+        "locator": "xml-name-validator@npm:4.0.0"
+      }
+    ]
+  }
+}
+{
+  "value": "jsonwebtoken@npm:8.5.1",
+  "children": {
+    "Version": "8.5.1",
+    "Dependencies": [
+      {
+        "descriptor": "jws@npm:^3.2.2",
+        "locator": "jws@npm:3.2.2"
+      },
+      {
+        "descriptor": "lodash.includes@npm:^4.3.0",
+        "locator": "lodash.includes@npm:4.3.0"
+      },
+      {
+        "descriptor": "lodash.isboolean@npm:^3.0.3",
+        "locator": "lodash.isboolean@npm:3.0.3"
+      },
+      {
+        "descriptor": "lodash.isinteger@npm:^4.0.4",
+        "locator": "lodash.isinteger@npm:4.0.4"
+      },
+      {
+        "descriptor": "lodash.isnumber@npm:^3.0.3",
+        "locator": "lodash.isnumber@npm:3.0.3"
+      },
+      {
+        "descriptor": "lodash.isplainobject@npm:^4.0.6",
+        "locator": "lodash.isplainobject@npm:4.0.6"
+      },
+      {
+        "descriptor": "lodash.isstring@npm:^4.0.1",
+        "locator": "lodash.isstring@npm:4.0.1"
+      },
+      {
+        "descriptor": "lodash.once@npm:^4.0.0",
+        "locator": "lodash.once@npm:4.1.1"
+      },
+      {
+        "descriptor": "ms@npm:^2.1.1",
+        "locator": "ms@npm:2.1.3"
+      },
+      {
+        "descriptor": "semver@npm:^5.6.0",
+        "locator": "semver@npm:5.7.2"
+      }
+    ]
+  }
+}
+{
+  "value": "mongoose@npm:5.13.23",
+  "children": {
+    "Version": "5.13.23",
+    "Dependencies": [
+      {
+        "descriptor": "@types/bson@npm:1.x || 4.0.x",
+        "locator": "@types/bson@npm:4.0.5"
+      },
+      {
+        "descriptor": "@types/mongodb@npm:^3.5.27",
+        "locator": "@types/mongodb@npm:3.6.20"
+      },
+      {
+        "descriptor": "bson@npm:^1.1.4",
+        "locator": "bson@npm:1.1.6"
+      },
+      {
+        "descriptor": "kareem@npm:2.3.2",
+        "locator": "kareem@npm:2.3.2"
+      },
+      {
+        "descriptor": "mongodb@virtual:bdb3046e155f8dd7e0d45528c89367c993c4060ccba6e218a0a448afc83a3e81d5c23b00cc9b782da71dbb3b6500b336a96d27f11bd3c6957a09a3cfc0e89510#npm:3.7.4",
+        "locator": "mongodb@virtual:bdb3046e155f8dd7e0d45528c89367c993c4060ccba6e218a0a448afc83a3e81d5c23b00cc9b782da71dbb3b6500b336a96d27f11bd3c6957a09a3cfc0e89510#npm:3.7.4"
+      },
+      {
+        "descriptor": "mongoose-legacy-pluralize@virtual:bdb3046e155f8dd7e0d45528c89367c993c4060ccba6e218a0a448afc83a3e81d5c23b00cc9b782da71dbb3b6500b336a96d27f11bd3c6957a09a3cfc0e89510#npm:1.0.2",
+        "locator": "mongoose-legacy-pluralize@virtual:bdb3046e155f8dd7e0d45528c89367c993c4060ccba6e218a0a448afc83a3e81d5c23b00cc9b782da71dbb3b6500b336a96d27f11bd3c6957a09a3cfc0e89510#npm:1.0.2"
+      },
+      {
+        "descriptor": "mpath@npm:0.8.4",
+        "locator": "mpath@npm:0.8.4"
+      },
+      {
+        "descriptor": "mquery@npm:3.2.5",
+        "locator": "mquery@npm:3.2.5"
+      },
+      {
+        "descriptor": "ms@npm:2.1.2",
+        "locator": "ms@npm:2.1.2"
+      },
+      {
+        "descriptor": "optional-require@npm:1.0.x",
+        "locator": "optional-require@npm:1.0.3"
+      },
+      {
+        "descriptor": "regexp-clone@npm:1.0.0",
+        "locator": "regexp-clone@npm:1.0.0"
+      },
+      {
+        "descriptor": "safe-buffer@npm:5.2.1",
+        "locator": "safe-buffer@npm:5.2.1"
+      },
+      {
+        "descriptor": "sift@npm:13.5.2",
+        "locator": "sift@npm:13.5.2"
+      },
+      {
+        "descriptor": "sliced@npm:1.0.1",
+        "locator": "sliced@npm:1.0.1"
+      }
+    ]
+  }
+}
+{
+  "value": "nodemon@npm:2.0.22",
+  "children": {
+    "Version": "2.0.22",
+    "Exported Binaries": [
+      "nodemon"
+    ],
+    "Dependencies": [
+      {
+        "descriptor": "chokidar@npm:^3.5.2",
+        "locator": "chokidar@npm:3.6.0"
+      },
+      {
+        "descriptor": "debug@virtual:2e71ccda0bb8e9b150eba16d9555040ae3f5a03be41bbaba1c15a7310399806e2c8e36c9e19d1b8015c6bb7294dccf844594ece9e99a12b6d5722662eca0b9b2#npm:^3.2.7",
+        "locator": "debug@virtual:2e71ccda0bb8e9b150eba16d9555040ae3f5a03be41bbaba1c15a7310399806e2c8e36c9e19d1b8015c6bb7294dccf844594ece9e99a12b6d5722662eca0b9b2#npm:3.2.7"
+      },
+      {
+        "descriptor": "ignore-by-default@npm:^1.0.1",
+        "locator": "ignore-by-default@npm:1.0.1"
+      },
+      {
+        "descriptor": "minimatch@npm:^3.1.2",
+        "locator": "minimatch@npm:3.1.2"
+      },
+      {
+        "descriptor": "pstree.remy@npm:^1.1.8",
+        "locator": "pstree.remy@npm:1.1.8"
+      },
+      {
+        "descriptor": "semver@npm:^5.7.1",
+        "locator": "semver@npm:5.7.2"
+      },
+      {
+        "descriptor": "simple-update-notifier@npm:^1.0.7",
+        "locator": "simple-update-notifier@npm:1.1.0"
+      },
+      {
+        "descriptor": "supports-color@npm:^5.5.0",
+        "locator": "supports-color@npm:5.5.0"
+      },
+      {
+        "descriptor": "touch@npm:^3.1.0",
+        "locator": "touch@npm:3.1.1"
+      },
+      {
+        "descriptor": "undefsafe@npm:^2.0.5",
+        "locator": "undefsafe@npm:2.0.5"
+      }
+    ]
+  }
+}

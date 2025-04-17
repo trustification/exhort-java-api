@@ -30,6 +30,7 @@ public final class Ecosystem {
     MAVEN("maven"),
     NPM("npm"),
     PNPM("pnpm"),
+    YARN("yarn"),
     GOLANG("golang"),
     PYTHON("pypi"),
     GRADLE("gradle");

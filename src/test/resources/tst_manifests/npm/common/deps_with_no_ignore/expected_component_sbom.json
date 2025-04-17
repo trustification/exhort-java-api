@@ -3,7 +3,7 @@
   "specVersion" : "1.4",
   "version" : 1,
   "metadata" : {
-    "timestamp" : "2025-04-14T11:30:12Z",
+    "timestamp" : "2025-04-16T11:20:27Z",
     "component" : {
       "type" : "application",
       "bom-ref" : "pkg:npm/backend@1.0.0",
@@ -65,10 +65,10 @@
     },
     {
       "type" : "library",
-      "bom-ref" : "pkg:npm/jsdom@19.0.0",
-      "name" : "jsdom",
-      "version" : "19.0.0",
-      "purl" : "pkg:npm/jsdom@19.0.0"
+      "bom-ref" : "pkg:npm/jsonwebtoken@8.5.1",
+      "name" : "jsonwebtoken",
+      "version" : "8.5.1",
+      "purl" : "pkg:npm/jsonwebtoken@8.5.1"
     },
     {
       "type" : "library",
@@ -95,7 +95,7 @@
         "pkg:npm/bcryptjs@2.4.3",
         "pkg:npm/dotenv@8.6.0",
         "pkg:npm/express@4.21.2",
-        "pkg:npm/jsdom@19.0.0",
+        "pkg:npm/jsonwebtoken@8.5.1",
         "pkg:npm/mongoose@5.13.23",
         "pkg:npm/nodemon@2.0.22"
       ]
@@ -125,7 +125,7 @@
       "dependsOn" : [ ]
     },
     {
-      "ref" : "pkg:npm/jsdom@19.0.0",
+      "ref" : "pkg:npm/jsonwebtoken@8.5.1",
       "dependsOn" : [ ]
     },
     {
