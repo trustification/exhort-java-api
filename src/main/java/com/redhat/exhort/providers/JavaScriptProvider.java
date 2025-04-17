@@ -81,7 +81,6 @@ public abstract class JavaScriptProvider extends Provider {
 
   @Override
   public Content provideStack() throws IOException {
-    // check for custom package manager executable
     Sbom sbom = getDependencySbom();
     return new Content(
         sbom.getAsJsonString().getBytes(StandardCharsets.UTF_8), Api.CYCLONEDX_MEDIA_TYPE);
