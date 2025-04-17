@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.TreeMap;
 import java.util.regex.Pattern;
 
-/** Concrete implementation for the Yarn Berry > 1.x processor */
+/** Concrete implementation of the Yarn Berry processor, supporting Yarn 2.x and later. */
 public final class YarnBerryProcessor extends YarnProcessor {
 
   private static final Pattern LOCATOR_PATTERN = Pattern.compile("^(@?[^@]+(?:/[^@]+)?)@npm:(.+)$");
