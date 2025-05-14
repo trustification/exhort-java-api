@@ -47,6 +47,8 @@ import com.redhat.exhort.tools.Operations;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -55,6 +57,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
@@ -77,6 +80,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 @ClearSystemProperty(key = "EXHORT_SNYK_TOKEN")
 @ClearSystemProperty(key = "EXHORT_DEV_MODE")
+@ClearSystemProperty(key = "EXHORT_PROXY_URL")
 @ClearSystemProperty(key = "DEV_EXHORT_BACKEND_URL")
 @ClearSystemProperty(key = "RHDA_TOKEN")
 @ClearSystemProperty(key = "RHDA_SOURCE")
@@ -788,5 +792,34 @@ class Exhort_Api_Test extends ExhortTest {
         httpResponse, responseGenerator, "test-operation", "testReport", "testTraceId");
 
     verify(responseGenerator).apply(eq(httpResponse));
+  }
+
+  @Test
+  @SetSystemProperty(key = "EXHORT_PROXY_URL", value = "http://proxy.example.com:8080")
+  void test_create_httpclient_applies_http_proxyselector() {
+    HttpClient client = ExhortApi.createHttpClient();
+    Optional<ProxySelector> selectorOpt = client.proxy();
+    assertTrue(selectorOpt.isPresent(), "ProxySelector should present");
+    ProxySelector selector = selectorOpt.get();
+    var proxies = selector.select(URI.create("http://proxy.example.com"));
+    assertTrue(
+        proxies.stream()
+            .anyMatch(
+                p -> {
+                  var addr = (InetSocketAddress) p.address();
+                  return "proxy.example.com".equals(addr.getHostString()) && addr.getPort() == 8080;
+                }),
+        "ProxySelector should contain proxy.test:9999");
+  }
+
+  @Test
+  @SetSystemProperty(key = "EXHORT_PROXY_URL", value = "://bad-url")
+  void test_create_httpclient_should_fallback_to_direct_when_proxyurl_is_invalid() {
+    HttpClient client = ExhortApi.createHttpClient();
+    Optional<ProxySelector> proxySelector = client.proxy();
+    assertTrue(
+        proxySelector.isEmpty(),
+        "When proxy url is malformed, createHttpClient() should not set a ProxySelector and should"
+            + " fall back to direct connections");
   }
 }
