@@ -326,6 +326,8 @@ System.setProperty("EXHORT_PYTHON3_PATH", "/path/to/python3");
 System.setProperty("EXHORT_PIP3_PATH", "/path/to/pip3");
 System.setProperty("EXHORT_PYTHON_PATH", "/path/to/python");
 System.setProperty("EXHORT_PIP_PATH", "/path/to/pip");
+// Configure proxy for all requests
+System.setProperty("EXHORT_PROXY_URL", "http://proxy.example.com:8080");
 ```
 
 > Environment variables takes precedence.
@@ -350,6 +352,23 @@ The HTTP Client Library can be configured to use HTTP Protocol version through e
 <td>HTTP_1_1</td>
 </tr>
 </table>
+
+<h4>Proxy Configuration</h4>
+<p>
+You can configure a proxy for all HTTP requests made by the API. This is useful when your environment requires going through a proxy to access external services.
+
+You can set the proxy URL in two ways:
+
+1. Using environment variable:
+```
+export EXHORT_PROXY_URL=http://proxy.example.com:8080
+```
+
+2. Using Java Properties when calling the API programmatically:
+```
+System.setProperty("EXHORT_PROXY_URL", "http://proxy.example.com:8080");
+```
+</p>
 
 <h4>Customizing Executables</h4>
 <p>

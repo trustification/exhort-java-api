@@ -34,6 +34,8 @@ import jakarta.mail.internet.MimeMultipart;
 import jakarta.mail.util.ByteArrayDataSource;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.InetSocketAddress;
+import java.net.ProxySelector;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpClient.Version;
@@ -67,6 +69,8 @@ public final class ExhortApi implements Api {
   private static final String EXHORT_DEV_MODE = "EXHORT_DEV_MODE";
 
   private static final String HTTP_VERSION_EXHORT_CLIENT = "HTTP_VERSION_EXHORT_CLIENT";
+
+  private static final String EXHORT_PROXY_URL = "EXHORT_PROXY_URL";
 
   private static final Logger LOG = LoggersFactory.getLogger(ExhortApi.class.getName());
 
@@ -123,7 +127,7 @@ public final class ExhortApi implements Api {
   private LocalDateTime endTime;
 
   public ExhortApi() {
-    this(HttpClient.newHttpClient());
+    this(createHttpClient());
   }
 
   /**
@@ -173,6 +177,21 @@ public final class ExhortApi implements Api {
     }
 
     this.endpoint = getExhortUrl();
+  }
+
+  public static HttpClient createHttpClient() {
+    HttpClient.Builder builder = HttpClient.newBuilder().version(getHttpVersion());
+    String proxyUrl = Environment.get(EXHORT_PROXY_URL);
+    if (proxyUrl != null && !proxyUrl.isBlank()) {
+      try {
+        URI proxyUri = URI.create(proxyUrl);
+        builder.proxy(
+            ProxySelector.of(new InetSocketAddress(proxyUri.getHost(), proxyUri.getPort())));
+      } catch (IllegalArgumentException e) {
+        LOG.warning("Invalid EXHORT_PROXY_URL: " + proxyUrl + ", using direct connection");
+      }
+    }
+    return builder.build();
   }
 
   private String commonHookBeginning(boolean startOfApi) {
