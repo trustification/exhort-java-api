@@ -29,7 +29,6 @@ public final class JavaScriptPnpmProvider extends JavaScriptProvider {
 
   public static final String LOCK_FILE = "pnpm-lock.yaml";
   public static final String CMD_NAME = "pnpm";
-  public static final String ENV_PNPM_HOME = "PNPM_HOME";
 
   public JavaScriptPnpmProvider(Path manifest) {
     super(manifest, Ecosystem.Type.PNPM, CMD_NAME);
@@ -38,11 +37,6 @@ public final class JavaScriptPnpmProvider extends JavaScriptProvider {
   @Override
   protected final String lockFileName() {
     return LOCK_FILE;
-  }
-
-  @Override
-  protected String pathEnv() {
-    return ENV_PNPM_HOME;
   }
 
   @Override
