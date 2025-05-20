@@ -26,7 +26,6 @@ public final class JavaScriptNpmProvider extends JavaScriptProvider {
 
   public static final String LOCK_FILE = "package-lock.json";
   public static final String CMD_NAME = "npm";
-  public static final String ENV_NODE_HOME = "NODE_HOME";
 
   public JavaScriptNpmProvider(Path manifest) {
     super(manifest, Ecosystem.Type.NPM, CMD_NAME);
@@ -35,11 +34,6 @@ public final class JavaScriptNpmProvider extends JavaScriptProvider {
   @Override
   protected final String lockFileName() {
     return LOCK_FILE;
-  }
-
-  @Override
-  protected String pathEnv() {
-    return ENV_NODE_HOME;
   }
 
   @Override

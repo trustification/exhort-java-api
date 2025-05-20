@@ -50,6 +50,7 @@ import java.util.TreeMap;
  */
 public abstract class JavaScriptProvider extends Provider {
 
+  public static final String ENV_NODE_HOME = "NODE_HOME";
   private static final String PROP_PATH = "PATH";
 
   private System.Logger log = System.getLogger(this.getClass().getName());
@@ -73,7 +74,9 @@ public abstract class JavaScriptProvider extends Provider {
 
   protected abstract String lockFileName();
 
-  protected abstract String pathEnv();
+  protected String pathEnv() {
+    return ENV_NODE_HOME;
+  }
 
   protected abstract String[] updateLockFileCmd(Path manifestDir);
 

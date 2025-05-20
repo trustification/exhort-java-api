@@ -34,7 +34,6 @@ public final class JavaScriptYarnProvider extends JavaScriptProvider {
 
   public static final String LOCK_FILE = "yarn.lock";
   public static final String CMD_NAME = "yarn";
-  public static final String ENV_YARN_HOME = "YARN_HOME";
 
   private static final Pattern versionPattern = Pattern.compile("^([0-9]+)\\.");
 
@@ -48,11 +47,6 @@ public final class JavaScriptYarnProvider extends JavaScriptProvider {
   @Override
   protected final String lockFileName() {
     return LOCK_FILE;
-  }
-
-  @Override
-  protected String pathEnv() {
-    return ENV_YARN_HOME;
   }
 
   @Override
