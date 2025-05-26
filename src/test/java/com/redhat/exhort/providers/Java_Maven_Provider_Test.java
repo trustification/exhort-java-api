@@ -17,6 +17,7 @@ package com.redhat.exhort.providers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mockStatic;
 
 import com.redhat.exhort.Api;
@@ -89,6 +90,11 @@ public class Java_Maven_Provider_Test extends ExhortTest {
                 return getOutputFileAndOverwriteItWithMock(
                     depTree, invocationOnMock, "-DoutputFile");
               });
+      // Mock Operations.getCustomPathOrElse to return "mvn"
+      mockedOperations.when(() -> Operations.getCustomPathOrElse(anyString())).thenReturn("mvn");
+      mockedOperations
+          .when(() -> Operations.getExecutable(anyString(), anyString()))
+          .thenReturn("mvn");
 
       // when providing stack content for our pom
       var content = new JavaMavenProvider(tmpPomFile).provideStack();
@@ -146,6 +152,11 @@ public class Java_Maven_Provider_Test extends ExhortTest {
                 return getOutputFileAndOverwriteItWithMock(
                     effectivePom, invocationOnMock, "-Doutput");
               });
+      // Mock Operations.getCustomPathOrElse to return "mvn"
+      mockedOperations.when(() -> Operations.getCustomPathOrElse(anyString())).thenReturn("mvn");
+      mockedOperations
+          .when(() -> Operations.getExecutable(anyString(), anyString()))
+          .thenReturn("mvn");
 
       // when providing component content for our pom
       var content = new JavaMavenProvider(targetPom).provideComponent();
@@ -190,6 +201,11 @@ public class Java_Maven_Provider_Test extends ExhortTest {
                 return getOutputFileAndOverwriteItWithMock(
                     effectivePom, invocationOnMock, "-Doutput");
               });
+      // Mock Operations.getCustomPathOrElse to return "mvn"
+      mockedOperations.when(() -> Operations.getCustomPathOrElse(anyString())).thenReturn("mvn");
+      mockedOperations
+          .when(() -> Operations.getExecutable(anyString(), anyString()))
+          .thenReturn("mvn");
 
       // when providing component content for our pom
       var content = new JavaMavenProvider(tmpPomFile).provideComponent();

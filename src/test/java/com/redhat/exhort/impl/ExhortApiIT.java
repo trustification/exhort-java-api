@@ -16,6 +16,7 @@
 package com.redhat.exhort.impl;
 
 import static com.redhat.exhort.Provider.PROP_MATCH_MANIFEST_VERSIONS;
+import static com.redhat.exhort.image.ImageUtils.SKIP_VALIDATION_KEY;
 import static com.redhat.exhort.utils.PythonControllerBase.PROP_EXHORT_PYTHON_INSTALL_BEST_EFFORTS;
 import static com.redhat.exhort.utils.PythonControllerBase.PROP_EXHORT_PYTHON_VIRTUAL_ENV;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -23,6 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mockStatic;
@@ -240,6 +242,7 @@ class ExhortApiIT extends ExhortTest {
 
   @Tag("IntegrationTest")
   @Test
+  @SetSystemProperty(key = SKIP_VALIDATION_KEY, value = "true")
   void Integration_Test_End_To_End_Image_Analysis() throws IOException {
     var result =
         testImageAnalysis(
@@ -257,6 +260,7 @@ class ExhortApiIT extends ExhortTest {
 
   @Tag("IntegrationTest")
   @Test
+  @SetSystemProperty(key = SKIP_VALIDATION_KEY, value = "true")
   void Integration_Test_End_To_End_Image_Analysis_Html() throws IOException {
     var result =
         testImageAnalysis(
@@ -288,6 +292,8 @@ class ExhortApiIT extends ExhortTest {
       var output = new Operations.ProcessExecOutput(jsonSbom, "", 0);
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("syft"))).thenReturn("syft");
+
+      mock.when(() -> Operations.getExecutable(eq("syft"), any())).thenReturn("syft");
 
       mock.when(
               () ->
@@ -365,6 +371,12 @@ class ExhortApiIT extends ExhortTest {
                 return getOutputFileAndOverwriteItWithMock(
                     depTree, invocationOnMock, "-DoutputFile");
               });
+      mockedOperations
+          .when(() -> Operations.getCustomPathOrElse(anyString()))
+          .thenReturn(packageManager.getExecutableShortName());
+      mockedOperations
+          .when(() -> Operations.getExecutable(anyString(), anyString()))
+          .thenReturn(packageManager.getExecutableShortName());
     }
   }
 

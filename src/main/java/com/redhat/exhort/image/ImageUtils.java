@@ -55,6 +55,12 @@ public class ImageUtils {
       "application/vnd.oci.image.manifest.v1+json";
   private static final String MEDIA_TYPE_OCI1_MANIFEST_LIST =
       "application/vnd.oci.image.index.v1+json";
+  private static final String DOCKER = "docker";
+  private static final String PODMAN = "podman";
+  private static final String SYFT = "syft";
+  private static final String SKOPEO = "skopeo";
+  public static final String SKIP_VALIDATION_KEY = "skip.binary.validation";
+  public static final String ARG_VERSION = "--version";
 
   private static final ObjectMapper OBJECT_MAPPER = new ObjectMapper();
 
@@ -124,9 +130,9 @@ public class ImageUtils {
   }
 
   static Operations.ProcessExecOutput execSyft(ImageRef imageRef) {
-    var syft = Operations.getCustomPathOrElse("syft");
-    var docker = Operations.getCustomPathOrElse("docker");
-    var podman = Operations.getCustomPathOrElse("podman");
+    var syft = Operations.getExecutable(SYFT, ARG_VERSION);
+    var docker = Operations.getExecutable(DOCKER, ARG_VERSION);
+    var podman = Operations.getExecutable(PODMAN, ARG_VERSION);
 
     var syftConfigPath = Environment.get(EXHORT_SYFT_CONFIG_PATH, "");
     var imageSource = Environment.get(EXHORT_SYFT_IMAGE_SOURCE, "");
@@ -232,7 +238,7 @@ public class ImageUtils {
   }
 
   static String hostInfo(String engine, String info) {
-    var exec = Operations.getCustomPathOrElse(engine);
+    var exec = Operations.getExecutable(engine, ARG_VERSION);
     var cmd = new String[] {exec, "info"};
 
     var output = Operations.runProcessGetFullOutput(null, cmd, null);
@@ -251,31 +257,31 @@ public class ImageUtils {
   }
 
   static String dockerGetOs() {
-    return hostInfo("docker", "OSType");
+    return hostInfo(DOCKER, "OSType");
   }
 
   static String dockerGetArch() {
-    var arch = hostInfo("docker", "Architecture");
+    var arch = hostInfo(DOCKER, "Architecture");
     arch = archMapping.get(arch);
     return Objects.requireNonNullElse(arch, "");
   }
 
   static String dockerGetVariant() {
-    var variant = hostInfo("docker", "Architecture");
+    var variant = hostInfo(DOCKER, "Architecture");
     variant = variantMapping.get(variant);
     return Objects.requireNonNullElse(variant, "");
   }
 
   static String podmanGetOs() {
-    return hostInfo("podman", "os");
+    return hostInfo(PODMAN, "os");
   }
 
   static String podmanGetArch() {
-    return hostInfo("podman", "arch");
+    return hostInfo(PODMAN, "arch");
   }
 
   static String podmanGetVariant() {
-    return hostInfo("podman", "variant");
+    return hostInfo(PODMAN, "variant");
   }
 
   static String dockerPodmanInfo(Supplier<String> dockerSupplier, Supplier<String> podmanSupplier) {
@@ -416,7 +422,7 @@ public class ImageUtils {
   }
 
   static Operations.ProcessExecOutput execSkopeoInspect(ImageRef imageRef, boolean raw) {
-    var skopeo = Operations.getCustomPathOrElse("skopeo");
+    var skopeo = Operations.getExecutable(SKOPEO, ARG_VERSION);
 
     var configPath = Environment.get(EXHORT_SKOPEO_CONFIG_PATH, "");
     var daemonHost = Environment.get(EXHORT_IMAGE_SERVICE_ENDPOINT, "");

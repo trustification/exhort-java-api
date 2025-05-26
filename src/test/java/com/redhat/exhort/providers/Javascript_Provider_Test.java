@@ -233,8 +233,17 @@ class Javascript_Provider_Test extends ExhortTest {
           .thenReturn(listResult);
     }
 
+    // Mock for yarn
+    mockedOperations.when(() -> Operations.getCustomPathOrElse(eq("yarn"))).thenReturn("yarn");
+    mockedOperations
+        .when(() -> Operations.getExecutable(eq("yarn"), anyString()))
+        .thenReturn("yarn");
+    // Mock for other pkgManager values (return pkgManager as-is)
     mockedOperations
         .when(() -> Operations.getCustomPathOrElse(eq(pkgManager)))
+        .thenReturn(pkgManager);
+    mockedOperations
+        .when(() -> Operations.getExecutable(eq(pkgManager), any()))
         .thenReturn(pkgManager);
     return mockedOperations;
   }

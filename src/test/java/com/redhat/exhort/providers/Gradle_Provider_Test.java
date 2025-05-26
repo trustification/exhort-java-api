@@ -132,6 +132,9 @@ abstract class Gradle_Provider_Test extends ExhortTest {
     try (MockedStatic<Operations> mockedOperations = mockStatic(Operations.class)) {
       mockedOperations.when(() -> Operations.getCustomPathOrElse("gradle")).thenReturn("gradle");
       mockedOperations
+          .when(() -> Operations.getExecutable("gradle", "--version"))
+          .thenReturn("gradle");
+      mockedOperations
           .when(
               () ->
                   Operations.runProcessGetOutput(
@@ -231,6 +234,9 @@ abstract class Gradle_Provider_Test extends ExhortTest {
       ArgumentMatcher<String> dependencies = string -> string.equals("dependencies");
       ArgumentMatcher<String> properties = string -> string.equals("properties");
       mockedOperations.when(() -> Operations.getCustomPathOrElse("gradle")).thenReturn("gradle");
+      mockedOperations
+          .when(() -> Operations.getExecutable("gradle", "--version"))
+          .thenReturn("gradle");
       mockedOperations
           .when(
               () ->

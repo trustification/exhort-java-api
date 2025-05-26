@@ -66,7 +66,7 @@ public final class Operations {
       processBuilder.environment().putAll(envMap);
     }
     // create a process builder or throw a runtime exception
-    Process process = null;
+    Process process;
     try {
       process = processBuilder.start();
     } catch (final IOException e) {
@@ -76,7 +76,7 @@ public final class Operations {
     }
 
     // execute the command or throw runtime exception if failed
-    int exitCode = 0;
+    int exitCode;
     try {
       exitCode = process.waitFor();
 
@@ -87,7 +87,7 @@ public final class Operations {
     }
     // verify the command was executed successfully or throw a runtime exception
     if (exitCode != 0) {
-      String errMsg = "";
+      String errMsg;
       try (var reader = new BufferedReader(new InputStreamReader(process.getErrorStream()))) {
         errMsg = reader.lines().collect(Collectors.joining(System.lineSeparator()));
       } catch (IOException e) {
@@ -225,5 +225,44 @@ public final class Operations {
     public int getExitCode() {
       return exitCode;
     }
+  }
+
+  /**
+   * Retrieves the executable path for a given command, verifying that it exists and can be executed
+   * successfully.
+   *
+   * <p>This method uses {@link Operations#getCustomPathOrElse(String)} to obtain the path to the
+   * executable for the specified command. It then attempts to run the executable with the
+   * "--version" argument to verify that it is functional. If the executable is not found, cannot be
+   * executed, or exits with a non-zero status code, a {@link RuntimeException} is thrown.
+   *
+   * @param command the name of the command (e.g., "mvn", "npm", "yarn") for which to find the
+   *     executable
+   * @return the path to the executable for the specified command
+   * @throws RuntimeException if the executable cannot be found, is not executable, or exits with an
+   *     error code
+   */
+  public static String getExecutable(String command, String args) {
+    String cmdExecutable = Operations.getCustomPathOrElse(command);
+    try {
+      Process process = new ProcessBuilder(cmdExecutable, args).redirectErrorStream(true).start();
+      int exitCode = process.waitFor();
+      if (exitCode != 0) {
+        throw new IOException(
+            command + " executable found, but it exited with error code " + exitCode);
+      }
+    } catch (IOException | InterruptedException e) {
+      throw new RuntimeException(
+          String.format(
+              "Unable to find or run "
+                  + command
+                  + " executable '%s'. Please ensure "
+                  + command
+                  + " is installed and"
+                  + " available in your PATH.",
+              cmdExecutable),
+          e);
+    }
+    return cmdExecutable;
   }
 }

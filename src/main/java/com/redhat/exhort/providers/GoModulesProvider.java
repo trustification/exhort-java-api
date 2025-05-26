@@ -48,11 +48,12 @@ import java.util.stream.Collectors;
 public final class GoModulesProvider extends Provider {
 
   public static final String PROP_EXHORT_GO_MVS_LOGIC_ENABLED = "EXHORT_GO_MVS_LOGIC_ENABLED";
-  private Logger log = LoggersFactory.getLogger(this.getClass().getName());
+  private static final Logger log = LoggersFactory.getLogger(GoModulesProvider.class.getName());
   private static final String GO_HOST_ARCHITECTURE_ENV_NAME = "GOHOSTARCH";
   private static final String GO_HOST_OPERATION_SYSTEM_ENV_NAME = "GOHOSTOS";
   public static final String DEFAULT_MAIN_VERSION = "v0.0.0";
   private final TreeMap<String, String> goEnvironmentVariableForPurl;
+  private final String goExecutable;
 
   public String getMainModuleVersion() {
     return mainModuleVersion;
@@ -62,6 +63,7 @@ public final class GoModulesProvider extends Provider {
 
   public GoModulesProvider(Path manifest) {
     super(Type.GOLANG, manifest);
+    this.goExecutable = Operations.getExecutable("go", "version");
     this.goEnvironmentVariableForPurl = getQualifiers(true);
     this.mainModuleVersion = getDefaultMainModuleVersion();
   }
@@ -378,11 +380,9 @@ public final class GoModulesProvider extends Provider {
         .collect(Collectors.toList());
   }
 
-  private static TreeMap<String, String> getQualifiers(boolean includeOsAndArch) {
-
+  private TreeMap<String, String> getQualifiers(boolean includeOsAndArch) {
     if (includeOsAndArch) {
-      var go = Operations.getCustomPathOrElse("go");
-      String goEnvironmentVariables = Operations.runProcessGetOutput(null, go, "env");
+      String goEnvironmentVariables = Operations.runProcessGetOutput(null, goExecutable, "env");
       String hostArch =
           getEnvironmentVariable(goEnvironmentVariables, GO_HOST_ARCHITECTURE_ENV_NAME);
       String hostOS =
@@ -405,9 +405,8 @@ public final class GoModulesProvider extends Provider {
 
   private String buildGoModulesDependencies(Path manifestPath)
       throws JsonMappingException, JsonProcessingException {
-    var go = Operations.getCustomPathOrElse("go");
     String[] goModulesDeps;
-    goModulesDeps = new String[] {go, "mod", "graph"};
+    goModulesDeps = new String[] {goExecutable, "mod", "graph"};
 
     // execute the clean command
     String goModulesOutput =

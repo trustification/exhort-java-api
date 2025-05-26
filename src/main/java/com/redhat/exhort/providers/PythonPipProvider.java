@@ -15,7 +15,7 @@
  */
 package com.redhat.exhort.providers;
 
-import static com.redhat.exhort.impl.ExhortApi.*;
+import static com.redhat.exhort.impl.ExhortApi.debugLoggingIsNeeded;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.packageurl.MalformedPackageURLException;
@@ -35,13 +35,16 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public final class PythonPipProvider extends Provider {
 
-  private Logger log = LoggersFactory.getLogger(this.getClass().getName());
+  private static final Logger log = LoggersFactory.getLogger(PythonPipProvider.class.getName());
   private static final String DEFAULT_PIP_ROOT_COMPONENT_NAME = "default-pip-root";
   private static final String DEFAULT_PIP_ROOT_COMPONENT_VERSION = "0.0.0";
 
@@ -206,15 +209,15 @@ public final class PythonPipProvider extends Provider {
     }
   }
 
-  private PythonControllerBase getPythonController() {
+  private PythonControllerBase getPythonController() throws IOException {
     String pythonPipBinaries;
     boolean useVirtualPythonEnv;
-    if (!Environment.get(PythonControllerBase.PROP_EXHORT_PIP_SHOW, "").trim().equals("")
-        && !Environment.get(PythonControllerBase.PROP_EXHORT_PIP_FREEZE, "").trim().equals("")) {
+    if (!Environment.get(PythonControllerBase.PROP_EXHORT_PIP_SHOW, "").trim().isEmpty()
+        && !Environment.get(PythonControllerBase.PROP_EXHORT_PIP_FREEZE, "").trim().isEmpty()) {
       pythonPipBinaries = "python;;pip";
       useVirtualPythonEnv = false;
     } else {
-      pythonPipBinaries = getPythonPipBinaries();
+      pythonPipBinaries = getExecutable("python", "--version");
       useVirtualPythonEnv =
           Environment.getBoolean(PythonControllerBase.PROP_EXHORT_PYTHON_VIRTUAL_ENV, false);
     }
@@ -235,17 +238,45 @@ public final class PythonPipProvider extends Provider {
     return pythonController;
   }
 
-  private static String getPythonPipBinaries() {
-    var python = Operations.getCustomPathOrElse("python3");
-    var pip = Operations.getCustomPathOrElse("pip3");
+  protected String getExecutable(String command, String args) {
+    String python = Operations.getCustomPathOrElse("python3");
+    String pip = Operations.getCustomPathOrElse("pip3");
     try {
-      Operations.runProcess(python, "--version");
-      Operations.runProcess(pip, "--version");
+      Operations.runProcess(python, args);
+      Operations.runProcess(pip, args);
     } catch (Exception e) {
       python = Operations.getCustomPathOrElse("python");
       pip = Operations.getCustomPathOrElse("pip");
-      Operations.runProcess(python, "--version");
-      Operations.runProcess(pip, "--version");
+      try {
+        Process process = new ProcessBuilder(command, args).redirectErrorStream(true).start();
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+          throw new IOException(
+              "Python executable found, but it exited with error code " + exitCode);
+        }
+      } catch (IOException | InterruptedException ex) {
+        throw new RuntimeException(
+            String.format(
+                "Unable to find or run Python executable '%s'. Please ensure Python is installed"
+                    + " and available in your PATH.",
+                command),
+            ex);
+      }
+
+      try {
+        Process process = new ProcessBuilder("pip", args).redirectErrorStream(true).start();
+        int exitCode = process.waitFor();
+        if (exitCode != 0) {
+          throw new IOException("Pip executable found, but it exited with error code " + exitCode);
+        }
+      } catch (IOException | InterruptedException ex) {
+        throw new RuntimeException(
+            String.format(
+                "Unable to find or run Pip executable '%s'. Please ensure Pip is installed and"
+                    + " available in your PATH.",
+                command),
+            ex);
+      }
     }
     return String.format("%s;;%s", python, pip);
   }

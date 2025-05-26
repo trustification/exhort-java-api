@@ -18,6 +18,7 @@ package com.redhat.exhort.image;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalMatchers.aryEq;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 
@@ -77,6 +78,8 @@ class ImageRefTest extends ExhortTest {
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("skopeo"))).thenReturn("skopeo");
 
+      mock.when(() -> Operations.getExecutable(eq("skopeo"), any())).thenReturn("skopeo");
+
       mock.when(
               () ->
                   Operations.runProcessGetFullOutput(
@@ -89,6 +92,8 @@ class ImageRefTest extends ExhortTest {
           .thenReturn(output);
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("docker"))).thenReturn("docker");
+
+      mock.when(() -> Operations.getExecutable(eq("docker"), any())).thenReturn("docker");
 
       mock.when(
               () ->

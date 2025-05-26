@@ -29,6 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalMatchers.aryEq;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 
@@ -51,6 +52,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Named;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -79,6 +82,8 @@ class ImageUtilsTest extends ExhortTest {
   static final String mockOs = "linux";
   static final String mockArch = "arm";
   static final String mockVariant = "v7";
+
+  private static final String SKIP_VALIDATION_KEY = "skip.binary.validation";
 
   static Stream<Arguments> dockerArchSources() {
     return Stream.of(
@@ -116,6 +121,16 @@ class ImageUtilsTest extends ExhortTest {
         Arguments.of(Named.of("empty", ""), ""));
   }
 
+  @BeforeEach
+  void setUp() {
+    System.setProperty(SKIP_VALIDATION_KEY, "true");
+  }
+
+  @AfterEach
+  void tearDown() {
+    System.clearProperty(SKIP_VALIDATION_KEY);
+  }
+
   @Test
   @ClearSystemProperty(key = "PATH")
   @ClearSystemProperty(key = "EXHORT_SYFT_PATH")
@@ -133,6 +148,8 @@ class ImageUtilsTest extends ExhortTest {
       var output = new Operations.ProcessExecOutput(json, "", 0);
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("syft"))).thenReturn("syft");
+
+      mock.when(() -> Operations.getExecutable(eq("syft"), any())).thenReturn("syft");
 
       mock.when(
               () ->
@@ -180,6 +197,8 @@ class ImageUtilsTest extends ExhortTest {
       var outputRaw = new Operations.ProcessExecOutput(jsonRaw, "", 0);
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("skopeo"))).thenReturn("skopeo");
+
+      mock.when(() -> Operations.getExecutable(eq("skopeo"), any())).thenReturn("skopeo");
 
       mock.when(
               () ->
@@ -242,6 +261,8 @@ class ImageUtilsTest extends ExhortTest {
       var output = new Operations.ProcessExecOutput(json, "", 0);
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("skopeo"))).thenReturn("skopeo");
+
+      mock.when(() -> Operations.getExecutable(eq("skopeo"), any())).thenReturn("skopeo");
 
       mock.when(
               () ->
@@ -309,6 +330,8 @@ class ImageUtilsTest extends ExhortTest {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       mock.when(() -> Operations.getCustomPathOrElse(eq("podman"))).thenReturn("podman");
 
+      mock.when(() -> Operations.getExecutable(eq("podman"), any())).thenReturn("podman");
+
       mock.when(
               () ->
                   Operations.runProcessGetFullOutput(
@@ -330,6 +353,8 @@ class ImageUtilsTest extends ExhortTest {
   void test_get_image_platform_no_defaults() {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class)) {
       mock.when(() -> Operations.getCustomPathOrElse(eq("podman"))).thenReturn("podman");
+
+      mock.when(() -> Operations.getExecutable(eq("podman"), any())).thenReturn("podman");
 
       mock.when(
               () ->
@@ -355,9 +380,19 @@ class ImageUtilsTest extends ExhortTest {
 
         opsMock.when(() -> Operations.getCustomPathOrElse(eq("syft"))).thenReturn(mockSyftPath);
 
+        opsMock.when(() -> Operations.getExecutable(eq("syft"), any())).thenReturn(mockSyftPath);
+
         opsMock.when(() -> Operations.getCustomPathOrElse(eq("docker"))).thenReturn(mockDockerPath);
 
+        opsMock
+            .when(() -> Operations.getExecutable(eq("docker"), any()))
+            .thenReturn(mockDockerPath);
+
         opsMock.when(() -> Operations.getCustomPathOrElse(eq("podman"))).thenReturn(mockPodmanPath);
+
+        opsMock
+            .when(() -> Operations.getExecutable(eq("podman"), any()))
+            .thenReturn(mockPodmanPath);
 
         opsMock
             .when(
@@ -401,9 +436,15 @@ class ImageUtilsTest extends ExhortTest {
 
         mock.when(() -> Operations.getCustomPathOrElse(eq("docker"))).thenReturn("docker");
 
+        mock.when(() -> Operations.getExecutable(eq("docker"), any())).thenReturn("docker");
+
         mock.when(() -> Operations.getCustomPathOrElse(eq("podman"))).thenReturn("podman");
 
+        mock.when(() -> Operations.getExecutable(eq("podman"), any())).thenReturn("podman");
+
         mock.when(() -> Operations.getCustomPathOrElse(eq("syft"))).thenReturn("syft");
+
+        mock.when(() -> Operations.getExecutable(eq("syft"), any())).thenReturn("syft");
 
         mock.when(
                 () ->
@@ -476,6 +517,8 @@ class ImageUtilsTest extends ExhortTest {
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("docker"))).thenReturn(mockDockerPath);
 
+      mock.when(() -> Operations.getExecutable(eq("docker"), any())).thenReturn(mockDockerPath);
+
       mock.when(
               () ->
                   Operations.runProcessGetFullOutput(
@@ -493,6 +536,8 @@ class ImageUtilsTest extends ExhortTest {
       var output = new Operations.ProcessExecOutput("", "test-error", 0);
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("docker"))).thenReturn("docker");
+
+      mock.when(() -> Operations.getExecutable(eq("docker"), any())).thenReturn("docker");
 
       mock.when(
               () ->
@@ -519,6 +564,8 @@ class ImageUtilsTest extends ExhortTest {
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("docker"))).thenReturn(mockDockerPath);
 
+      mock.when(() -> Operations.getExecutable(eq("docker"), any())).thenReturn(mockDockerPath);
+
       mock.when(
               () ->
                   Operations.runProcessGetFullOutput(
@@ -538,6 +585,8 @@ class ImageUtilsTest extends ExhortTest {
       var output = new Operations.ProcessExecOutput("Architecture:" + sysArch, "", 0);
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("docker"))).thenReturn(mockDockerPath);
+
+      mock.when(() -> Operations.getExecutable(eq("docker"), any())).thenReturn(mockDockerPath);
 
       mock.when(
               () ->
@@ -559,6 +608,8 @@ class ImageUtilsTest extends ExhortTest {
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("docker"))).thenReturn(mockDockerPath);
 
+      mock.when(() -> Operations.getExecutable(eq("docker"), any())).thenReturn(mockDockerPath);
+
       mock.when(
               () ->
                   Operations.runProcessGetFullOutput(
@@ -577,6 +628,8 @@ class ImageUtilsTest extends ExhortTest {
       var output = new Operations.ProcessExecOutput("info: test-output\nabcdesss", "", 0);
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("podman"))).thenReturn(mockPodmanPath);
+
+      mock.when(() -> Operations.getExecutable(eq("podman"), any())).thenReturn(mockPodmanPath);
 
       mock.when(
               () ->
@@ -597,6 +650,8 @@ class ImageUtilsTest extends ExhortTest {
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("podman"))).thenReturn(mockPodmanPath);
 
+      mock.when(() -> Operations.getExecutable(eq("podman"), any())).thenReturn(mockPodmanPath);
+
       mock.when(
               () ->
                   Operations.runProcessGetFullOutput(
@@ -616,6 +671,8 @@ class ImageUtilsTest extends ExhortTest {
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("podman"))).thenReturn(mockPodmanPath);
 
+      mock.when(() -> Operations.getExecutable(eq("podman"), any())).thenReturn(mockPodmanPath);
+
       mock.when(
               () ->
                   Operations.runProcessGetFullOutput(
@@ -634,6 +691,8 @@ class ImageUtilsTest extends ExhortTest {
       var output = new Operations.ProcessExecOutput("variant: test-output", "", 0);
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("podman"))).thenReturn(mockPodmanPath);
+
+      mock.when(() -> Operations.getExecutable(eq("podman"), any())).thenReturn(mockPodmanPath);
 
       mock.when(
               () ->
@@ -663,6 +722,8 @@ class ImageUtilsTest extends ExhortTest {
       var output = new Operations.ProcessExecOutput("test-output", "test-error", 0);
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("skopeo"))).thenReturn(mockSkopeoPath);
+
+      mock.when(() -> Operations.getExecutable(eq("skopeo"), any())).thenReturn(mockSkopeoPath);
 
       mock.when(
               () ->
@@ -696,6 +757,8 @@ class ImageUtilsTest extends ExhortTest {
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("skopeo"))).thenReturn(mockSkopeoPath);
 
+      mock.when(() -> Operations.getExecutable(eq("skopeo"), any())).thenReturn(mockSkopeoPath);
+
       mock.when(
               () ->
                   Operations.runProcessGetFullOutput(
@@ -725,6 +788,8 @@ class ImageUtilsTest extends ExhortTest {
       var output = new Operations.ProcessExecOutput("test-output", "test-error", 0);
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("skopeo"))).thenReturn("skopeo");
+
+      mock.when(() -> Operations.getExecutable(eq("skopeo"), any())).thenReturn("skopeo");
 
       mock.when(
               () ->
@@ -756,6 +821,8 @@ class ImageUtilsTest extends ExhortTest {
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("skopeo"))).thenReturn("skopeo");
 
+      mock.when(() -> Operations.getExecutable(eq("skopeo"), any())).thenReturn("skopeo");
+
       mock.when(
               () ->
                   Operations.runProcessGetFullOutput(
@@ -783,6 +850,8 @@ class ImageUtilsTest extends ExhortTest {
       var output = new Operations.ProcessExecOutput("test-output", "test-error", 0);
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("skopeo"))).thenReturn(mockSkopeoPath);
+
+      mock.when(() -> Operations.getExecutable(eq("skopeo"), any())).thenReturn(mockSkopeoPath);
 
       mock.when(
               () ->
@@ -816,6 +885,8 @@ class ImageUtilsTest extends ExhortTest {
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("skopeo"))).thenReturn(mockSkopeoPath);
 
+      mock.when(() -> Operations.getExecutable(eq("skopeo"), any())).thenReturn(mockSkopeoPath);
+
       mock.when(
               () ->
                   Operations.runProcessGetFullOutput(
@@ -846,6 +917,8 @@ class ImageUtilsTest extends ExhortTest {
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("skopeo"))).thenReturn("skopeo");
 
+      mock.when(() -> Operations.getExecutable(eq("skopeo"), any())).thenReturn("skopeo");
+
       mock.when(
               () ->
                   Operations.runProcessGetFullOutput(
@@ -875,6 +948,8 @@ class ImageUtilsTest extends ExhortTest {
       var output = new Operations.ProcessExecOutput("test-output", "test-error", 0);
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("skopeo"))).thenReturn("skopeo");
+
+      mock.when(() -> Operations.getExecutable(eq("skopeo"), any())).thenReturn("skopeo");
 
       mock.when(
               () ->
@@ -976,6 +1051,8 @@ class ImageUtilsTest extends ExhortTest {
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("skopeo"))).thenReturn("skopeo");
 
+      mock.when(() -> Operations.getExecutable(eq("skopeo"), any())).thenReturn("skopeo");
+
       mock.when(
               () ->
                   Operations.runProcessGetFullOutput(
@@ -1008,6 +1085,8 @@ class ImageUtilsTest extends ExhortTest {
       var output = new Operations.ProcessExecOutput(mapper.writeValueAsString(node), "", 0);
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("skopeo"))).thenReturn("skopeo");
+
+      mock.when(() -> Operations.getExecutable(eq("skopeo"), any())).thenReturn("skopeo");
 
       mock.when(
               () ->

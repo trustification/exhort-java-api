@@ -41,6 +41,27 @@ public final class Ecosystem {
       return type;
     }
 
+    public String getExecutableShortName() {
+      switch (this) {
+        case MAVEN:
+          return "mvn";
+        case NPM:
+          return "npm";
+        case PNPM:
+          return "pnpm";
+        case YARN:
+          return "yarn";
+        case GOLANG:
+          return "go";
+        case PYTHON:
+          return "python";
+        case GRADLE:
+          return "gradle";
+        default:
+          throw new IllegalStateException("Unexpected value: " + this);
+      }
+    }
+
     Type(String type) {
       this.type = type;
     }
