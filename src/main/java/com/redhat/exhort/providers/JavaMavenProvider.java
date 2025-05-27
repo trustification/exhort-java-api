@@ -30,6 +30,7 @@ import com.redhat.exhort.utils.Environment;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -53,20 +54,21 @@ public final class JavaMavenProvider extends BaseJavaProvider {
   private static final String PROP_JAVA_HOME = "JAVA_HOME";
   private static final Logger log = LoggersFactory.getLogger(JavaMavenProvider.class.getName());
   private final String mvnExecutable;
+  private static final String MVN = "mvn";
+  private static final String ARG_VERSION = "-v";
 
   public JavaMavenProvider(Path manifest) {
     super(Type.MAVEN, manifest);
-    // check for custom mvn executable
-    this.mvnExecutable = Operations.getExecutable("mvn", "-v");
+    // check for custom mvn executable mvn or mvn wrapper
+    this.mvnExecutable = selectMvnRuntime(manifest);
   }
 
   @Override
   public Content provideStack() throws IOException {
-    // clean command used to clean build target
     var mvnCleanCmd = new String[] {mvnExecutable, "clean", "-f", manifest.toString()};
     var mvnEnvs = getMvnExecEnvs();
     // execute the clean command
-    Operations.runProcess(mvnCleanCmd, mvnEnvs);
+    Operations.runProcess(manifest.getParent(), mvnCleanCmd, mvnEnvs);
     // create a temp file for storing the dependency tree in
     var tmpFile = Files.createTempFile("exhort_dot_graph_", null);
     // the tree command will build the project and create the dependency tree in the temp file
@@ -90,7 +92,7 @@ public final class JavaMavenProvider extends BaseJavaProvider {
             .map(PackageURL::getCoordinates)
             .collect(Collectors.toList());
     // execute the tree command
-    Operations.runProcess(mvnTreeCmd.toArray(String[]::new), mvnEnvs);
+    Operations.runProcess(manifest.getParent(), mvnTreeCmd.toArray(String[]::new), mvnEnvs);
     if (debugLoggingIsNeeded()) {
       String stackAnalysisDependencyTree = Files.readString(tmpFile);
       log.info(
@@ -137,7 +139,7 @@ public final class JavaMavenProvider extends BaseJavaProvider {
           manifest.toString()
         };
     // execute the effective pom command
-    Operations.runProcess(mvnEffPomCmd, getMvnExecEnvs());
+    Operations.runProcess(manifest.getParent(), mvnEffPomCmd, getMvnExecEnvs());
     if (debugLoggingIsNeeded()) {
       String CaEffectivePoM = Files.readString(tmpEffPom);
       log.info(
@@ -365,5 +367,69 @@ public final class JavaMavenProvider extends BaseJavaProvider {
     public int hashCode() {
       return Objects.hash(groupId, artifactId, version);
     }
+  }
+
+  private String selectMvnRuntime(final Path manifestPath) {
+    boolean preferWrapper = Operations.getWrapperPreference(MVN);
+    if (preferWrapper) {
+      String wrapperName = isWindows() ? "mvnw.cmd" : "mvnw";
+      String mvnw = traverseForMvnw(wrapperName, manifestPath.toString());
+      if (mvnw != null) {
+        try {
+          // verify maven wrapper is accessible
+          Operations.runProcess(manifest.getParent(), mvnw, ARG_VERSION);
+          log.fine("using maven wrapper from : " + mvnw);
+          return mvnw;
+        } catch (Exception e) {
+          log.warning(
+              "Failed to check for mvnw due to: " + e.getMessage() + " Fail back to use mvn");
+        }
+      }
+    }
+    // If maven wrapper is not requested or not accessible, fail back to use mvn
+    String mvn = Operations.getExecutable(MVN, ARG_VERSION);
+    log.fine("using mvn executable from : " + mvn);
+    return mvn;
+  }
+
+  private String traverseForMvnw(String wrapperName, String startingManifest) {
+    return traverseForMvnw(wrapperName, startingManifest, null);
+  }
+
+  public static String traverseForMvnw(
+      String wrapperName, String startingManifest, String repoRoot) {
+    String normalizedManifest = normalizePath(startingManifest);
+
+    Path path = Paths.get(normalizedManifest);
+    if (repoRoot == null) {
+      repoRoot =
+          Operations.getGitRootDir(path.getParent().toString())
+              .orElse(path.toAbsolutePath().getRoot().toString());
+    }
+
+    Path wrapperPath = path.getParent().resolve(wrapperName).toAbsolutePath();
+
+    if (Files.isExecutable(wrapperPath)) {
+      return wrapperPath.toString();
+    } else {
+      String currentDir = path.getParent().toAbsolutePath().toString();
+      if (currentDir.equals(repoRoot)) {
+        return null;
+      }
+      return traverseForMvnw(wrapperName, path.getParent().toString(), repoRoot);
+    }
+  }
+
+  public static String normalizePath(String thePath) {
+    Path normalized = Paths.get(thePath).toAbsolutePath().normalize();
+    String result = normalized.toString();
+    if (isWindows()) {
+      result = result.toLowerCase();
+    }
+    return result;
+  }
+
+  private static boolean isWindows() {
+    return System.getProperty("os.name").toLowerCase().contains("win");
   }
 }

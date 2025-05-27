@@ -362,7 +362,7 @@ class ExhortApiIT extends ExhortTest {
         depTree = new String(is.readAllBytes());
       }
       mockedOperations
-          .when(() -> Operations.runProcess(any(), any()))
+          .when(() -> Operations.runProcess(any(), any(), any()))
           .thenAnswer(
               invocationOnMock ->
                   getOutputFileAndOverwriteItWithMock(depTree, invocationOnMock, "-DoutputFile"));
@@ -378,7 +378,7 @@ class ExhortApiIT extends ExhortTest {
   public static String getOutputFileAndOverwriteItWithMock(
       String outputFileContent, InvocationOnMock invocationOnMock, String parameterPrefix)
       throws IOException {
-    String[] rawArguments = (String[]) invocationOnMock.getRawArguments()[0];
+    String[] rawArguments = (String[]) invocationOnMock.getRawArguments()[1];
     Optional<String> outputFileArg =
         Arrays.stream(rawArguments)
             .filter(arg -> arg != null && arg.startsWith(parameterPrefix))

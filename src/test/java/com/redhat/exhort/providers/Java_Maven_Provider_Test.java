@@ -84,7 +84,7 @@ public class Java_Maven_Provider_Test extends ExhortTest {
     }
     try (MockedStatic<Operations> mockedOperations = mockStatic(Operations.class)) {
       mockedOperations
-          .when(() -> Operations.runProcess(any(), any()))
+          .when(() -> Operations.runProcess(any(), any(), any()))
           .thenAnswer(
               invocationOnMock ->
                   getOutputFileAndOverwriteItWithMock(depTree, invocationOnMock, "-DoutputFile"));
@@ -107,7 +107,7 @@ public class Java_Maven_Provider_Test extends ExhortTest {
   public static String getOutputFileAndOverwriteItWithMock(
       String outputFileContent, InvocationOnMock invocationOnMock, String parameterPrefix)
       throws IOException {
-    String[] rawArguments = (String[]) invocationOnMock.getRawArguments()[0];
+    String[] rawArguments = (String[]) invocationOnMock.getRawArguments()[1];
     Optional<String> outputFileArg =
         Arrays.stream(rawArguments)
             .filter(arg -> arg != null && arg.startsWith(parameterPrefix))
@@ -144,7 +144,7 @@ public class Java_Maven_Provider_Test extends ExhortTest {
     }
     try (MockedStatic<Operations> mockedOperations = mockStatic(Operations.class)) {
       mockedOperations
-          .when(() -> Operations.runProcess(any(), any()))
+          .when(() -> Operations.runProcess(any(), any(), any()))
           .thenAnswer(
               invocationOnMock ->
                   getOutputFileAndOverwriteItWithMock(effectivePom, invocationOnMock, "-Doutput"));
@@ -190,7 +190,7 @@ public class Java_Maven_Provider_Test extends ExhortTest {
     }
     try (MockedStatic<Operations> mockedOperations = mockStatic(Operations.class)) {
       mockedOperations
-          .when(() -> Operations.runProcess(any(), any()))
+          .when(() -> Operations.runProcess(any(), any(), any()))
           .thenAnswer(
               invocationOnMock ->
                   getOutputFileAndOverwriteItWithMock(effectivePom, invocationOnMock, "-Doutput"));
