@@ -24,6 +24,7 @@ import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.redhat.exhort.Api;
 import com.redhat.exhort.Provider;
+import com.redhat.exhort.logging.LoggersFactory;
 import com.redhat.exhort.providers.javascript.model.Manifest;
 import com.redhat.exhort.sbom.Sbom;
 import com.redhat.exhort.sbom.SbomFactory;
@@ -42,6 +43,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.TreeMap;
+import java.util.logging.Logger;
 
 /**
  * Abstract implementation of the {@link Provider} used for converting dependency trees for
@@ -53,14 +55,14 @@ public abstract class JavaScriptProvider extends Provider {
   public static final String ENV_NODE_HOME = "NODE_HOME";
   private static final String PROP_PATH = "PATH";
 
-  private System.Logger log = System.getLogger(this.getClass().getName());
+  private static final Logger log = LoggersFactory.getLogger(JavaScriptProvider.class.getName());
 
   protected final String cmd;
   protected final Manifest manifest;
 
   public JavaScriptProvider(Path manifest, Ecosystem.Type ecosystem, String cmd) {
     super(ecosystem, manifest);
-    this.cmd = Operations.getCustomPathOrElse(cmd);
+    this.cmd = Operations.getExecutable(cmd, "-v");
     try {
       this.manifest = new Manifest(manifest);
     } catch (IOException e) {
@@ -96,7 +98,7 @@ public abstract class JavaScriptProvider extends Provider {
         Api.CYCLONEDX_MEDIA_TYPE);
   }
 
-  public static final PackageURL toPurl(String name, String version) {
+  public static PackageURL toPurl(String name, String version) {
     try {
       String[] parts = name.split("/");
       if (parts.length == 2) {
@@ -109,7 +111,7 @@ public abstract class JavaScriptProvider extends Provider {
     }
   }
 
-  public static final PackageURL toPurl(String name) {
+  public static PackageURL toPurl(String name) {
     try {
       return new PackageURL(String.format("pkg:%s/%s", Ecosystem.Type.NPM.getType(), name));
     } catch (MalformedPackageURLException e) {
@@ -208,7 +210,7 @@ public abstract class JavaScriptProvider extends Provider {
   protected JsonNode buildDependencyTree(boolean includeTransitive)
       throws JsonMappingException, JsonProcessingException {
     // clean command used to clean build target
-    Path manifestDir = null;
+    Path manifestDir;
     try {
       // MacOS requires resolving to the CanonicalPath to avoid problems with /var
       // being a symlink
@@ -234,8 +236,7 @@ public abstract class JavaScriptProvider extends Provider {
     // execute the clean command
     String output = Operations.runProcessGetOutput(workDir, allDeps, getExecEnvAsArgs());
     if (debugLoggingIsNeeded()) {
-      log.log(
-          System.Logger.Level.INFO,
+      log.info(
           String.format("Listed Install Packages in Json : %s %s", System.lineSeparator(), output));
     }
     output = parseDepTreeOutput(output);

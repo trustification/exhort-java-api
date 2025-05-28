@@ -15,6 +15,7 @@
  */
 package com.redhat.exhort.impl;
 
+import static com.redhat.exhort.image.ImageUtils.SKIP_VALIDATION_KEY;
 import static org.assertj.core.api.BDDAssertions.then;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -86,6 +87,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ClearSystemProperty(key = "RHDA_SOURCE")
 @SuppressWarnings("unchecked")
 class Exhort_Api_Test extends ExhortTest {
+
   @Mock Provider mockProvider;
 
   @Mock HttpClient mockHttpClient;
@@ -457,6 +459,7 @@ class Exhort_Api_Test extends ExhortTest {
   @SetSystemProperty(key = "EXHORT_SNYK_TOKEN", value = "snyk-token-from-env-var")
   @SetSystemProperty(key = "RHDA_TOKEN", value = "rhda-token-from-env-var")
   @SetSystemProperty(key = "RHDA_SOURCE", value = "rhda-source-from-env-var")
+  @SetSystemProperty(key = SKIP_VALIDATION_KEY, value = "true")
   void test_image_analysis()
       throws IOException, ExecutionException, InterruptedException, MalformedPackageURLException {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
@@ -476,6 +479,8 @@ class Exhort_Api_Test extends ExhortTest {
       var output = new Operations.ProcessExecOutput(jsonSbom, "", 0);
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("syft"))).thenReturn("syft");
+
+      mock.when(() -> Operations.getExecutable(eq("syft"), any())).thenReturn("syft");
 
       mock.when(
               () ->
@@ -554,6 +559,7 @@ class Exhort_Api_Test extends ExhortTest {
   @SetSystemProperty(key = "EXHORT_SNYK_TOKEN", value = "snyk-token-from-env-var")
   @SetSystemProperty(key = "RHDA_TOKEN", value = "rhda-token-from-env-var")
   @SetSystemProperty(key = "RHDA_SOURCE", value = "rhda-source-from-env-var")
+  @SetSystemProperty(key = SKIP_VALIDATION_KEY, value = "true")
   void imageAnalysisHtml()
       throws IOException, ExecutionException, InterruptedException, MalformedPackageURLException {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
@@ -573,6 +579,8 @@ class Exhort_Api_Test extends ExhortTest {
       var output = new Operations.ProcessExecOutput(jsonSbom, "", 0);
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("syft"))).thenReturn("syft");
+
+      mock.when(() -> Operations.getExecutable(eq("syft"), any())).thenReturn("syft");
 
       mock.when(
               () ->
@@ -688,6 +696,7 @@ class Exhort_Api_Test extends ExhortTest {
   }
 
   @Test
+  @SetSystemProperty(key = SKIP_VALIDATION_KEY, value = "true")
   void test_get_batch_image_sboms() throws IOException, MalformedPackageURLException {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
         var is = getResourceAsStreamDecision(this.getClass(), "msc/image/image_sbom.json")) {
@@ -703,6 +712,8 @@ class Exhort_Api_Test extends ExhortTest {
       var output = new Operations.ProcessExecOutput(json, "", 0);
 
       mock.when(() -> Operations.getCustomPathOrElse(eq("syft"))).thenReturn("syft");
+
+      mock.when(() -> Operations.getExecutable(eq("syft"), any())).thenReturn("syft");
 
       mock.when(
               () ->
