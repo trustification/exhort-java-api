@@ -62,7 +62,7 @@ public abstract class JavaScriptProvider extends Provider {
 
   public JavaScriptProvider(Path manifest, Ecosystem.Type ecosystem, String cmd) {
     super(ecosystem, manifest);
-    this.cmd = Operations.getExecutable(cmd, "-v");
+    this.cmd = Operations.getExecutable(cmd, "-v", getExecEnv());
     try {
       this.manifest = new Manifest(manifest);
     } catch (IOException e) {

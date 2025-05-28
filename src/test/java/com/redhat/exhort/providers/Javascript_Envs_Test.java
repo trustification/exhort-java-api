@@ -17,7 +17,11 @@ package com.redhat.exhort.providers;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.anyMap;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.mockStatic;
 
+import com.redhat.exhort.tools.Operations;
 import com.redhat.exhort.utils.Environment;
 import java.io.File;
 import java.nio.file.Path;
@@ -37,18 +41,28 @@ public class Javascript_Envs_Test {
   @SetSystemProperty(key = "NODE_HOME", value = "test-node-home")
   @SetSystemProperty(key = "PATH", value = "test-path")
   void test_javascript_get_envs() {
-    var envs = new JavaScriptNpmProvider(MANIFEST_PATH).getExecEnv();
-    assertEquals(
-        Collections.singletonMap("PATH", "test-path" + File.pathSeparator + "test-node-home"),
-        envs);
+    try (MockedStatic<Operations> mockedOperations = mockStatic(Operations.class)) {
+      // Configure the mock to return "npm" when getExecutable is called
+      mockedOperations
+          .when(() -> Operations.getExecutable(anyString(), anyString(), anyMap()))
+          .thenReturn("npm");
+      var envs = new JavaScriptNpmProvider(MANIFEST_PATH).getExecEnv();
+      assertEquals(
+          Collections.singletonMap("PATH", "test-path" + File.pathSeparator + "test-node-home"),
+          envs);
+    }
   }
 
   @Test
   @SetSystemProperty(key = "NODE_HOME", value = "test-node-home")
   void test_javascript_get_envs_no_path() {
     try (MockedStatic<Environment> mockEnv =
-        Mockito.mockStatic(Environment.class, Mockito.CALLS_REAL_METHODS)) {
+            mockStatic(Environment.class, Mockito.CALLS_REAL_METHODS);
+        MockedStatic<Operations> mockOps = mockStatic(Operations.class)) {
       mockEnv.when(() -> Environment.get("PATH")).thenReturn(null);
+      mockOps
+          .when(() -> Operations.getExecutable(anyString(), anyString(), anyMap()))
+          .thenReturn("npm");
       var envs = new JavaScriptNpmProvider(MANIFEST_PATH).getExecEnv();
       assertEquals(Collections.singletonMap("PATH", "test-node-home"), envs);
     }
