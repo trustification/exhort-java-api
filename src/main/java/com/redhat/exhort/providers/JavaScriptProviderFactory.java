@@ -40,7 +40,7 @@ public final class JavaScriptProviderFactory {
     var validLockFiles = String.join(",", JS_PROVIDERS.keySet());
     throw new IllegalStateException(
         String.format(
-            "No known lock file found for %s. Supported lock files: ",
+            "No known lock file found for %s. Supported lock files: %s",
             manifestPath, validLockFiles));
   }
 }
