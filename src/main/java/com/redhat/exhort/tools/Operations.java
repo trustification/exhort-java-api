@@ -242,10 +242,17 @@ public final class Operations {
    * @throws RuntimeException if the executable cannot be found, is not executable, or exits with an
    *     error code
    */
-  public static String getExecutable(String command, String args) {
+  public static String getExecutable(
+      String command, String args, final Map<String, String> envMap) {
     String cmdExecutable = Operations.getCustomPathOrElse(command);
     try {
-      Process process = new ProcessBuilder(cmdExecutable, args).redirectErrorStream(true).start();
+      ProcessBuilder processBuilder = new ProcessBuilder();
+      processBuilder.command(cmdExecutable, args);
+      if (envMap != null) {
+        processBuilder.environment().putAll(envMap);
+      }
+      Process process = processBuilder.start();
+
       int exitCode = process.waitFor();
       if (exitCode != 0) {
         throw new IOException(
@@ -264,5 +271,9 @@ public final class Operations {
           e);
     }
     return cmdExecutable;
+  }
+
+  public static String getExecutable(String command, String args) {
+    return getExecutable(command, args, null);
   }
 }
