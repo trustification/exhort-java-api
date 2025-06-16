@@ -2574,7 +2574,8 @@ testRuntimeClasspath - Runtime classpath of source set 'test'.
 |         +--- io.quarkus:quarkus-arc-deployment:2.0.2.Final (*)
 |         +--- org.jboss:jandex:2.3.0.Final
 |         \--- org.ow2.asm:asm:9.1 -> 9.3
-\--- log4j:log4j:1.2.17
++--- log4j:log4j:1.2.17
+\--- com.acme:invented.dependency:1.0.0 FAILED
 
 testRuntimeOnly - Runtime only dependencies for source set 'test'. (n)
 No dependencies

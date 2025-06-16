@@ -30,12 +30,10 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -51,9 +49,11 @@ import org.tomlj.TomlTable;
  */
 public final class GradleProvider extends BaseJavaProvider {
 
-  public static final String[] COMPONENT_ANALYSIS_CONFIGURATIONS = {
-    "api", "implementation", "compileOnlyApi", "compileOnly", "runtimeOnly"
-  };
+  public static String RUNTIME_CLASSPATH = "runtimeClasspath";
+  public static String COMPILE_CLASSPATH = "compileClasspath";
+  public static String REQUIRED = "required";
+  public static String OPTIONAL = "optional";
+
   private static final Logger log = LoggersFactory.getLogger(GradleProvider.class.getName());
 
   private final String gradleExecutable = Operations.getExecutable("gradle", "--version");
@@ -74,7 +74,7 @@ public final class GradleProvider extends BaseJavaProvider {
     }
     Map<String, String> propertiesMap = extractProperties(manifest);
 
-    var sbom = buildSbomFromTextFormat(tempFile, propertiesMap, new String[] {"runtimeClasspath"});
+    var sbom = buildSbomFromTextFormat(tempFile, propertiesMap, AnalysisType.STACK);
     var ignored = getIgnoredDeps(manifest);
 
     return new Content(
@@ -245,144 +245,248 @@ public final class GradleProvider extends BaseJavaProvider {
     return propsTempFile;
   }
 
+  /**
+   * Builds a Software Bill of Materials (SBOM) from a text format file based on the specified
+   * analysis type.
+   *
+   * <p>This method initializes an SBOM, extracts the root dependency, and processes runtime and
+   * compile configuration lines from the provided text format file. Depending on the {@code
+   * analysisType}:
+   *
+   * <ul>
+   *   <li>For {@code AnalysisType.STACK}, it uses {@code prepareLinesForParsingDependencyTree} to
+   *       prepare lines and parses the full dependency tree for both runtime (as {@code REQUIRED})
+   *       and compile (as {@code OPTIONAL}) configurations.
+   *   <li>For {@code AnalysisType.COMPONENT}, it uses {@code
+   *       prepareLinesForParsingDirectDependency} to prepare lines, filters for lines with a depth
+   *       of 1 using {@code ProcessedLine}, and parses the filtered dependencies for runtime (as
+   *       {@code REQUIRED}) and compile (as {@code OPTIONAL}) configurations.
+   * </ul>
+   *
+   * The resulting SBOM includes the root dependency and parsed dependencies with appropriate
+   * scopes.
+   *
+   * @param textFormatFile the path to the text format file containing dependency information
+   * @param propertiesMap a map of properties used to extract the root dependency
+   * @param analysisType the type of analysis to perform ({@code STACK} or {@code COMPONENT})
+   * @return the constructed {@code Sbom} object with parsed dependencies
+   * @throws IOException if an I/O error occurs while reading the text format file
+   */
   private Sbom buildSbomFromTextFormat(
-      Path textFormatFile, Map<String, String> propertiesMap, String[] configNames)
+      Path textFormatFile, Map<String, String> propertiesMap, AnalysisType analysisType)
       throws IOException {
-    var sbom = SbomFactory.newInstance(Sbom.BelongingCondition.PURL, "sensitive");
+    Sbom sbom = SbomFactory.newInstance(Sbom.BelongingCondition.PURL, "sensitive");
     String root = getRoot(textFormatFile, propertiesMap);
 
-    var rootPurl = parseDep(root);
+    PackageURL rootPurl = parseDep(root);
     sbom.addRoot(rootPurl);
-    List<String> lines = new ArrayList<>();
 
-    for (String configName : configNames) {
-      List<String> deps = extractLines(textFormatFile, configName);
-      lines.addAll(deps);
-    }
+    List<String> runtimeConfig = extractLines(textFormatFile, RUNTIME_CLASSPATH);
+    List<String> compileConfig = extractLines(textFormatFile, COMPILE_CLASSPATH);
 
-    List<String> arrayForSbom = new ArrayList<>();
+    if (analysisType == AnalysisType.STACK) {
+      List<String> runtimePreparedLines = prepareLinesForParsingDependencyTree(runtimeConfig);
+      List<String> compilePreparedLines = prepareLinesForParsingDependencyTree(compileConfig);
 
-    for (String line : lines) {
-      line = line.replaceAll("---", "-").replaceAll("    ", "  ");
-      line = line.replaceAll(":(.*):(.*) -> (.*)$", ":$1:$3");
-      line = line.replaceAll("(.*):(.*):(.*)$", "$1:$2:jar:$3");
-      line = line.replaceAll(" \\(n\\)$", "");
-      line = line.replaceAll(" \\(\\*\\)", "");
-      line = line.replaceAll("$", ":compile");
-      if (containsVersion(line)) {
-        arrayForSbom.add(line);
+      parseDependencyTree(root, 0, runtimePreparedLines.toArray(new String[0]), sbom, REQUIRED);
+      parseDependencyTree(root, 0, compilePreparedLines.toArray(new String[0]), sbom, OPTIONAL);
+
+    } else {
+      List<ProcessedLine> runtimePreparedLines =
+          prepareLinesForParsingDirectDependency(runtimeConfig);
+      List<ProcessedLine> compilePreparedLines =
+          prepareLinesForParsingDirectDependency(compileConfig);
+
+      List<String> runtimeArrayForSbom = new ArrayList<>();
+      for (ProcessedLine line : runtimePreparedLines) {
+        if (line.getDepth() == 1) {
+          runtimeArrayForSbom.add(line.getLine());
+        }
       }
-    }
-    // remove duplicates for component analysis
-    if (Arrays.equals(configNames, COMPONENT_ANALYSIS_CONFIGURATIONS)) {
-      removeDuplicateIfExists(arrayForSbom, textFormatFile);
-      arrayForSbom = performManifestVersionsCheck(arrayForSbom, textFormatFile);
-    }
+      parseDependencyTree(root, 0, runtimeArrayForSbom.toArray(new String[0]), sbom, REQUIRED);
 
-    String[] array = arrayForSbom.toArray(new String[0]);
-    parseDependencyTree(root, 0, array, sbom);
+      List<String> compileArrayForSbom = new ArrayList<>();
+      for (ProcessedLine line : compilePreparedLines) {
+        if (line.getDepth() == 1) {
+          compileArrayForSbom.add(line.getLine());
+        }
+      }
+      parseDependencyTree(root, 0, compileArrayForSbom.toArray(new String[0]), sbom, OPTIONAL);
+    }
     return sbom;
   }
 
-  private List<String> performManifestVersionsCheck(List<String> arrayForSbom, Path textFormatFile)
-      throws IOException {
+  /**
+   * A class representing a processed line of text with an associated indentation depth.
+   *
+   * <p>This class encapsulates a line of text and its corresponding depth level, typically used to
+   * represent hierarchical or structured data such as dependencies. The class provides methods to
+   * access the line and depth, and overrides the {@code toString} method to provide a meaningful
+   * string representation.
+   */
+  static class ProcessedLine {
+    /** The text content of the processed line. */
+    public final String line;
 
-    List<String> runtimeClasspathLines = extractLines(textFormatFile, "runtimeClasspath");
-    Map<String, String> runtimeClasspathVersions = parseDependencyVersions(runtimeClasspathLines);
-    List<String> updatedLines = updateDependencies(arrayForSbom, runtimeClasspathVersions);
+    /** The indentation depth associated with the line. */
+    public final int depth;
 
-    return updatedLines;
+    /**
+     * Constructs a new {@code ProcessedLine} with the specified line and depth.
+     *
+     * @param line the text content of the line
+     * @param depth the indentation depth of the line
+     */
+    public ProcessedLine(String line, int depth) {
+      this.line = line;
+      this.depth = depth;
+    }
+
+    public String getLine() {
+      return line;
+    }
+
+    public int getDepth() {
+      return depth;
+    }
+
+    @Override
+    public String toString() {
+      return "Dependency{line='" + line + "', depth=" + depth + "}";
+    }
   }
 
-  private Map<String, String> parseDependencyVersions(List<String> lines) {
-    Map<String, String> dependencyVersions = new HashMap<>();
+  /**
+   * Prepares a list of strings for parsing direct dependencies by transforming and filtering lines
+   * into {@code ProcessedLine} objects.
+   *
+   * <p>This method processes each input line, skipping empty lines or those ending with " FAILED".
+   * For valid lines, it:
+   *
+   * <ul>
+   *   <li>Calculates the indentation depth using {@code getIndentationLevel}.
+   *   <li>Applies transformations to the line using {@code replaceLine}.
+   *   <li>Checks if the transformed line contains a version using {@code containsVersion}.
+   *   <li>If a version is present, creates a new {@code ProcessedLine} with the transformed line
+   *       appended with ":compile" and the calculated depth, and adds it to the result list.
+   * </ul>
+   *
+   * The resulting list contains only lines that meet the version criteria, encapsulated as {@code
+   * ProcessedLine} objects.
+   *
+   * @param lines the list of input strings to process
+   * @return a list of {@code ProcessedLine} objects representing valid, transformed lines with
+   *     their indentation depths
+   */
+  private List<ProcessedLine> prepareLinesForParsingDirectDependency(List<String> lines) {
+    List<ProcessedLine> result = new ArrayList<>();
 
     for (String line : lines) {
-      if (line.contains("->")) {
-        String[] splitLine = line.split("---");
-        if (splitLine.length > 1) {
-          String dependencyPart = splitLine[1].trim();
-          String[] parts = dependencyPart.split("-> ");
-          // Extract the dependency name (without the version) and the resolved version
-          String dependency = parts[0].substring(0, parts[0].lastIndexOf(':')).trim();
-          String version = parts[1].split(" ")[0].trim();
-          dependencyVersions.put(dependency, version);
-        }
+      if (line.trim().isEmpty() || line.endsWith(" FAILED")) {
+        continue;
+      }
+
+      int depth = getIndentationLevel(line);
+
+      line = replaceLine(line);
+      if (containsVersion(line)) {
+        result.add(new ProcessedLine(line + ":compile", depth));
       }
     }
 
-    return dependencyVersions;
+    return result;
   }
 
-  private List<String> updateDependencies(
-      List<String> lines, Map<String, String> runtimeClasspathVersions) {
-    List<String> updatedLines = new ArrayList<>();
+  /**
+   * Prepares a list of strings for parsing a dependency tree by transforming and filtering lines.
+   *
+   * <p>This method processes each input line, skipping empty lines or those ending with " FAILED".
+   * For valid lines, it:
+   *
+   * <ul>
+   *   <li>Applies transformations to the line using {@code replaceLine}.
+   *   <li>Checks if the transformed line contains a version using {@code containsVersion}.
+   *   <li>If a version is present, appends ":compile" to the line and adds it to the result list.
+   * </ul>
+   *
+   * The resulting list contains only transformed lines that meet the version criteria, suitable for
+   * dependency tree parsing.
+   *
+   * @param lines the list of input strings to process
+   * @return a list of transformed strings, each appended with ":compile", representing valid
+   *     dependency lines
+   */
+  private List<String> prepareLinesForParsingDependencyTree(List<String> lines) {
+    List<String> result = new ArrayList<>();
+
     for (String line : lines) {
-      PackageURL packageURL = parseDep(line);
-      String[] parts = line.split(":");
-      if (parts.length >= 4) {
-        String dependencyKey =
-            packageURL.getNamespace() + ":" + packageURL.getName(); // Extract dependency key
-        if (runtimeClasspathVersions.containsKey(dependencyKey)) {
-          String newVersion = runtimeClasspathVersions.get(dependencyKey);
-          parts[3] = newVersion; // Replace version with the resolved version
-          updatedLines.add(String.join(":", parts));
-        } else {
-          updatedLines.add(line); // Keep the original line if no update is needed
-        }
-      } else {
-        updatedLines.add(line); // Keep the original line if it doesn't match the expected pattern
+      if (line.trim().isEmpty() || line.endsWith(" FAILED")) {
+        continue;
+      }
+
+      line = replaceLine(line);
+      if (containsVersion(line)) {
+        result.add(line + ":compile");
       }
     }
-    return updatedLines;
+
+    return result;
   }
 
-  private void removeDuplicateIfExists(List<String> arrayForSbom, Path theContent) {
-    Consumer<String> removeDuplicateFunction =
-        dependency -> {
-          try {
-            String content = Files.readString(theContent);
-            PackageURL depUrl = parseDep(dependency);
-            String depVersion = depUrl.getVersion().trim();
-            int indexOfDuplicate = -1;
-            int selfIndex = -1;
+  /**
+   * Processes a given line of text by applying a series of string replacements to standardize its
+   * format.
+   *
+   * <p>This method performs multiple transformations on the input line, including:
+   *
+   * <ul>
+   *   <li>Replacing triple dashes ("---") with a single dash ("-") and four spaces with two spaces.
+   *   <li>Simplifying colon-separated patterns of the form ":X:Y -> Z" to ":X:Z".
+   *   <li>Transforming colon-separated patterns of the form "X:Y:Z" to "X:Y:jar:Z".
+   *   <li>Removing trailing annotations such as " (n)", " (c)", or " (*)".
+   *   <li>Appending ":compile" to the end of the line.
+   * </ul>
+   *
+   * The transformed line is then returned.
+   *
+   * @param line the input string to be processed
+   * @return the transformed string after applying all replacements
+   */
+  private String replaceLine(String line) {
+    line = line.replaceAll("---", "-").replaceAll("    ", "  ");
+    line = line.replaceAll(":(.*):(.*) -> (.*)$", ":$1:$3");
+    line = line.replaceAll("(.*):(.*):(.*)$", "$1:$2:jar:$3");
+    line = line.replaceAll(" \\(n\\)$", "");
+    line = line.replaceAll(" \\(c\\)$", "");
+    line = line.replaceAll(" \\(\\*\\)", "");
+    return line;
+  }
 
-            for (int i = 0; i < arrayForSbom.size(); i++) {
-              PackageURL dep = parseDep(arrayForSbom.get(i));
-              if (dep.getNamespace().equals(depUrl.getNamespace())
-                  && dep.getName().equals(depUrl.getName())) {
-                if (dep.getVersion().equals(depVersion)) {
-                  selfIndex = i;
-                } else if (!dep.getVersion().equals(depVersion) && indexOfDuplicate == -1) {
-                  indexOfDuplicate = i;
-                }
-              }
-            }
+  /**
+   * Determines the indentation level of a given line of text based on specific patterns.
+   *
+   * <p>This method analyzes the input line to calculate its indentation level. If the line starts
+   * with a '+' or '\', it is considered to have an indentation level of 1. Otherwise, it counts
+   * occurrences of specific indentation patterns ("| " or " ") to determine the level. If no such
+   * patterns are found, it returns -1; otherwise, it returns the count of patterns plus 1.
+   *
+   * @param line the input string to analyze for indentation
+   * @return the indentation level of the line; returns 1 if the line starts with '+' or '\', the
+   *     count of indentation patterns plus 1 if patterns are found, or -1 if no patterns are found
+   */
+  public int getIndentationLevel(String line) {
+    if (line.matches("^[\\\\+].*")) {
+      return 1;
+    }
 
-            if (selfIndex != -1 && selfIndex != indexOfDuplicate && indexOfDuplicate != -1) {
-              PackageURL duplicateDepVersion = parseDep(arrayForSbom.get(indexOfDuplicate));
-              Pattern pattern =
-                  Pattern.compile(
-                      ".*" + depVersion + "\\W?->\\W?" + duplicateDepVersion.getVersion() + ".*");
-              Matcher matcher = pattern.matcher(content);
-              if (matcher.find()) {
-                arrayForSbom.remove(selfIndex);
-              } else {
-                pattern =
-                    Pattern.compile(
-                        ".*" + duplicateDepVersion.getVersion() + "\\W?->\\W?" + depVersion + ".*");
-                matcher = pattern.matcher(content);
-                if (matcher.find()) {
-                  arrayForSbom.remove(indexOfDuplicate);
-                }
-              }
-            }
-          } catch (Exception e) {
-            e.printStackTrace();
-          }
-        };
-    List<String> copyOfArrayForSbom = new ArrayList<>(arrayForSbom);
-    copyOfArrayForSbom.forEach(removeDuplicateFunction);
+    Pattern pattern = Pattern.compile("\\| {4}| {5}");
+    Matcher matcher = pattern.matcher(line);
+    int count = 0;
+    while (matcher.find()) {
+      count++;
+    }
+
+    return count == 0 ? -1 : count + 1;
   }
 
   private boolean containsVersion(String line) {
@@ -470,9 +574,7 @@ public final class GradleProvider extends BaseJavaProvider {
     Path tempFile = getDependencies(manifest);
     Map<String, String> propertiesMap = extractProperties(manifest);
 
-    String[] configurationNames = COMPONENT_ANALYSIS_CONFIGURATIONS;
-
-    var sbom = buildSbomFromTextFormat(tempFile, propertiesMap, configurationNames);
+    Sbom sbom = buildSbomFromTextFormat(tempFile, propertiesMap, AnalysisType.COMPONENT);
     var ignored = getIgnoredDeps(manifest);
 
     return new Content(

@@ -26,7 +26,7 @@ public interface Sbom {
 
   public <T> Sbom filterIgnoredDeps(Collection<T> ignoredDeps);
 
-  public Sbom addDependency(PackageURL sourceRef, PackageURL targetRef);
+  public Sbom addDependency(PackageURL sourceRef, PackageURL targetRef, String scope);
 
   public String getAsJsonString();
 

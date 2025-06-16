@@ -32,7 +32,7 @@ public abstract class BaseJavaProvider extends Provider {
     super(ecosystem, manifest);
   }
 
-  void parseDependencyTree(String src, int srcDepth, String[] lines, Sbom sbom) {
+  void parseDependencyTree(String src, int srcDepth, String[] lines, Sbom sbom, String scope) {
     if (lines.length == 0) {
       return;
     }
@@ -47,11 +47,12 @@ public abstract class BaseJavaProvider extends Provider {
         PackageURL from = parseDep(src);
         PackageURL to = parseDep(target);
         if (dependencyIsNotTestScope(from) && dependencyIsNotTestScope(to)) {
-          sbom.addDependency(from, to);
+          sbom.addDependency(from, to, scope);
         }
       } else {
         String[] modifiedLines = Arrays.copyOfRange(lines, index, lines.length);
-        parseDependencyTree(lines[index - 1], getDepth(lines[index - 1]), modifiedLines, sbom);
+        parseDependencyTree(
+            lines[index - 1], getDepth(lines[index - 1]), modifiedLines, sbom, scope);
       }
       if (index < lines.length - 1) {
         target = lines[++index];

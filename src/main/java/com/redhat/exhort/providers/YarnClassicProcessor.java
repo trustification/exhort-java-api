@@ -103,7 +103,7 @@ public final class YarnClassicProcessor extends YarnProcessor {
 
           purls.put(dep.name, dep.purl);
           if (manifest.dependencies.contains(dep.name)) {
-            sbom.addDependency(manifest.root, dep.purl);
+            sbom.addDependency(manifest.root, dep.purl, null);
           }
         });
 
@@ -123,7 +123,7 @@ public final class YarnClassicProcessor extends YarnProcessor {
             var from = dep.shadow ? purls.get(dep.name) : dep.purl;
             var target = child.shadow ? purls.get(child.name) : child.purl;
             if (from != null && target != null) {
-              sbom.addDependency(from, target);
+              sbom.addDependency(from, target, null);
             }
             addChildrenToSbom(sbom, c, purls);
           });
