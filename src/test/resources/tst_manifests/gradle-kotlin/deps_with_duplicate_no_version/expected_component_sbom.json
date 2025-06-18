@@ -3,7 +3,7 @@
   "specVersion" : "1.4",
   "version" : 1,
   "metadata" : {
-    "timestamp" : "2025-04-09T12:29:37Z",
+    "timestamp" : "2025-04-09T12:29:26Z",
     "component" : {
       "type" : "application",
       "bom-ref" : "pkg:maven/org.acme.dbaas/postgresql-orm-quarkus@1.0.0-SNAPSHOT",
@@ -28,6 +28,7 @@
       "group" : "log4j",
       "name" : "log4j",
       "version" : "1.2.17",
+      "scope":"required",
       "purl" : "pkg:maven/log4j/log4j@1.2.17?scope=compile"
     }
   ],

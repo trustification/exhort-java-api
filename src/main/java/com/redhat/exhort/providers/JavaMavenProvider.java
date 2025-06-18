@@ -115,7 +115,7 @@ public final class JavaMavenProvider extends BaseJavaProvider {
     String[] array = new String[lines.size()];
     lines.toArray(array);
     //    createSbomIteratively(lines,sbom);
-    parseDependencyTree(root, 0, array, sbom);
+    parseDependencyTree(root, 0, array, sbom, null);
     return sbom;
   }
 
@@ -169,7 +169,7 @@ public final class JavaMavenProvider extends BaseJavaProvider {
                         .collect(Collectors.toList())
                         .size()
                     == 0)
-        .forEach(d -> sbom.addDependency(sbom.getRoot(), d));
+        .forEach(d -> sbom.addDependency(sbom.getRoot(), d, null));
 
     // build and return content for constructing request to the backend
     return new Content(sbom.getAsJsonString().getBytes(), Api.CYCLONEDX_MEDIA_TYPE);

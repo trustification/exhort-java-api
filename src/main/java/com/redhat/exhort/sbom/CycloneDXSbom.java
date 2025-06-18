@@ -127,7 +127,7 @@ public class CycloneDXSbom implements Sbom {
     return c;
   }
 
-  private Component newComponent(PackageURL ref) {
+  private Component newComponent(PackageURL ref, Component.Scope scope) {
     Component c = new Component();
     c.setBomRef(ref.getCoordinates());
     c.setName(ref.getName());
@@ -135,6 +135,9 @@ public class CycloneDXSbom implements Sbom {
     c.setVersion(ref.getVersion());
     c.setPurl(ref);
     c.setType(Type.LIBRARY);
+    if (scope != null) {
+      c.setScope(scope);
+    }
     return c;
   }
 
@@ -213,8 +216,12 @@ public class CycloneDXSbom implements Sbom {
   }
 
   @Override
-  public Sbom addDependency(PackageURL sourceRef, PackageURL targetRef) {
-    Component srcComp = newComponent(sourceRef);
+  public Sbom addDependency(PackageURL sourceRef, PackageURL targetRef, String s) {
+    Component.Scope scope = null;
+    if (s != null) {
+      scope = Component.Scope.valueOf(s.toUpperCase());
+    }
+    Component srcComp = newComponent(sourceRef, scope);
     Dependency srcDep;
     if (bom.getComponents().stream().noneMatch(c -> c.getBomRef().equals(srcComp.getBomRef()))) {
       bom.addComponent(srcComp);
@@ -238,7 +245,7 @@ public class CycloneDXSbom implements Sbom {
       bom.addDependency(targetDep);
     }
     if (bom.getComponents().stream().noneMatch(c -> c.getBomRef().equals(targetDep.getRef()))) {
-      bom.addComponent(newComponent(targetRef));
+      bom.addComponent(newComponent(targetRef, scope));
     }
     return this;
   }

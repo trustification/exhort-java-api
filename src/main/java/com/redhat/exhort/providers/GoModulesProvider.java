@@ -300,7 +300,7 @@ public final class GoModulesProvider extends Provider {
               dep -> {
                 PackageURL targetPurl =
                     toPurl((String) dep, "@", this.goEnvironmentVariableForPurl);
-                sbom.addDependency(source, targetPurl);
+                sbom.addDependency(source, targetPurl, null);
               });
         });
     List<String> ignoredDepsPurl =
@@ -433,7 +433,7 @@ public final class GoModulesProvider extends Provider {
         dep -> {
           PackageURL targetPurl = toPurl(dep, "@", this.goEnvironmentVariableForPurl);
           if (dependencyNotToBeIgnored(ignoredDeps, targetPurl)) {
-            sbom.addDependency(root, targetPurl);
+            sbom.addDependency(root, targetPurl, null);
           }
         });
     List<String> ignoredDepsByName = new ArrayList<>();

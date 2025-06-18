@@ -79,7 +79,7 @@ public final class PythonPipProvider extends Provider {
 
     PackageURL packageURL =
         toPurl((String) component.get("name"), (String) component.get("version"));
-    sbom.addDependency(source, packageURL);
+    sbom.addDependency(source, packageURL, null);
 
     List<Map<String, Object>> directDeps =
         (List<Map<String, Object>>) component.get("dependencies");
@@ -103,7 +103,8 @@ public final class PythonPipProvider extends Provider {
             (component) -> {
               sbom.addDependency(
                   sbom.getRoot(),
-                  toPurl((String) component.get("name"), (String) component.get("version")));
+                  toPurl((String) component.get("name"), (String) component.get("version")),
+                  null);
             });
 
     var manifestContent = Files.readString(manifest);

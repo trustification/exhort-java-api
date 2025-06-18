@@ -134,7 +134,7 @@ public abstract class JavaScriptProvider extends Provider {
       }
       String version = versionNode.asText();
       PackageURL purl = toPurl(name, version);
-      sbom.addDependency(from, purl);
+      sbom.addDependency(from, purl, null);
       addDependenciesOf(sbom, purl, e.getValue());
     }
   }
@@ -169,7 +169,7 @@ public abstract class JavaScriptProvider extends Provider {
             e -> {
               var version = e.getValue().get("version").asText();
               var target = toPurl(e.getKey(), version);
-              sbom.addDependency(manifest.root, target);
+              sbom.addDependency(manifest.root, target, null);
               addDependenciesOf(sbom, target, e.getValue());
             });
   }
@@ -182,7 +182,7 @@ public abstract class JavaScriptProvider extends Provider {
     getRootDependencies(depTree).entrySet().stream()
         .filter(e -> manifest.dependencies.contains(e.getKey()))
         .map(Entry::getValue)
-        .forEach(p -> sbom.addDependency(manifest.root, p));
+        .forEach(p -> sbom.addDependency(manifest.root, p, null));
     sbom.filterIgnoredDeps(manifest.ignored);
     return sbom;
   }

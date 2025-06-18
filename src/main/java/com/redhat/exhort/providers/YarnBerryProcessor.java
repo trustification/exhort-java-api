@@ -113,7 +113,7 @@ public final class YarnBerryProcessor extends YarnProcessor {
                     d -> {
                       var target = purlFromlocator(d.get("locator").asText());
                       if (target != null) {
-                        sbom.addDependency(from, target);
+                        sbom.addDependency(from, target, null);
                       }
                     });
               }
