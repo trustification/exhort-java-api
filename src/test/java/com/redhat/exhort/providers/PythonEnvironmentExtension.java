@@ -18,7 +18,15 @@ package com.redhat.exhort.providers;
 import com.redhat.exhort.tools.Operations;
 import com.redhat.exhort.utils.PythonControllerBase;
 import com.redhat.exhort.utils.PythonControllerTestEnv;
-import org.junit.jupiter.api.extension.*;
+import org.junit.jupiter.api.extension.AfterAllCallback;
+import org.junit.jupiter.api.extension.AfterEachCallback;
+import org.junit.jupiter.api.extension.BeforeAllCallback;
+import org.junit.jupiter.api.extension.BeforeEachCallback;
+import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
+import org.junit.jupiter.api.extension.ExtensionContext;
+import org.junit.jupiter.api.extension.ParameterContext;
+import org.junit.jupiter.api.extension.ParameterResolutionException;
+import org.junit.jupiter.api.extension.ParameterResolver;
 
 public class PythonEnvironmentExtension
     implements BeforeAllCallback,
@@ -31,23 +39,23 @@ public class PythonEnvironmentExtension
   private PythonControllerBase pythonController =
       new PythonControllerTestEnv(
           Operations.getCustomPathOrElse("python3"), Operations.getCustomPathOrElse("pip3"));
-  private System.Logger log = System.getLogger(this.getClass().getName());
+  private final System.Logger log = System.getLogger(this.getClass().getName());
 
   @Override
-  public void afterAll(ExtensionContext extensionContext) throws Exception {
+  public void afterAll(ExtensionContext extensionContext) {
     log.log(System.Logger.Level.INFO, "Finished all python tests and about to clean environment");
     pythonController.cleanEnvironment(true);
   }
 
   @Override
-  public void afterEach(ExtensionContext extensionContext) throws Exception {
+  public void afterEach(ExtensionContext extensionContext) {
     log.log(
         System.Logger.Level.INFO,
         String.format("Finished Test Method: %s", extensionContext.getRequiredTestMethod()));
   }
 
   @Override
-  public void beforeAll(ExtensionContext extensionContext) throws Exception {
+  public void beforeAll(ExtensionContext extensionContext) {
     log.log(System.Logger.Level.INFO, "Preparing python environment for tests");
     String python3 = Operations.getCustomPathOrElse("python3");
     String pip3 = Operations.getCustomPathOrElse("pip3");
@@ -73,7 +81,7 @@ public class PythonEnvironmentExtension
   }
 
   @Override
-  public void beforeEach(ExtensionContext extensionContext) throws Exception {
+  public void beforeEach(ExtensionContext extensionContext) {
     log.log(
         System.Logger.Level.INFO,
         String.format("About to Start Test Method: %s", extensionContext.getRequiredTestMethod()));
@@ -95,7 +103,7 @@ public class PythonEnvironmentExtension
   }
 
   @Override
-  public void beforeTestExecution(ExtensionContext extensionContext) throws Exception {
+  public void beforeTestExecution(ExtensionContext extensionContext) {
     //    Method requiredTestMethod = extensionContext.getRequiredTestInstances();
   }
 }

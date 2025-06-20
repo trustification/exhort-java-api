@@ -37,7 +37,7 @@ public final class JavaScriptYarnProvider extends JavaScriptProvider {
 
   private static final Pattern versionPattern = Pattern.compile("^([0-9]+)\\.");
 
-  private YarnProcessor processor;
+  private final YarnProcessor processor;
 
   public JavaScriptYarnProvider(Path manifest) {
     super(manifest, Ecosystem.Type.YARN, CMD_NAME);
@@ -45,7 +45,7 @@ public final class JavaScriptYarnProvider extends JavaScriptProvider {
   }
 
   @Override
-  protected final String lockFileName() {
+  protected String lockFileName() {
     return LOCK_FILE;
   }
 
@@ -82,12 +82,10 @@ public final class JavaScriptYarnProvider extends JavaScriptProvider {
     var matcher = versionPattern.matcher(output);
     if (matcher.find()) {
       var majorVersion = Integer.parseInt(matcher.group(1));
-      switch (majorVersion) {
-        case 1:
-          return new YarnClassicProcessor(packageManager(), manifest);
-        default:
-          return new YarnBerryProcessor(packageManager(), manifest);
+      if (majorVersion == 1) {
+        return new YarnClassicProcessor(packageManager(), manifest);
       }
+      return new YarnBerryProcessor(packageManager(), manifest);
     }
     throw new IllegalStateException("Unable to resolve current Yarn version: " + output);
   }

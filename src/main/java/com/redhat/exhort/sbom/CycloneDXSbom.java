@@ -21,7 +21,12 @@ import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.redhat.exhort.logging.LoggersFactory;
 import com.redhat.exhort.utils.Environment;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
@@ -30,6 +35,7 @@ import org.cyclonedx.Version;
 import org.cyclonedx.exception.GeneratorException;
 import org.cyclonedx.generators.BomGeneratorFactory;
 import org.cyclonedx.model.Bom;
+import org.cyclonedx.model.BomReference;
 import org.cyclonedx.model.Component;
 import org.cyclonedx.model.Component.Type;
 import org.cyclonedx.model.Dependency;
@@ -38,10 +44,10 @@ import org.cyclonedx.model.Metadata;
 public class CycloneDXSbom implements Sbom {
 
   private static final String EXHORT_IGNORE_METHOD = "EXHORT_IGNORE_METHOD";
-  private Logger log = LoggersFactory.getLogger(this.getClass().getName());
+  private final Logger log = LoggersFactory.getLogger(this.getClass().getName());
   private static final Version VERSION = Version.VERSION_14;
   private String exhortIgnoreMethod;
-  private Bom bom;
+  private final Bom bom;
   private PackageURL root;
 
   private BiPredicate<Collection<?>, Component> belongingCriteriaBinaryAlgorithm;
@@ -175,7 +181,7 @@ public class CycloneDXSbom implements Sbom {
             .filter(d -> !refsToIgnore.contains(d.getRef()))
             .collect(Collectors.toList());
     bom.setDependencies(newDeps);
-    bom.getDependencies().stream()
+    bom.getDependencies()
         .forEach(
             d -> {
               if (d.getDependencies() != null) {
@@ -205,9 +211,9 @@ public class CycloneDXSbom implements Sbom {
     for (Dependency dep : deps) {
       if (toIgnore.contains(dep.getRef()) && dep.getDependencies() != null) {
         List<String> collected =
-            dep.getDependencies().stream().map(p -> p.getRef()).collect(Collectors.toList());
+            dep.getDependencies().stream().map(BomReference::getRef).collect(Collectors.toList());
         result.addAll(collected);
-        if (dep.getDependencies().stream().filter(p -> p != null).count() > 0) {
+        if (dep.getDependencies().stream().anyMatch(Objects::nonNull)) {
           result = createIgnoreFilter(dep.getDependencies(), result);
         }
       }
@@ -294,7 +300,7 @@ public class CycloneDXSbom implements Sbom {
                   })
               .collect(Collectors.toList());
 
-      result = allDirectDeps.stream().filter(dep -> dep.getName().equals(name)).count() > 0;
+      result = allDirectDeps.stream().anyMatch(dep -> dep.getName().equals(name));
     }
     return result;
   }

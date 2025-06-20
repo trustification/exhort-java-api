@@ -35,7 +35,7 @@ public final class Ecosystem {
     PYTHON("pypi"),
     GRADLE("gradle");
 
-    String type;
+    final String type;
 
     public String getType() {
       return type;

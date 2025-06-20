@@ -43,8 +43,7 @@ public class PythonControllerVirtualEnv extends PythonControllerBase {
       throw new RuntimeException(e);
     }
     Operations.runProcessGetOutput(
-        Path.of("."),
-        new String[] {pathToPythonBin, "-m", "venv", pythonEnvironmentDir.toString()});
+        Path.of("."), pathToPythonBin, "-m", "venv", pythonEnvironmentDir.toString());
     String envBinDir = pipBinaryDir.toString();
     if (pathToPythonBin.contains("python3")) {
       this.pipBinaryLocation = Path.of(envBinDir, "pip3").toString();

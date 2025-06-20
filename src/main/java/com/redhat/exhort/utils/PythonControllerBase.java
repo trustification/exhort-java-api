@@ -47,7 +47,7 @@ public abstract class PythonControllerBase {
   public static final String PROP_EXHORT_PIP_SHOW = "EXHORT_PIP_SHOW";
   public static final String PROP_EXHORT_PYTHON_VIRTUAL_ENV = "EXHORT_PYTHON_VIRTUAL_ENV";
 
-  private Logger log = LoggersFactory.getLogger(this.getClass().getName());
+  private final Logger log = LoggersFactory.getLogger(this.getClass().getName());
   protected Path pythonEnvironmentDir;
   protected Path pipBinaryDir;
 
@@ -114,7 +114,7 @@ public abstract class PythonControllerBase {
       List<String> requirementsRows = Files.readAllLines(Path.of(pathToRequirements));
       requirementsRows.stream()
           .filter((line) -> !line.trim().startsWith("#"))
-          .filter((line) -> !line.trim().equals(""))
+          .filter((line) -> !line.trim().isEmpty())
           .forEach(
               (dependency) -> {
                 String dependencyName = getDependencyName(dependency);
@@ -190,7 +190,7 @@ public abstract class PythonControllerBase {
           if (pythonDependency != null) {
             installedVersion = pythonDependency.getVersion();
           }
-          if (!installedVersion.trim().equals("")) {
+          if (!installedVersion.trim().isEmpty()) {
             if (!manifestVersion.trim().equals(installedVersion.trim())) {
               throw new RuntimeException(
                   String.format(
@@ -296,7 +296,7 @@ public abstract class PythonControllerBase {
       boolean includeTransitive,
       List<String> path) {
 
-    if (dependencyList == null || depName.trim().equals("")) return;
+    if (dependencyList == null || depName.trim().isEmpty()) return;
 
     PythonDependency pythonDependency = cachedTree.get(new StringInsensitive(depName));
     if (pythonDependency == null) {
@@ -352,7 +352,7 @@ public abstract class PythonControllerBase {
     }
     return Arrays.stream(listOfDeps.split(","))
         .map(String::trim)
-        .filter(dep -> !dep.equals(""))
+        .filter(dep -> !dep.isEmpty())
         .collect(Collectors.toList());
   }
 

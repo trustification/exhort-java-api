@@ -24,7 +24,7 @@ import java.util.regex.Pattern;
 
 public class GitVersionControlSystemImpl implements VersionControlSystem {
 
-  private String gitBinary;
+  private final String gitBinary;
 
   public GitVersionControlSystemImpl() {
     gitBinary = Operations.getCustomPathOrElse("git");
@@ -106,12 +106,10 @@ public class GitVersionControlSystemImpl implements VersionControlSystem {
     String result = "";
     // if tag version ends with a digit, then increment it by one, and append to the end -0.
     if (Pattern.matches(".*[0-9]$", tagInfo.getTagName())) {
-      int length = tagInfo.getTagName().toCharArray().length;
+      int length = tagInfo.getTagName().length();
       Integer lastDigit = Integer.parseInt(tagInfo.getTagName().substring(length - 1, length));
       lastDigit++;
-      result =
-          String.format(
-              "%s%s-0", tagInfo.getTagName().substring(0, length - 1), lastDigit.toString());
+      result = String.format("%s%s-0", tagInfo.getTagName().substring(0, length - 1), lastDigit);
     } else {
       // if tag version ends with some suffix starting with '.' or '-', then just append to the end
       // -0.

@@ -25,9 +25,9 @@ public final class JavaScriptProviderFactory {
 
   private static final Map<String, Function<Path, Provider>> JS_PROVIDERS =
       Map.of(
-          JavaScriptNpmProvider.LOCK_FILE, (manifest) -> new JavaScriptNpmProvider(manifest),
-          JavaScriptYarnProvider.LOCK_FILE, (manifest) -> new JavaScriptYarnProvider(manifest),
-          JavaScriptPnpmProvider.LOCK_FILE, (manifest) -> new JavaScriptPnpmProvider(manifest));
+          JavaScriptNpmProvider.LOCK_FILE, JavaScriptNpmProvider::new,
+          JavaScriptYarnProvider.LOCK_FILE, JavaScriptYarnProvider::new,
+          JavaScriptPnpmProvider.LOCK_FILE, JavaScriptPnpmProvider::new);
 
   public static Provider create(final Path manifestPath) {
     var manifestDir = manifestPath.getParent();

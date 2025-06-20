@@ -546,11 +546,7 @@ class ImageUtilsTest extends ExhortTest {
           .thenReturn(output);
 
       var exception =
-          assertThrows(
-              RuntimeException.class,
-              () -> {
-                ImageUtils.hostInfo("docker", "info");
-              });
+          assertThrows(RuntimeException.class, () -> ImageUtils.hostInfo("docker", "info"));
       assertEquals("test-error", exception.getMessage());
     }
   }

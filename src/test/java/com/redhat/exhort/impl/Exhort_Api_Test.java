@@ -560,8 +560,7 @@ class Exhort_Api_Test extends ExhortTest {
   @SetSystemProperty(key = "RHDA_TOKEN", value = "rhda-token-from-env-var")
   @SetSystemProperty(key = "RHDA_SOURCE", value = "rhda-source-from-env-var")
   @SetSystemProperty(key = SKIP_VALIDATION_KEY, value = "true")
-  void imageAnalysisHtml()
-      throws IOException, ExecutionException, InterruptedException, MalformedPackageURLException {
+  void imageAnalysisHtml() throws IOException, ExecutionException, InterruptedException {
     try (MockedStatic<Operations> mock = Mockito.mockStatic(Operations.class);
         var sbomIS = getResourceAsStreamDecision(this.getClass(), "msc/image/image_sbom.json");
         var reportIS =

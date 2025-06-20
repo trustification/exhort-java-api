@@ -36,7 +36,7 @@ public abstract class BaseJavaProvider extends Provider {
     if (lines.length == 0) {
       return;
     }
-    if (lines.length == 1 && lines[0].trim().equals("")) {
+    if (lines.length == 1 && lines[0].trim().isEmpty()) {
       return;
     }
     int index = 0;
@@ -90,7 +90,7 @@ public abstract class BaseJavaProvider extends Provider {
     dependency = dependency.replace(":runtime", ":compile").replace(":provided", ":compile");
     int endIndex = Math.max(dependency.indexOf(":compile"), dependency.indexOf(":test"));
     int scopeLength;
-    if (dependency.indexOf(":compile") > -1) {
+    if (dependency.contains(":compile")) {
       scopeLength = ":compile".length();
     } else {
       scopeLength = ":test".length();
@@ -140,7 +140,7 @@ public abstract class BaseJavaProvider extends Provider {
   }
 
   int getDepth(String line) {
-    if (line == null || line.trim().equals("")) {
+    if (line == null || line.trim().isEmpty()) {
       return -1;
     }
 
@@ -165,7 +165,7 @@ public abstract class BaseJavaProvider extends Provider {
     /**
      * Get the string representation of the dependency to use as excludes
      *
-     * @return an exclude string for the dependency:tree plugin, ie. group-id:artifact-id:*:version
+     * @return an exclude string for the dependency:tree plugin, i.e. group-id:artifact-id:*:version
      */
     @Override
     public String toString() {
@@ -188,7 +188,7 @@ public abstract class BaseJavaProvider extends Provider {
             groupId,
             artifactId,
             version,
-            this.scope == "*" ? null : new TreeMap<>(Map.of("scope", this.scope)),
+            this.scope.equals("*") ? null : new TreeMap<>(Map.of("scope", this.scope)),
             null);
       } catch (MalformedPackageURLException e) {
         throw new IllegalArgumentException("Unable to parse PackageURL", e);

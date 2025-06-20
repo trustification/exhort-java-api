@@ -16,7 +16,6 @@
 package com.redhat.exhort.providers;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.redhat.exhort.tools.Ecosystem;
 import java.nio.file.Path;
@@ -35,7 +34,7 @@ public final class JavaScriptPnpmProvider extends JavaScriptProvider {
   }
 
   @Override
-  protected final String lockFileName() {
+  protected String lockFileName() {
     return LOCK_FILE;
   }
 
@@ -65,8 +64,7 @@ public final class JavaScriptPnpmProvider extends JavaScriptProvider {
   }
 
   @Override
-  protected JsonNode buildDependencyTree(boolean includeTransitive)
-      throws JsonMappingException, JsonProcessingException {
+  protected JsonNode buildDependencyTree(boolean includeTransitive) throws JsonProcessingException {
     var depTree = super.buildDependencyTree(includeTransitive);
     return depTree.get(0);
   }

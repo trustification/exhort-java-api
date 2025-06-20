@@ -23,7 +23,7 @@ import java.util.Optional;
 public class RequestManager {
 
   private static RequestManager requestManager;
-  private Map<String, String> requests;
+  private final Map<String, String> requests;
 
   public static RequestManager getInstance() {
     if (Objects.isNull(requestManager)) {
@@ -47,11 +47,9 @@ public class RequestManager {
       Optional<String> keyOfParent =
           requests.entrySet().stream()
               .filter(pair -> pair.getValue().equals(removedClientTraceId))
-              .map(pair -> pair.getKey())
+              .map(Map.Entry::getKey)
               .findFirst();
-      if (keyOfParent.isPresent()) {
-        requests.remove(keyOfParent.get());
-      }
+      keyOfParent.ifPresent(requests::remove);
     }
   }
 

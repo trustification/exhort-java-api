@@ -17,8 +17,11 @@ package com.redhat.exhort.providers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.mockStatic;
 
 import com.redhat.exhort.Api;
 import com.redhat.exhort.ExhortTest;
@@ -32,7 +35,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.mockito.*;
+import org.mockito.MockedStatic;
 
 @ExtendWith(HelperExtension.class)
 class Javascript_Provider_Test extends ExhortTest {
@@ -55,8 +58,7 @@ class Javascript_Provider_Test extends ExhortTest {
 
   @ParameterizedTest
   @MethodSource({"testCases"})
-  void test_the_provideStack(String pkgManager, String testFolder)
-      throws IOException, InterruptedException {
+  void test_the_provideStack(String pkgManager, String testFolder) throws IOException {
     // create temp file hosting our sut package.json
     var tmpFolder = Files.createTempDirectory("exhort_test_");
     var tmpFile = Files.createFile(tmpFolder.resolve("package.json"));
@@ -109,14 +111,13 @@ class Javascript_Provider_Test extends ExhortTest {
 
   @ParameterizedTest
   @MethodSource({"testCases"})
-  void test_the_provideComponent(String pkgManager, String testFolder)
-      throws IOException, InterruptedException {
+  void test_the_provideComponent(String pkgManager, String testFolder) throws IOException {
     // load the pom target pom file
     var targetPom =
         String.format(
             "src/test/resources/tst_manifests/%s/%s/package.json", pkgManager, testFolder);
     // load expected SBOM
-    String expectedSbom = "";
+    String expectedSbom;
     try (var is =
         getResourceAsStreamDecision(
             this.getClass(),
@@ -165,7 +166,7 @@ class Javascript_Provider_Test extends ExhortTest {
                 "tst_manifests/%s/%s/%s", pkgManager, testFolder, getLockFile(pkgManager)))) {
       Files.write(tmpFolder.resolve(getLockFile(pkgManager)), is.readAllBytes());
     }
-    String expectedSbom = "";
+    String expectedSbom;
     try (var is =
         getResourceAsStreamDecision(
             this.getClass(),
@@ -197,7 +198,7 @@ class Javascript_Provider_Test extends ExhortTest {
   }
 
   private String getLockFile(String pkgManager) {
-    Ecosystem.Type mgr = null;
+    Ecosystem.Type mgr;
     if (pkgManager.startsWith(Ecosystem.Type.YARN.getType().toLowerCase())) {
       mgr = Ecosystem.Type.YARN;
     } else {

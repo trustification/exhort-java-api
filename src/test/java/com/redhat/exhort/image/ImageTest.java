@@ -15,7 +15,9 @@
  */
 package com.redhat.exhort.image;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Named;
@@ -408,8 +410,8 @@ class ImageTest {
     var image2 = new Image("test-image:latest");
     var image3 = new Image("test-image:old");
 
-    assertTrue(image1.equals(image2));
-    assertFalse(image2.equals(image3));
+    assertEquals(image1, image2);
+    assertNotEquals(image2, image3);
   }
 
   @Test
@@ -426,28 +428,13 @@ class ImageTest {
   void test_image_null() {
     var expectedMessage = "Image name must not be null";
 
-    var exception1 =
-        assertThrows(
-            NullPointerException.class,
-            () -> {
-              new Image(null);
-            });
+    var exception1 = assertThrows(NullPointerException.class, () -> new Image(null));
     assertEquals(expectedMessage, exception1.getMessage());
 
-    var exception2 =
-        assertThrows(
-            NullPointerException.class,
-            () -> {
-              new Image(null, "test");
-            });
+    var exception2 = assertThrows(NullPointerException.class, () -> new Image(null, "test"));
     assertEquals(expectedMessage, exception2.getMessage());
 
-    var exception3 =
-        assertThrows(
-            NullPointerException.class,
-            () -> {
-              Image.validate(null);
-            });
+    var exception3 = assertThrows(NullPointerException.class, () -> Image.validate(null));
     assertEquals(expectedMessage, exception3.getMessage());
   }
 
@@ -456,28 +443,14 @@ class ImageTest {
     var imageName = "";
     var expectedMessage = imageName + " is not a proper image name ([registry/][repo][:port]";
 
-    var exception1 =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              new Image(imageName);
-            });
+    var exception1 = assertThrows(IllegalArgumentException.class, () -> new Image(imageName));
     assertEquals(expectedMessage, exception1.getMessage());
 
     var exception2 =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              new Image(imageName, "test");
-            });
+        assertThrows(IllegalArgumentException.class, () -> new Image(imageName, "test"));
     assertEquals(expectedMessage, exception2.getMessage());
 
-    var exception3 =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              Image.validate(imageName);
-            });
+    var exception3 = assertThrows(IllegalArgumentException.class, () -> Image.validate(imageName));
     assertEquals(expectedMessage, exception3.getMessage());
   }
 
@@ -501,28 +474,14 @@ class ImageTest {
             + " match allowed pattern '^sha256:[a-z0-9]{32,}$'\n"
             + "See http://bit.ly/docker_image_fmt for more details";
 
-    var exception1 =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              new Image(imageName);
-            });
+    var exception1 = assertThrows(IllegalArgumentException.class, () -> new Image(imageName));
     assertEquals(expectedMessage, exception1.getMessage());
 
     var exception2 =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              new Image(imageName, "&^*&");
-            });
+        assertThrows(IllegalArgumentException.class, () -> new Image(imageName, "&^*&"));
     assertEquals(expectedMessage, exception2.getMessage());
 
-    var exception3 =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              Image.validate(imageName);
-            });
+    var exception3 = assertThrows(IllegalArgumentException.class, () -> Image.validate(imageName));
     assertEquals(expectedMessage, exception3.getMessage());
   }
 }

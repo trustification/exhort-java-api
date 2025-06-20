@@ -18,8 +18,8 @@ package com.redhat.exhort.utils;
 import java.util.List;
 
 public class PythonDependency {
-  String name = "";
-  String version = "";
+  String name;
+  String version;
   List<String> dependencies;
 
   public PythonDependency(String name, String version, List<String> dependencies) {

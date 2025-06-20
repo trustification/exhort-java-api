@@ -17,8 +17,6 @@ package com.redhat.exhort.providers;
 
 import static com.redhat.exhort.impl.ExhortApi.debugLoggingIsNeeded;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.redhat.exhort.Api;
@@ -36,7 +34,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -152,39 +156,37 @@ public final class GoModulesProvider extends Provider {
       List<String> comparisonLines =
           Arrays.stream(goModGraphLines)
               .filter((line) -> line.startsWith(root))
-              .map((line) -> getChildVertex(line))
+              .map(GoModulesProvider::getChildVertex)
               .collect(Collectors.toList());
       List<String> goModDependencies = collectAllDepsFromManifest(lines, goModLines);
-      comparisonLines.stream()
-          .forEach(
-              (dependency) -> {
-                String[] parts = dependency.split("@");
-                String version = parts[1];
-                String depName = parts[0];
-                goModDependencies.stream()
-                    .forEach(
-                        (dep) -> {
-                          String[] artifactParts = dep.trim().split(" ");
-                          String currentDepName = artifactParts[0];
-                          String currentVersion = artifactParts[1];
-                          if (currentDepName.trim().equals(depName.trim())) {
-                            if (!currentVersion.trim().equals(version.trim())) {
-                              throw new RuntimeException(
-                                  String.format(
-                                      "Can't continue with analysis - versions mismatch for"
-                                          + " dependency name=%s, manifest version=%s, installed"
-                                          + " Version=%s, if you want to allow version mismatch for"
-                                          + " analysis between installed and requested packages,"
-                                          + " set environment variable/setting -"
-                                          + " %s=false",
-                                      depName,
-                                      currentVersion,
-                                      version,
-                                      Provider.PROP_MATCH_MANIFEST_VERSIONS));
-                            }
-                          }
-                        });
-              });
+      comparisonLines.forEach(
+          (dependency) -> {
+            String[] parts = dependency.split("@");
+            String version = parts[1];
+            String depName = parts[0];
+            goModDependencies.forEach(
+                (dep) -> {
+                  String[] artifactParts = dep.trim().split(" ");
+                  String currentDepName = artifactParts[0];
+                  String currentVersion = artifactParts[1];
+                  if (currentDepName.trim().equals(depName.trim())) {
+                    if (!currentVersion.trim().equals(version.trim())) {
+                      throw new RuntimeException(
+                          String.format(
+                              "Can't continue with analysis - versions mismatch for"
+                                  + " dependency name=%s, manifest version=%s, installed"
+                                  + " Version=%s, if you want to allow version mismatch for"
+                                  + " analysis between installed and requested packages,"
+                                  + " set environment variable/setting -"
+                                  + " %s=false",
+                              depName,
+                              currentVersion,
+                              version,
+                              Provider.PROP_MATCH_MANIFEST_VERSIONS));
+                    }
+                  }
+                });
+          });
     } catch (IOException e) {
       throw new RuntimeException(
           "Failed to open go.mod file for manifest versions check validation!");
@@ -192,16 +194,14 @@ public final class GoModulesProvider extends Provider {
   }
 
   private List<String> collectAllDepsFromManifest(String[] lines, String goModLines) {
-    List<String> result = new ArrayList<>();
     // collect all deps that starts with require keyword
-    result =
+    List<String> result =
         Arrays.stream(lines)
             .filter((line) -> line.trim().startsWith("require") && !line.contains("("))
             .map((dep) -> dep.substring("require".length()).trim())
             .collect(Collectors.toList());
 
     // collect all deps that are inside `require` blocks
-
     String currentSegmentOfGoMod = goModLines;
     Map<String, Integer> requirePosObject = decideRequireBlockIndex(currentSegmentOfGoMod);
     while (requirePosObject.get("index") > -1) {
@@ -245,7 +245,7 @@ public final class GoModulesProvider extends Provider {
     VersionControlSystem vcs = new GitVersionControlSystemImpl();
     if (vcs.isDirectoryRepo(directory)) {
       TagInfo latestTagInfo = vcs.getLatestTag(directory);
-      if (!latestTagInfo.getTagName().trim().equals("")) {
+      if (!latestTagInfo.getTagName().trim().isEmpty()) {
         if (!latestTagInfo.isCurrentCommitPointedByTag()) {
           String nextTagVersion = vcs.getNextTagVersion(latestTagInfo);
           this.mainModuleVersion = vcs.getPseudoVersion(latestTagInfo, nextTagVersion);
@@ -253,7 +253,7 @@ public final class GoModulesProvider extends Provider {
           this.mainModuleVersion = latestTagInfo.getTagName();
         }
       } else {
-        if (!latestTagInfo.getCurrentCommitDigest().trim().equals("")) {
+        if (!latestTagInfo.getCurrentCommitDigest().trim().isEmpty()) {
           this.mainModuleVersion =
               vcs.getPseudoVersion(latestTagInfo, getDefaultMainModuleVersion());
         }
@@ -262,7 +262,7 @@ public final class GoModulesProvider extends Provider {
   }
 
   private Sbom buildSbomFromGraph(
-      String goModulesResult, List<PackageURL> ignoredDeps, Path manifestPath) throws IOException {
+      String goModulesResult, List<PackageURL> ignoredDeps, Path manifestPath) {
     // Each entry contains a key of the module, and the list represents the module direct
     // dependencies , so
     // pairing of the key with each of the dependencies in a list is basically an edge in the graph.
@@ -272,7 +272,7 @@ public final class GoModulesProvider extends Provider {
     // value of list of that module' dependencies.
     List<String> linesList = Arrays.asList(goModulesResult.split(System.lineSeparator()));
 
-    Integer startingIndex = 0;
+    int startingIndex = 0;
     for (String line : linesList) {
       if (!edges.containsKey(getParentVertex(line))) {
         // Collect all direct dependencies of the current module into a list.
@@ -298,8 +298,7 @@ public final class GoModulesProvider extends Provider {
           PackageURL source = toPurl(key, "@", this.goEnvironmentVariableForPurl);
           value.forEach(
               dep -> {
-                PackageURL targetPurl =
-                    toPurl((String) dep, "@", this.goEnvironmentVariableForPurl);
+                PackageURL targetPurl = toPurl(dep, "@", this.goEnvironmentVariableForPurl);
                 sbom.addDependency(source, targetPurl, null);
               });
         });
@@ -348,12 +347,11 @@ public final class GoModulesProvider extends Provider {
 
   private List<String> getListOfPackagesWithFinalVersions(
       Map<String, String> finalModulesVersions, Map.Entry<String, List<String>> entry) {
-    return (List<String>)
-        entry.getValue().stream()
-            .map(
-                (packageWithVersion) ->
-                    getPackageWithFinalVersion(finalModulesVersions, (String) packageWithVersion))
-            .collect(Collectors.toList());
+    return entry.getValue().stream()
+        .map(
+            (packageWithVersion) ->
+                getPackageWithFinalVersion(finalModulesVersions, packageWithVersion))
+        .collect(Collectors.toList());
   }
 
   public static String getPackageWithFinalVersion(
@@ -387,11 +385,10 @@ public final class GoModulesProvider extends Provider {
           getEnvironmentVariable(goEnvironmentVariables, GO_HOST_ARCHITECTURE_ENV_NAME);
       String hostOS =
           getEnvironmentVariable(goEnvironmentVariables, GO_HOST_OPERATION_SYSTEM_ENV_NAME);
-      return new TreeMap<String, String>(
-          Map.of("type", "module", "goos", hostOS, "goarch", hostArch));
+      return new TreeMap<>(Map.of("type", "module", "goos", hostOS, "goarch", hostArch));
     }
 
-    return new TreeMap<String, String>(Map.of("type", "module"));
+    return new TreeMap<>(Map.of("type", "module"));
   }
 
   private static String getEnvironmentVariable(String goEnvironmentVariables, String envName) {
@@ -403,8 +400,7 @@ public final class GoModulesProvider extends Provider {
     return envValue.replaceAll("\"", "");
   }
 
-  private String buildGoModulesDependencies(Path manifestPath)
-      throws JsonMappingException, JsonProcessingException {
+  private String buildGoModulesDependencies(Path manifestPath) {
     String[] goModulesDeps;
     goModulesDeps = new String[] {goExecutable, "mod", "graph"};
 

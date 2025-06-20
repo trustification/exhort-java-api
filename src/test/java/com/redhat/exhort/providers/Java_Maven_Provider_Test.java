@@ -60,7 +60,7 @@ public class Java_Maven_Provider_Test extends ExhortTest {
 
   @ParameterizedTest
   @MethodSource("testFolders")
-  void test_the_provideStack(String testFolder) throws IOException, InterruptedException {
+  void test_the_provideStack(String testFolder) throws IOException {
     // create temp file hosting our sut pom.xml
     var tmpPomFile = Files.createTempFile("exhort_test_", ".xml");
     try (var is =
@@ -86,10 +86,8 @@ public class Java_Maven_Provider_Test extends ExhortTest {
       mockedOperations
           .when(() -> Operations.runProcess(any(), any()))
           .thenAnswer(
-              invocationOnMock -> {
-                return getOutputFileAndOverwriteItWithMock(
-                    depTree, invocationOnMock, "-DoutputFile");
-              });
+              invocationOnMock ->
+                  getOutputFileAndOverwriteItWithMock(depTree, invocationOnMock, "-DoutputFile"));
       // Mock Operations.getCustomPathOrElse to return "mvn"
       mockedOperations.when(() -> Operations.getCustomPathOrElse(anyString())).thenReturn("mvn");
       mockedOperations
@@ -125,12 +123,12 @@ public class Java_Maven_Provider_Test extends ExhortTest {
 
   @ParameterizedTest
   @MethodSource("testFolders")
-  void test_the_provideComponent(String testFolder) throws IOException, InterruptedException {
+  void test_the_provideComponent(String testFolder) throws IOException {
     // load the pom target pom file
     var targetPom = resolveFile(String.format("tst_manifests/maven/%s/pom.xml", testFolder));
 
     // load expected SBOM
-    String expectedSbom = "";
+    String expectedSbom;
     try (var is =
         getResourceAsStreamDecision(
             getClass(),
@@ -148,10 +146,8 @@ public class Java_Maven_Provider_Test extends ExhortTest {
       mockedOperations
           .when(() -> Operations.runProcess(any(), any()))
           .thenAnswer(
-              invocationOnMock -> {
-                return getOutputFileAndOverwriteItWithMock(
-                    effectivePom, invocationOnMock, "-Doutput");
-              });
+              invocationOnMock ->
+                  getOutputFileAndOverwriteItWithMock(effectivePom, invocationOnMock, "-Doutput"));
       // Mock Operations.getCustomPathOrElse to return "mvn"
       mockedOperations.when(() -> Operations.getCustomPathOrElse(anyString())).thenReturn("mvn");
       mockedOperations
@@ -168,8 +164,7 @@ public class Java_Maven_Provider_Test extends ExhortTest {
 
   @ParameterizedTest
   @MethodSource("testFolders")
-  void test_the_provideComponent_With_Path(String testFolder)
-      throws IOException, InterruptedException {
+  void test_the_provideComponent_With_Path(String testFolder) throws IOException {
     // load the pom target pom file
     // create temp file hosting our sut pom.xml
     var tmpPomFile = Files.createTempFile("exhort_test_", ".xml");
@@ -179,7 +174,7 @@ public class Java_Maven_Provider_Test extends ExhortTest {
       Files.write(tmpPomFile, is.readAllBytes());
     }
     // load expected SBOM
-    String expectedSbom = "";
+    String expectedSbom;
     try (var is =
         getResourceAsStreamDecision(
             getClass(),
@@ -197,10 +192,8 @@ public class Java_Maven_Provider_Test extends ExhortTest {
       mockedOperations
           .when(() -> Operations.runProcess(any(), any()))
           .thenAnswer(
-              invocationOnMock -> {
-                return getOutputFileAndOverwriteItWithMock(
-                    effectivePom, invocationOnMock, "-Doutput");
-              });
+              invocationOnMock ->
+                  getOutputFileAndOverwriteItWithMock(effectivePom, invocationOnMock, "-Doutput"));
       // Mock Operations.getCustomPathOrElse to return "mvn"
       mockedOperations.when(() -> Operations.getCustomPathOrElse(anyString())).thenReturn("mvn");
       mockedOperations

@@ -28,17 +28,11 @@ public class PythonControllerTestEnv extends PythonControllerRealEnv {
   public void prepareEnvironment(String pathToPythonBin) {
     super.prepareEnvironment(pathToPythonBin);
     Operations.runProcessGetOutput(
-        Path.of("."),
-        new String[] {this.pathToPythonBin, "-m", "pip", "install", "--upgrade", "pip"});
+        Path.of("."), this.pathToPythonBin, "-m", "pip", "install", "--upgrade", "pip");
   }
 
   @Override
   public boolean automaticallyInstallPackageOnEnvironment() {
     return true;
-  }
-
-  @Override
-  public boolean isVirtualEnv() {
-    return false;
   }
 }

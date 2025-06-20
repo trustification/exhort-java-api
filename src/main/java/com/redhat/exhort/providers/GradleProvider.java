@@ -233,7 +233,7 @@ public final class GradleProvider extends BaseJavaProvider {
     return tempFile;
   }
 
-  protected Path getProperties(Path manifestPath) throws IOException {
+  private Path getProperties(Path manifestPath) throws IOException {
     Path propsTempFile = Files.createTempFile("propsfile", ".txt");
     String propCmd = gradleExecutable + " properties";
     String[] propCmdList = propCmd.split("\\s+");
@@ -504,8 +504,7 @@ public final class GradleProvider extends BaseJavaProvider {
     String group = propertiesMap.get("group");
     String version = propertiesMap.get("version");
     String rootName = extractRootProjectValue(textFormatFile);
-    String root = group + ':' + rootName + ':' + "jar" + ':' + version;
-    return root;
+    return group + ':' + rootName + ':' + "jar" + ':' + version;
   }
 
   private String extractRootProjectValue(Path inputFilePath) throws IOException {

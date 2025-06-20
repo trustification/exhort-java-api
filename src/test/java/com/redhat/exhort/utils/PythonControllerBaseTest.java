@@ -27,7 +27,7 @@ import org.mockito.ArgumentMatcher;
 class PythonControllerBaseTest extends ExhortTest {
 
   static ArgumentMatcher<String[]> matchCommandPipFreeze =
-      new ArgumentMatcher<String[]>() {
+      new ArgumentMatcher<>() {
         @Override
         public boolean matches(String[] command) {
           return Arrays.stream(command).anyMatch(word -> word.contains("freeze"));
@@ -43,7 +43,7 @@ class PythonControllerBaseTest extends ExhortTest {
       };
 
   static ArgumentMatcher<String[]> matchCommandPipShow =
-      new ArgumentMatcher<String[]>() {
+      new ArgumentMatcher<>() {
         @Override
         public boolean matches(String[] command) {
           return Arrays.stream(command).anyMatch(word -> word.contains("show"));
