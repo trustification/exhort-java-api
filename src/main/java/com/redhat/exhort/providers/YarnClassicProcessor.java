@@ -107,10 +107,7 @@ public final class YarnClassicProcessor extends YarnProcessor {
           }
         });
 
-    trees.forEach(
-        n -> {
-          addChildrenToSbom(sbom, n, purls);
-        });
+    trees.forEach(n -> addChildrenToSbom(sbom, n, purls));
   }
 
   void addChildrenToSbom(Sbom sbom, JsonNode node, Map<String, PackageURL> purls) {

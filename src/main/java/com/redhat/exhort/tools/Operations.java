@@ -204,9 +204,9 @@ public final class Operations {
   }
 
   public static class ProcessExecOutput {
-    private String output;
-    private String error;
-    private int exitCode;
+    private final String output;
+    private final String error;
+    private final int exitCode;
 
     public ProcessExecOutput(String output, String error, int exitCode) {
       this.output = output;

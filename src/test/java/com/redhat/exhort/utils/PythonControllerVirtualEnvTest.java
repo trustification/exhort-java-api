@@ -17,8 +17,14 @@ package com.redhat.exhort.utils;
 
 import static com.redhat.exhort.Provider.PROP_MATCH_MANIFEST_VERSIONS;
 import static com.redhat.exhort.utils.PythonControllerBase.PROP_EXHORT_PYTHON_INSTALL_BEST_EFFORTS;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -39,7 +45,7 @@ class PythonControllerVirtualEnvTest extends ExhortTest {
   private static PythonControllerVirtualEnv pythonControllerVirtualEnv;
   private static PythonControllerVirtualEnv spiedPythonControllerVirtualEnv;
 
-  private ObjectMapper om = new ObjectMapper();
+  private final ObjectMapper om = new ObjectMapper();
 
   @BeforeAll
   static void setUp() {
@@ -78,7 +84,7 @@ class PythonControllerVirtualEnvTest extends ExhortTest {
   void test_Virtual_Environment_Flow() throws IOException {
     //    Mockito
     String requirementsTxt = "Jinja2==3.0.3";
-    Path requirementsFilePath = Path.of(Environment.get("user.dir").toString(), "requirements.txt");
+    Path requirementsFilePath = Path.of(Environment.get("user.dir"), "requirements.txt");
     Files.write(requirementsFilePath, requirementsTxt.getBytes());
 
     spiedPythonControllerVirtualEnv.getDependencies(requirementsFilePath.toString(), true);

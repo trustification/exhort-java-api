@@ -32,7 +32,7 @@ public final class JavaScriptNpmProvider extends JavaScriptProvider {
   }
 
   @Override
-  protected final String lockFileName() {
+  protected String lockFileName() {
     return LOCK_FILE;
   }
 

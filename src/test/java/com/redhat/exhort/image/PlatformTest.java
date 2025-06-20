@@ -15,7 +15,8 @@
  */
 package com.redhat.exhort.image;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Named;
@@ -102,58 +103,31 @@ class PlatformTest {
     assertEquals(variantRequired, Platform.isVariantRequired(p.getOs(), p.getArchitecture()));
 
     var pf = new Platform(os, arch, variant);
-    assertTrue(p.equals(pf));
+    assertEquals(p, pf);
     assertEquals(p.hashCode(), pf.hashCode());
   }
 
   @Test
   void test_platform_invalid() {
-    var exception1 =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              new Platform(null);
-            });
+    var exception1 = assertThrows(IllegalArgumentException.class, () -> new Platform(null));
     assertEquals("Invalid platform: null", exception1.getMessage());
 
     var exception2 =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              new Platform("linux/arm/v8/a");
-            });
+        assertThrows(IllegalArgumentException.class, () -> new Platform("linux/arm/v8/a"));
     assertEquals("Invalid platform: linux/arm/v8/a", exception2.getMessage());
 
-    var exception3 =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              new Platform("linux/abc");
-            });
+    var exception3 = assertThrows(IllegalArgumentException.class, () -> new Platform("linux/abc"));
     assertEquals("Image platform is not supported: linux/abc", exception3.getMessage());
 
-    var exception4 =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              new Platform("", null, "");
-            });
+    var exception4 = assertThrows(IllegalArgumentException.class, () -> new Platform("", null, ""));
     assertEquals("Invalid platform arch: null", exception4.getMessage());
 
     var exception5 =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              new Platform("linux", "arm", "v8");
-            });
+        assertThrows(IllegalArgumentException.class, () -> new Platform("linux", "arm", "v8"));
     assertEquals("Image platform is not supported: linux/arm/v8", exception5.getMessage());
 
     var exception6 =
-        assertThrows(
-            IllegalArgumentException.class,
-            () -> {
-              new Platform(null, "arm", null);
-            });
+        assertThrows(IllegalArgumentException.class, () -> new Platform(null, "arm", null));
     assertEquals("Image platform is not supported: null/arm/null", exception6.getMessage());
   }
 }

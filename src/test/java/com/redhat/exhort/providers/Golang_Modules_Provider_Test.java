@@ -16,8 +16,12 @@
 package com.redhat.exhort.providers;
 
 import static com.redhat.exhort.Provider.PROP_MATCH_MANIFEST_VERSIONS;
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.redhat.exhort.Api;
 import com.redhat.exhort.ExhortTest;
@@ -50,7 +54,7 @@ class Golang_Modules_Provider_Test extends ExhortTest {
 
   @ParameterizedTest
   @MethodSource("testFolders")
-  void test_the_provideStack(String testFolder) throws IOException, InterruptedException {
+  void test_the_provideStack(String testFolder) throws IOException {
     // create temp file hosting our sut package.json
     var tmpGoModulesDir = Files.createTempDirectory("exhort_test_");
     var tmpGolangFile = Files.createFile(tmpGoModulesDir.resolve("go.mod"));
@@ -79,7 +83,7 @@ class Golang_Modules_Provider_Test extends ExhortTest {
 
   @ParameterizedTest
   @MethodSource("testFolders")
-  void test_the_provideComponent(String testFolder) throws IOException, InterruptedException {
+  void test_the_provideComponent(String testFolder) throws IOException {
     // create temp file hosting our sut package.json
     var tmpGoModulesDir = Files.createTempDirectory("exhort_test_");
     var tmpGolangFile = Files.createFile(tmpGoModulesDir.resolve("go.mod"));
@@ -89,7 +93,7 @@ class Golang_Modules_Provider_Test extends ExhortTest {
       Files.write(tmpGolangFile, is.readAllBytes());
     }
     // load expected SBOM
-    String expectedSbom = "";
+    String expectedSbom;
     try (var is =
         getResourceAsStreamDecision(
             this.getClass(),
@@ -110,11 +114,7 @@ class Golang_Modules_Provider_Test extends ExhortTest {
   void Test_The_ProvideComponent_Path_Should_Throw_Exception() {
 
     GoModulesProvider goModulesProvider = new GoModulesProvider(Path.of("."));
-    assertThatIllegalArgumentException()
-        .isThrownBy(
-            () -> {
-              goModulesProvider.provideComponent();
-            });
+    assertThatIllegalArgumentException().isThrownBy(goModulesProvider::provideComponent);
   }
 
   @ParameterizedTest
@@ -158,27 +158,28 @@ class Golang_Modules_Provider_Test extends ExhortTest {
   void Test_Golang_MvS_Logic_Enabled() throws IOException {
     System.setProperty(GoModulesProvider.PROP_EXHORT_GO_MVS_LOGIC_ENABLED, "true");
     String goModPath = getFileFromResource("go.mod", "msc/golang/mvs_logic/go.mod");
-    GoModulesProvider goModulesProvider = new GoModulesProvider(Path.of(goModPath));
+    Path manifest = Path.of(goModPath);
+    GoModulesProvider goModulesProvider = new GoModulesProvider(manifest);
     String resultSbom =
         dropIgnoredKeepFormat(
-            goModulesProvider.getDependenciesSbom(Path.of(goModPath), true).getAsJsonString());
+            goModulesProvider.getDependenciesSbom(manifest, true).getAsJsonString());
     String expectedSbom =
         getStringFromFile("msc/golang/mvs_logic/expected_sbom_stack_analysis.json").trim();
     assertEquals(dropIgnored(expectedSbom), dropIgnored(resultSbom));
 
     // check that only one version of package golang/go.opencensus.io is in sbom for
     // EXHORT_GO_MVS_LOGIC_ENABLED=true
-    assertTrue(
+    assertEquals(
+        1,
         Arrays.stream(resultSbom.split(System.lineSeparator()))
-                .filter(str -> str.contains("\"ref\" : \"pkg:golang/go.opencensus.io@"))
-                .count()
-            == 1);
+            .filter(str -> str.contains("\"ref\" : \"pkg:golang/go.opencensus.io@"))
+            .count());
 
     System.clearProperty(GoModulesProvider.PROP_EXHORT_GO_MVS_LOGIC_ENABLED);
 
     resultSbom =
         dropIgnoredKeepFormat(
-            goModulesProvider.getDependenciesSbom(Path.of(goModPath), true).getAsJsonString());
+            goModulesProvider.getDependenciesSbom(manifest, true).getAsJsonString());
     // check that there is more than one version of package golang/go.opencensus.io in sbom for
     // EXHORT_GO_MVS_LOGIC_ENABLED=false
     assertTrue(

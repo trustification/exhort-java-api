@@ -162,13 +162,7 @@ public final class JavaMavenProvider extends BaseJavaProvider {
     deps.stream()
         .filter(dep -> !testsDeps.contains(dep))
         .map(DependencyAggregator::toPurl)
-        .filter(
-            dep ->
-                ignored.stream()
-                        .filter(artifact -> artifact.isCoordinatesEquals(dep))
-                        .collect(Collectors.toList())
-                        .size()
-                    == 0)
+        .filter(dep -> ignored.stream().noneMatch(artifact -> artifact.isCoordinatesEquals(dep)))
         .forEach(d -> sbom.addDependency(sbom.getRoot(), d, null));
 
     // build and return content for constructing request to the backend
@@ -206,7 +200,7 @@ public final class JavaMavenProvider extends BaseJavaProvider {
                 break;
             }
           }
-          if (isRoot && dependencyAggregator.isValid()) {
+          if (dependencyAggregator.isValid()) {
             return dependencyAggregator.toPurl();
           }
         }

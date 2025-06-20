@@ -16,7 +16,6 @@
 package com.redhat.exhort.image;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.AdditionalMatchers.aryEq;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
@@ -59,7 +58,7 @@ class ImageRefTest extends ExhortTest {
 
     var imageRefPurl = new ImageRef(purl);
     assertEquals(imageRef, imageRefPurl);
-    assertTrue(imageRef.equals(imageRefPurl));
+    assertEquals(imageRef, imageRefPurl);
     assertEquals(imageRef.hashCode(), imageRefPurl.hashCode());
   }
 

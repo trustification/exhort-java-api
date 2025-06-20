@@ -18,7 +18,6 @@ package com.redhat.exhort.providers;
 import static com.redhat.exhort.impl.ExhortApi.debugLoggingIsNeeded;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
@@ -187,7 +186,7 @@ public abstract class JavaScriptProvider extends Provider {
     return sbom;
   }
 
-  // Returns the dependencies a the base level of the dependency tree in a name -> purl format.
+  // Returns the dependencies a base level of the dependency tree in a name -> purl format.
   // axios -> pkg:npm/axios@0.19.2
   protected Map<String, PackageURL> getRootDependencies(JsonNode depTree) {
     Map<String, PackageURL> direct = new TreeMap<>();
@@ -207,8 +206,7 @@ public abstract class JavaScriptProvider extends Provider {
     return direct;
   }
 
-  protected JsonNode buildDependencyTree(boolean includeTransitive)
-      throws JsonMappingException, JsonProcessingException {
+  protected JsonNode buildDependencyTree(boolean includeTransitive) throws JsonProcessingException {
     // clean command used to clean build target
     Path manifestDir;
     try {
@@ -248,7 +246,7 @@ public abstract class JavaScriptProvider extends Provider {
     return output;
   }
 
-  protected List<String> getIgnoredDeps(JsonNode manifest) throws IOException {
+  protected List<String> getIgnoredDeps(JsonNode manifest) {
     var ignored = new ArrayList<String>();
     var ignoredNode = manifest.withArray("exhortignore");
     if (ignoredNode == null) {

@@ -29,7 +29,7 @@ import org.apache.commons.io.FileUtils;
 public class ExhortTest {
 
   protected String getStringFromFile(String path) {
-    byte[] bytes = new byte[0];
+    byte[] bytes;
     try {
       InputStream resourceAsStream = getResourceAsStreamDecision(this.getClass(), path);
       bytes = resourceAsStream.readAllBytes();

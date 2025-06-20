@@ -34,7 +34,7 @@ public class ImageRef {
   public static final String OS_QUALIFIER = "os";
   public static final String VARIANT_QUALIFIER = "variant";
 
-  private Image image;
+  private final Image image;
   private Platform platform;
 
   public ImageRef(String image, String platform) {
@@ -48,8 +48,8 @@ public class ImageRef {
   }
 
   public ImageRef(PackageURL packageURL) {
-    String name = null;
-    String version = null;
+    String name;
+    String version;
     String tag = null;
     String repositoryRrl = null;
     String arch = null;
