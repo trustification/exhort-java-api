@@ -194,16 +194,14 @@ public final class GoModulesProvider extends Provider {
   }
 
   private List<String> collectAllDepsFromManifest(String[] lines, String goModLines) {
-    List<String> result;
     // collect all deps that starts with require keyword
-    result =
+    List<String> result =
         Arrays.stream(lines)
             .filter((line) -> line.trim().startsWith("require") && !line.contains("("))
             .map((dep) -> dep.substring("require".length()).trim())
             .collect(Collectors.toList());
 
     // collect all deps that are inside `require` blocks
-
     String currentSegmentOfGoMod = goModLines;
     Map<String, Integer> requirePosObject = decideRequireBlockIndex(currentSegmentOfGoMod);
     while (requirePosObject.get("index") > -1) {
