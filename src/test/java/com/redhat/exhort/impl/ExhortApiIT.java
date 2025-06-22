@@ -29,7 +29,6 @@ import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.mockStatic;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.redhat.exhort.Api;
 import com.redhat.exhort.ExhortTest;
 import com.redhat.exhort.api.v4.AnalysisReport;
@@ -333,8 +332,7 @@ class ExhortApiIT extends ExhortTest {
               assertThat(provider.getValue().getStatus().getCode())
                   .isEqualTo(HttpURLConnection.HTTP_OK);
             });
-    analysisReportResult.getProviders().entrySet().stream()
-        .map(Map.Entry::getValue)
+    analysisReportResult.getProviders().values().stream()
         .map(ProviderReport::getSources)
         .map(Map::entrySet)
         .flatMap(Collection::stream)
@@ -348,12 +346,11 @@ class ExhortApiIT extends ExhortTest {
     }
   }
 
-  private void handleHtmlResponse(String analysisReportHtml) throws JsonProcessingException {
+  private void handleHtmlResponse(String analysisReportHtml) {
     assertThat(analysisReportHtml).contains("svg", "html");
   }
 
-  private void handleHtmlResponseForImage(String analysisReportHtml)
-      throws JsonProcessingException {
+  private void handleHtmlResponseForImage(String analysisReportHtml) {
     assertThat(analysisReportHtml).contains("svg", "html");
   }
 
@@ -367,10 +364,8 @@ class ExhortApiIT extends ExhortTest {
       mockedOperations
           .when(() -> Operations.runProcess(any(), any()))
           .thenAnswer(
-              invocationOnMock -> {
-                return getOutputFileAndOverwriteItWithMock(
-                    depTree, invocationOnMock, "-DoutputFile");
-              });
+              invocationOnMock ->
+                  getOutputFileAndOverwriteItWithMock(depTree, invocationOnMock, "-DoutputFile"));
       mockedOperations
           .when(() -> Operations.getCustomPathOrElse(anyString()))
           .thenReturn(packageManager.getExecutableShortName());

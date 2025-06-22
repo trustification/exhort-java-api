@@ -231,10 +231,7 @@ class PythonControllerRealEnvTest extends ExhortTest {
       // collect all packages returned from getDependencies into Set.
       System.out.println(dependencies);
       Set<String> actualSetOfPackages = new HashSet<>();
-      dependencies.forEach(
-          entry -> {
-            accumulateAllPackages(entry, actualSetOfPackages);
-          });
+      dependencies.forEach(entry -> accumulateAllPackages(entry, actualSetOfPackages));
 
       // Check that all actual collected packages are exactly the ones that are expected
       Set<String> expectedSetOfPackagesLC =
@@ -258,11 +255,7 @@ class PythonControllerRealEnvTest extends ExhortTest {
     actualSetOfPackages.add(entry.get("name"));
     if (entry.get("dependencies") != null) {
       ((List<Map<String, Object>>) entry.get("dependencies"))
-          .stream()
-              .forEach(
-                  record -> {
-                    accumulateAllPackages(record, actualSetOfPackages);
-                  });
+          .stream().forEach(record -> accumulateAllPackages(record, actualSetOfPackages));
     }
   }
 

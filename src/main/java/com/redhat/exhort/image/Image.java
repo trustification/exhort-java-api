@@ -89,7 +89,7 @@ public class Image {
 
   /**
    * Create an image name with a tag. If a tag is provided (i.e. is not null) then this tag is used.
-   * Otherwise the tag of the provided name is used (if any).
+   * Otherwise, the tag of the provided name is used (if any).
    *
    * @param fullName The fullname of the image in Docker format. I
    * @param givenTag tag to use. Can be null in which case the tag specified in fullName is used.
@@ -190,7 +190,7 @@ public class Image {
   }
 
   public boolean hasRegistry() {
-    return registry != null && registry.length() > 0;
+    return registry != null && !registry.isEmpty();
   }
 
   private String joinTail(String[] parts) {
@@ -329,7 +329,7 @@ public class Image {
                 checks[i], value, checkPattern.pattern()));
       }
     }
-    if (errors.size() > 0) {
+    if (!errors.isEmpty()) {
       StringBuilder buf = new StringBuilder();
       buf.append(String.format("Given Docker name '%s' is invalid:\n", getFullName()));
       for (String error : errors) {

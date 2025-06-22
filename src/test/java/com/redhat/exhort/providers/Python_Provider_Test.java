@@ -49,12 +49,12 @@ class Python_Provider_Test extends ExhortTest {
     this.pythonController = pythonController;
   }
 
-  private PythonControllerBase pythonController;
+  private final PythonControllerBase pythonController;
 
   @EnabledIfEnvironmentVariable(named = "RUN_PYTHON_BIN", matches = "true")
   @ParameterizedTest
   @MethodSource("testFolders")
-  void test_the_provideStack(String testFolder) throws IOException, InterruptedException {
+  void test_the_provideStack(String testFolder) throws IOException {
     // create temp file hosting our sut package.json
     var tmpPythonModuleDir = Files.createTempDirectory("exhort_test_");
     var tmpPythonFile = Files.createFile(tmpPythonModuleDir.resolve("requirements.txt"));
@@ -86,14 +86,14 @@ class Python_Provider_Test extends ExhortTest {
   @EnabledIfEnvironmentVariable(named = "RUN_PYTHON_BIN", matches = "true")
   @ParameterizedTest
   @MethodSource("testFolders")
-  void test_the_provideComponent(String testFolder) throws IOException, InterruptedException {
+  void test_the_provideComponent(String testFolder) throws IOException {
     // load the pom target pom file
     var requirementsFile =
         Path.of(
             String.format("src/test/resources/tst_manifests/pip/%s/requirements.txt", testFolder));
 
     // load expected SBOM
-    String expectedSbom = "";
+    String expectedSbom;
     try (var is =
         getResourceAsStreamDecision(
             this.getClass(),
@@ -111,8 +111,7 @@ class Python_Provider_Test extends ExhortTest {
   @MethodSource("testFolders")
   @SetSystemProperty(key = PythonControllerBase.PROP_EXHORT_PYTHON_VIRTUAL_ENV, value = "true")
   @RestoreSystemProperties
-  void test_the_provideStack_with_properties(String testFolder)
-      throws IOException, InterruptedException {
+  void test_the_provideStack_with_properties(String testFolder) throws IOException {
     // create temp file hosting our sut package.json
     var tmpPythonModuleDir = Files.createTempDirectory("exhort_test_");
     var tmpPythonFile = Files.createFile(tmpPythonModuleDir.resolve("requirements.txt"));
@@ -150,8 +149,7 @@ class Python_Provider_Test extends ExhortTest {
   @SetSystemProperty(key = PythonControllerBase.PROP_EXHORT_PYTHON_VIRTUAL_ENV, value = "true")
   @SetSystemProperty(key = PROP_EXHORT_PIP_USE_DEP_TREE, value = "true")
   @RestoreSystemProperties
-  void test_the_provideStack_with_pipdeptree(String testFolder)
-      throws IOException, InterruptedException {
+  void test_the_provideStack_with_pipdeptree(String testFolder) throws IOException {
     // create temp file hosting our sut package.json
     var tmpPythonModuleDir = Files.createTempDirectory("exhort_test_");
     var tmpPythonFile = Files.createFile(tmpPythonModuleDir.resolve("requirements.txt"));
@@ -184,14 +182,13 @@ class Python_Provider_Test extends ExhortTest {
   @ParameterizedTest
   @MethodSource("testFolders")
   @RestoreSystemProperties
-  void test_the_provideComponent_with_properties(String testFolder)
-      throws IOException, InterruptedException {
+  void test_the_provideComponent_with_properties(String testFolder) throws IOException {
     // load the pom target pom file
     var targetRequirements =
         String.format("src/test/resources/tst_manifests/pip/%s/requirements.txt", testFolder);
 
     // load expected SBOM
-    String expectedSbom = "";
+    String expectedSbom;
     try (var is =
         getResourceAsStreamDecision(
             this.getClass(),
@@ -214,10 +211,7 @@ class Python_Provider_Test extends ExhortTest {
   @Test
   void Test_The_ProvideComponent_Path_Should_Throw_Exception() {
     assertThatIllegalArgumentException()
-        .isThrownBy(
-            () -> {
-              new PythonPipProvider(Path.of(".")).provideComponent();
-            });
+        .isThrownBy(() -> new PythonPipProvider(Path.of(".")).provideComponent());
   }
 
   private String dropIgnored(String s) {

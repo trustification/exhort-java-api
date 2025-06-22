@@ -98,14 +98,12 @@ public final class PythonPipProvider extends Provider {
     printDependenciesTree(dependencies);
     Sbom sbom = SbomFactory.newInstance();
     sbom.addRoot(toPurl(DEFAULT_PIP_ROOT_COMPONENT_NAME, DEFAULT_PIP_ROOT_COMPONENT_VERSION));
-    dependencies.stream()
-        .forEach(
-            (component) -> {
-              sbom.addDependency(
-                  sbom.getRoot(),
-                  toPurl((String) component.get("name"), (String) component.get("version")),
-                  null);
-            });
+    dependencies.forEach(
+        (component) ->
+            sbom.addDependency(
+                sbom.getRoot(),
+                toPurl((String) component.get("name"), (String) component.get("version")),
+                null));
 
     var manifestContent = Files.readString(manifest);
     handleIgnoredDependencies(manifestContent, sbom);
@@ -154,17 +152,16 @@ public final class PythonPipProvider extends Provider {
       // name of package
       // from the purl, and remove the package name from sbom according to name only
       Set<String> deps =
-          (Set<String>)
-              ignoredDepsVersions.stream()
-                  .map(
-                      purlString -> {
-                        try {
-                          return new PackageURL((String) purlString).getName();
-                        } catch (MalformedPackageURLException e) {
-                          throw new RuntimeException(e);
-                        }
-                      })
-                  .collect(Collectors.toSet());
+          ignoredDepsVersions.stream()
+              .map(
+                  purlString -> {
+                    try {
+                      return new PackageURL(purlString).getName();
+                    } catch (MalformedPackageURLException e) {
+                      throw new RuntimeException(e);
+                    }
+                  })
+              .collect(Collectors.toSet());
       sbom.setBelongingCriteriaBinaryAlgorithm(Sbom.BelongingCondition.NAME);
       sbom.filterIgnoredDeps(deps);
     }
@@ -210,7 +207,7 @@ public final class PythonPipProvider extends Provider {
     }
   }
 
-  private PythonControllerBase getPythonController() throws IOException {
+  private PythonControllerBase getPythonController() {
     String pythonPipBinaries;
     boolean useVirtualPythonEnv;
     if (!Environment.get(PythonControllerBase.PROP_EXHORT_PIP_SHOW, "").trim().isEmpty()
@@ -239,7 +236,7 @@ public final class PythonPipProvider extends Provider {
     return pythonController;
   }
 
-  protected String getExecutable(String command, String args) {
+  private String getExecutable(String command, String args) {
     String python = Operations.getCustomPathOrElse("python3");
     String pip = Operations.getCustomPathOrElse("pip3");
     try {

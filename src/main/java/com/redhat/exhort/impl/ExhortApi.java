@@ -427,7 +427,7 @@ public final class ExhortApi implements Api {
               "Time took to create sbom file to be sent to exhort backend, in ms : %s, in seconds:"
                   + " %s",
               this.startTime.until(this.providerEndTime, ChronoUnit.MILLIS),
-              (float) (this.startTime.until(this.providerEndTime, ChronoUnit.MILLIS) / 1000F)));
+              this.startTime.until(this.providerEndTime, ChronoUnit.MILLIS) / 1000F));
     }
   }
 
@@ -673,13 +673,13 @@ public final class ExhortApi implements Api {
     // set rhda-token
     // Environment variable/property name = RHDA_TOKEN
     String rhdaToken = calculateHeaderValue(RHDA_TOKEN_HEADER);
-    if (rhdaToken != null && Optional.of(rhdaToken).isPresent()) {
+    if (rhdaToken != null) {
       request.setHeader(RHDA_TOKEN_HEADER, rhdaToken);
     }
     // set rhda-source ( extension/plugin id/name)
     // Environment variable/property name = RHDA_SOURCE
     String rhdaSource = calculateHeaderValue(RHDA_SOURCE_HEADER);
-    if (rhdaSource != null && Optional.of(rhdaSource).isPresent()) {
+    if (rhdaSource != null) {
       request.setHeader(RHDA_SOURCE_HEADER, rhdaSource);
     }
     request.setHeader(RHDA_OPERATION_TYPE_HEADER, analysisType);

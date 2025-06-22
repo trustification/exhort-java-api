@@ -30,12 +30,12 @@ public class HelperExtension
   private static final Logger LOG = LoggersFactory.getLogger(ExhortApi.class.getName());
 
   @Override
-  public void afterAll(ExtensionContext extensionContext) throws Exception {
+  public void afterAll(ExtensionContext extensionContext) {
     LOG.info("Finished all tests!!");
   }
 
   @Override
-  public void afterEach(ExtensionContext extensionContext) throws Exception {
+  public void afterEach(ExtensionContext extensionContext) {
     LOG.info(
         String.format(
             "Finished Test Method: %s_%s",
@@ -43,13 +43,13 @@ public class HelperExtension
   }
 
   @Override
-  public void beforeAll(ExtensionContext extensionContext) throws Exception {
+  public void beforeAll(ExtensionContext extensionContext) {
 
     LOG.info("Before all tests");
   }
 
   @Override
-  public void beforeEach(ExtensionContext extensionContext) throws Exception {
+  public void beforeEach(ExtensionContext extensionContext) {
     LOG.info(
         String.format(
             "Started Test Method: %s_%s",

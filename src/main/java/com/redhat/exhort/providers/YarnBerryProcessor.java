@@ -102,22 +102,21 @@ public final class YarnBerryProcessor extends YarnProcessor {
     if (depTree == null) {
       return;
     }
-    ((ArrayNode) depTree)
-        .forEach(
-            n -> {
-              var depName = n.get("value").asText();
-              var from = isRoot(depName) ? sbom.getRoot() : purlFromNode(depName, n);
-              var deps = (ArrayNode) n.get("children").get("Dependencies");
-              if (deps != null && !deps.isEmpty()) {
-                deps.forEach(
-                    d -> {
-                      var target = purlFromlocator(d.get("locator").asText());
-                      if (target != null) {
-                        sbom.addDependency(from, target, null);
-                      }
-                    });
-              }
-            });
+    depTree.forEach(
+        n -> {
+          var depName = n.get("value").asText();
+          var from = isRoot(depName) ? sbom.getRoot() : purlFromNode(depName, n);
+          var deps = (ArrayNode) n.get("children").get("Dependencies");
+          if (deps != null && !deps.isEmpty()) {
+            deps.forEach(
+                d -> {
+                  var target = purlFromlocator(d.get("locator").asText());
+                  if (target != null) {
+                    sbom.addDependency(from, target, null);
+                  }
+                });
+          }
+        });
   }
 
   private PackageURL purlFromlocator(String locator) {

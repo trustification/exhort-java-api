@@ -21,17 +21,17 @@ public final class Environment {
 
   private Environment() {}
 
-  public static final String get(String name, String defaultValue) {
+  public static String get(String name, String defaultValue) {
     return Optional.ofNullable(System.getProperty(name))
         .or(() -> Optional.ofNullable(System.getenv(name)))
         .orElse(defaultValue);
   }
 
-  public static final String get(String name) {
+  public static String get(String name) {
     return get(name, null);
   }
 
-  public static final boolean getBoolean(String key, boolean defaultValue) {
+  public static boolean getBoolean(String key, boolean defaultValue) {
     var val = get(key);
     if (val != null) {
       return Boolean.parseBoolean(val.trim().toLowerCase());
