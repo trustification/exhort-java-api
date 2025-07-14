@@ -138,7 +138,7 @@ public final class YarnClassicProcessor extends YarnProcessor {
       this.nodeName = node.get("name").asText();
       var versionIdx = nodeName.lastIndexOf("@");
       this.name = nodeName.substring(0, versionIdx);
-      this.version = nodeName.substring(versionIdx);
+      this.version = nodeName.substring(versionIdx + 1);
       this.purl = JavaScriptProvider.toPurl(name, version);
       var shadowNode = node.get("shadow");
       this.shadow = shadowNode != null && shadowNode.asBoolean();
