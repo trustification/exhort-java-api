@@ -382,11 +382,11 @@ public final class JavaMavenProvider extends BaseJavaProvider {
           return mvnw;
         } catch (Exception e) {
           log.warning(
-              "Failed to check for mvnw due to: " + e.getMessage() + " Fail back to use mvn");
+              "Failed to check for mvnw due to: " + e.getMessage() + " Fall back to use mvn");
         }
       }
     }
-    // If maven wrapper is not requested or not accessible, fail back to use mvn
+    // If maven wrapper is not requested or not accessible, fall back to use mvn
     String mvn = Operations.getExecutable(MVN, ARG_VERSION);
     log.fine("using mvn executable from : " + mvn);
     return mvn;
