@@ -503,6 +503,73 @@ By Default, The API algorithm will use native commands of PIP installer as data 
 It's also possible, to use lightweight Python PIP utility [pipdeptree](https://pypi.org/project/pipdeptree/) as data source instead, in order to activate this,
 Need to set environment variable/system property - `EXHORT_PIP_USE_DEP_TREE` to true.
 
+### CLI Support
+
+The Exhort Java API includes a command-line interface for standalone usage.
+
+#### Building the CLI
+
+To build the CLI JAR with all dependencies included:
+
+```shell
+mvn clean package
+```
+
+This creates two JAR files in the `target/` directory:
+- `exhort-java-api.jar` - Library JAR (for programmatic use)
+- `exhort-java-api-cli.jar` - CLI JAR (includes all dependencies)
+
+#### Usage
+
+```shell
+java -jar target/exhort-java-api-cli.jar <COMMAND> <FILE_PATH> [OPTIONS]
+```
+
+#### Commands
+
+**Stack Analysis**
+```shell
+java -jar exhort-java-api-cli.jar stack <file_path> [--summary|--html]
+```
+Perform stack analysis on the specified manifest file.
+
+Options:
+- `--summary` - Output summary in JSON format
+- `--html` - Output full report in HTML format
+- (default) - Output full report in JSON format
+
+**Component Analysis**
+```shell
+java -jar exhort-java-api-cli.jar component <file_path> [--summary]
+```
+Perform component analysis on the specified manifest file.
+
+Options:
+- `--summary` - Output summary in JSON format
+- (default) - Output full report in JSON format
+
+#### Examples
+
+```shell
+# Stack analysis with JSON output (default)
+java -jar exhort-java-api-cli.jar stack /path/to/pom.xml
+
+# Stack analysis with summary
+java -jar exhort-java-api-cli.jar stack /path/to/package.json --summary
+
+# Stack analysis with HTML output
+java -jar exhort-java-api-cli.jar stack /path/to/build.gradle --html
+
+# Component analysis with JSON output (default)
+java -jar exhort-java-api-cli.jar component /path/to/requirements.txt
+
+# Component analysis with summary
+java -jar exhort-java-api-cli.jar component /path/to/go.mod --summary
+
+# Show help
+java -jar exhort-java-api-cli.jar --help
+```
+
 ### Image Support 
 
 Generate vulnerability analysis report for container images.
