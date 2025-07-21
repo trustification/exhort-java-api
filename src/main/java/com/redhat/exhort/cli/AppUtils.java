@@ -20,10 +20,6 @@ public class AppUtils {
     System.exit(1);
   }
 
-  public static void exitWithSuccess() {
-    System.exit(0);
-  }
-
   public static void printLine(String message) {
     System.out.println(message);
   }

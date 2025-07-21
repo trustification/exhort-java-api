@@ -81,7 +81,10 @@ public class App {
 
     Path path = validateFile(args[1]);
 
-    OutputFormat outputFormat = parseOutputFormat(command, args[2]);
+    OutputFormat outputFormat = OutputFormat.JSON;
+    if (args.length == 3) {
+      outputFormat = parseOutputFormat(command, args[2]);
+    }
 
     return new CliArgs(command, path, outputFormat);
   }
@@ -99,10 +102,6 @@ public class App {
   }
 
   private static OutputFormat parseOutputFormat(Command command, String formatArg) {
-    if (formatArg == null) {
-      return OutputFormat.JSON;
-    }
-
     switch (formatArg) {
       case "--summary":
         return OutputFormat.SUMMARY;
@@ -124,9 +123,6 @@ public class App {
     }
     if (!Files.isRegularFile(path)) {
       throw new IllegalArgumentException("File is not a regular file: " + filePath);
-    }
-    if (!Files.isReadable(path)) {
-      throw new IllegalArgumentException("File is not readable: " + filePath);
     }
     return path;
   }
