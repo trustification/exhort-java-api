@@ -1,0 +1,27 @@
+Exhort Java API CLI
+
+USAGE:
+  java -jar exhort-java-api.jar <COMMAND> <FILE_PATH> [OPTIONS]
+
+COMMANDS:
+  stack <file_path> [--summary|--html]
+    Perform stack analysis on the specified manifest file
+    Options:
+      --summary    Output summary in JSON format
+      --html       Output full report in HTML format
+      (default)    Output full report in JSON format
+
+  component <file_path> [--summary]
+    Perform component analysis on the specified manifest file
+    Options:
+      --summary    Output summary in JSON format
+      (default)    Output full report in JSON format
+
+OPTIONS:
+  -h, --help     Show this help message
+
+EXAMPLES:
+  java -jar exhort-java-api.jar stack /path/to/pom.xml
+  java -jar exhort-java-api.jar stack /path/to/package.json --summary
+  java -jar exhort-java-api.jar stack /path/to/build.gradle --html
+  java -jar exhort-java-api.jar component /path/to/requirements.txt

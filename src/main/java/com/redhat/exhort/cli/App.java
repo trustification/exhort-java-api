@@ -13,11 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.redhat.exhort;
+package com.redhat.exhort.cli;
+
+import static com.redhat.exhort.cli.AppUtils.exitWithError;
+import static com.redhat.exhort.cli.AppUtils.printException;
+import static com.redhat.exhort.cli.AppUtils.printLine;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.redhat.exhort.Api;
 import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.api.v4.ProviderReport;
 import com.redhat.exhort.api.v4.Source;
@@ -29,23 +34,13 @@ import java.nio.file.Paths;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-public class Cli {
+public class App {
 
   private static final ObjectMapper MAPPER = new ObjectMapper();
+  private static final String CLI_HELPTXT = "cli_help.txt";
 
   static {
     MAPPER.setSerializationInclusion(JsonInclude.Include.NON_NULL);
-  }
-
-  private enum Command {
-    STACK,
-    COMPONENT
-  }
-
-  private enum OutputFormat {
-    JSON,
-    SUMMARY,
-    HTML
   }
 
   public static void main(String[] args) {
@@ -57,15 +52,14 @@ public class Cli {
     try {
       CliArgs cliArgs = parseArgs(args);
       String result = executeCommand(cliArgs).get();
-      System.out.println(result);
+      printLine(result);
     } catch (IllegalArgumentException e) {
-      System.err.println("Error: " + e.getMessage());
-      System.err.println();
+      printException(e);
       printHelp();
-      System.exit(1);
+      exitWithError();
     } catch (IOException | InterruptedException | ExecutionException e) {
-      System.err.println("Unexpected error: " + e.getMessage());
-      System.exit(1);
+      printException(e);
+      exitWithError();
     }
   }
 
@@ -83,56 +77,58 @@ public class Cli {
       throw new IllegalArgumentException("Missing required arguments");
     }
 
-    String commandStr = args[0].toLowerCase();
-    Command command;
+    Command command = parseCommand(args[0]);
 
+    Path path = validateFile(args[1]);
+
+    OutputFormat outputFormat = parseOutputFormat(command, args[2]);
+
+    return new CliArgs(command, path, outputFormat);
+  }
+
+  private static Command parseCommand(String commandStr) {
     switch (commandStr) {
       case "stack":
-        command = Command.STACK;
-        break;
+        return Command.STACK;
       case "component":
-        command = Command.COMPONENT;
-        break;
+        return Command.COMPONENT;
       default:
         throw new IllegalArgumentException(
             "Unknown command: " + commandStr + ". Use 'stack' or 'component'");
     }
+  }
 
-    String filePath = args[1];
+  private static OutputFormat parseOutputFormat(Command command, String formatArg) {
+    if (formatArg == null) {
+      return OutputFormat.JSON;
+    }
+
+    switch (formatArg) {
+      case "--summary":
+        return OutputFormat.SUMMARY;
+      case "--html":
+        if (command != Command.STACK) {
+          throw new IllegalArgumentException("HTML format is only supported for stack command");
+        }
+        return OutputFormat.HTML;
+      default:
+        throw new IllegalArgumentException(
+            "Unknown option for " + command + " command: " + formatArg);
+    }
+  }
+
+  private static Path validateFile(String filePath) {
     Path path = Paths.get(filePath);
-
     if (!Files.exists(path)) {
       throw new IllegalArgumentException("File does not exist: " + filePath);
     }
-
     if (!Files.isRegularFile(path)) {
-      throw new IllegalArgumentException("Path is not a file: " + filePath);
+      throw new IllegalArgumentException("File is not a regular file: " + filePath);
     }
-
-    OutputFormat outputFormat = OutputFormat.JSON; // default
-
-    // Parse additional options for stack command
-    if (args.length > 2) {
-      for (int i = 2; i < args.length; i++) {
-        switch (args[i]) {
-          case "--summary":
-            outputFormat = OutputFormat.SUMMARY;
-            break;
-          case "--html":
-            if (command != Command.STACK) {
-              throw new IllegalArgumentException("HTML format is only supported for stack command");
-            }
-            outputFormat = OutputFormat.HTML;
-            break;
-          default:
-            throw new IllegalArgumentException("Unknown option for stack command: " + args[i]);
-        }
-      }
-    } else if (command == Command.COMPONENT && args.length > 2) {
-      throw new IllegalArgumentException("Component command does not accept additional options");
+    if (!Files.isReadable(path)) {
+      throw new IllegalArgumentException("File is not readable: " + filePath);
     }
-
-    return new CliArgs(command, path, outputFormat);
+    return path;
   }
 
   private static CompletableFuture<String> executeCommand(CliArgs args) throws IOException {
@@ -152,13 +148,13 @@ public class Cli {
     Api api = new ExhortApi();
     switch (outputFormat) {
       case JSON:
-        return api.stackAnalysis(filePath).thenApply(Cli::toJsonString);
+        return api.stackAnalysis(filePath).thenApply(App::toJsonString);
       case HTML:
         return api.stackAnalysisHtml(filePath).thenApply(bytes -> new String(bytes));
       case SUMMARY:
         return api.stackAnalysis(filePath)
-            .thenApply(Cli::extractSummary)
-            .thenApply(Cli::toJsonString);
+            .thenApply(App::extractSummary)
+            .thenApply(App::toJsonString);
       default:
         throw new AssertionError();
     }
@@ -169,9 +165,9 @@ public class Cli {
     Api api = new ExhortApi();
     CompletableFuture<AnalysisReport> analysis = api.componentAnalysis(filePath);
     if (outputFormat.equals(OutputFormat.SUMMARY)) {
-      analysis = analysis.thenApply(Cli::extractSummary);
+      analysis = analysis.thenApply(App::extractSummary);
     }
-    return analysis.thenApply(Cli::toJsonString);
+    return analysis.thenApply(App::toJsonString);
   }
 
   private static String toJsonString(Object obj) {
@@ -213,44 +209,16 @@ public class Cli {
   }
 
   private static void printHelp() {
-    System.out.println("Exhort Java API CLI");
-    System.out.println();
-    System.out.println("USAGE:");
-    System.out.println("  java -jar exhort-java-api.jar <COMMAND> <FILE_PATH> [OPTIONS]");
-    System.out.println();
-    System.out.println("COMMANDS:");
-    System.out.println("  stack <file_path> [--summary|--html]");
-    System.out.println("    Perform stack analysis on the specified manifest file");
-    System.out.println("    Options:");
-    System.out.println("      --summary    Output summary in JSON format");
-    System.out.println("      --html       Output full report in HTML format");
-    System.out.println("      (default)    Output full report in JSON format");
-    System.out.println();
-    System.out.println("  component <file_path> [--summary]");
-    System.out.println("    Perform component analysis on the specified manifest file");
-    System.out.println("    Options:");
-    System.out.println("      --summary    Output summary in JSON format");
-    System.out.println("      (default)    Output full report in JSON format");
-    System.out.println();
-    System.out.println("OPTIONS:");
-    System.out.println("  -h, --help     Show this help message");
-    System.out.println();
-    System.out.println("EXAMPLES:");
-    System.out.println("  java -jar exhort-java-api.jar stack /path/to/pom.xml");
-    System.out.println("  java -jar exhort-java-api.jar stack /path/to/package.json --summary");
-    System.out.println("  java -jar exhort-java-api.jar stack /path/to/build.gradle --html");
-    System.out.println("  java -jar exhort-java-api.jar component /path/to/requirements.txt");
-  }
+    try (var inputStream = App.class.getClassLoader().getResourceAsStream(CLI_HELPTXT)) {
+      if (inputStream == null) {
+        AppUtils.printError("Help file not found.");
+        return;
+      }
 
-  private static class CliArgs {
-    final Command command;
-    final Path filePath;
-    final OutputFormat outputFormat;
-
-    CliArgs(Command command, Path filePath, OutputFormat outputFormat) {
-      this.command = command;
-      this.filePath = filePath;
-      this.outputFormat = outputFormat;
+      String helpText = new String(inputStream.readAllBytes());
+      printLine(helpText);
+    } catch (IOException e) {
+      AppUtils.printError("Error reading help file: " + e.getMessage());
     }
   }
 }
