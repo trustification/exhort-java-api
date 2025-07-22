@@ -165,7 +165,7 @@
     "package": {
       "key": "immutables",
       "package_name": "immutables",
-      "installed_version": "0.19"
+      "installed_version": "0.21"
     },
     "dependencies": []
   },

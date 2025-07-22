@@ -148,10 +148,10 @@
     },
     {
       "type" : "library",
-      "bom-ref" : "pkg:pypi/immutables@0.19",
+      "bom-ref" : "pkg:pypi/immutables@0.21",
       "name" : "immutables",
-      "version" : "0.19",
-      "purl" : "pkg:pypi/immutables@0.19"
+      "version" : "0.21",
+      "purl" : "pkg:pypi/immutables@0.21"
     },
     {
       "type" : "library",
@@ -210,7 +210,7 @@
         "pkg:pypi/flask@2.0.3",
         "pkg:pypi/h11@0.13.0",
         "pkg:pypi/idna@2.10",
-        "pkg:pypi/immutables@0.19",
+        "pkg:pypi/immutables@0.21",
         "pkg:pypi/importlib-metadata@4.8.3",
         "pkg:pypi/itsdangerous@2.0.1",
         "pkg:pypi/jinja2@3.0.3",
@@ -315,7 +315,7 @@
       "dependsOn" : [ ]
     },
     {
-      "ref" : "pkg:pypi/immutables@0.19",
+      "ref" : "pkg:pypi/immutables@0.21",
       "dependsOn" : [ ]
     },
     {
