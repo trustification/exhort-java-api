@@ -19,7 +19,7 @@
     <maven.compiler.release>11</maven.compiler.release>
     <!-- Dependencies -->
     <exhort-api.version>1.0.6</exhort-api.version>
-    <jackson.version>2.15.0</jackson.version>
+    <jackson.version>2.19.1</jackson.version>
     <jakarta.annotation-api.version>2.1.1</jakarta.annotation-api.version>
     <jakarta.mail.version>2.0.2</jakarta.mail.version>
     <cyclonedx.version>10.2.1</cyclonedx.version>
@@ -516,7 +516,7 @@ limitations under the License.]]>
           <consoleOutputReporter>
             <disable>false</disable>
           </consoleOutputReporter>
-          <statelessTestsetInfoReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoTreeReporter" />
+          <statelessTestsetInfoReporter implementation="org.apache.maven.plugin.surefire.extensions.junit5.JUnit5StatelessTestsetInfoTreeReporter"/>
           <excludes>
             <exclude>
               **/Exhort_Api_Test.java
@@ -607,15 +607,15 @@ limitations under the License.]]>
         </executions>
         <configuration>
           <rules>
-            <dependencyConvergence />
+            <dependencyConvergence/>
             <requireJavaVersion>
               <version>[11,)</version>
             </requireJavaVersion>
             <requireMavenVersion>
               <version>[3.8,)</version>
             </requireMavenVersion>
-            <banDuplicateClasses />
-            <banCircularDependencies />
+            <banDuplicateClasses/>
+            <banCircularDependencies/>
           </rules>
         </configuration>
       </plugin>
@@ -759,10 +759,10 @@ limitations under the License.]]>
               <reflowLongStrings>true</reflowLongStrings> <!-- optional -->
             </googleJavaFormat>
             <licenseHeader>
-              <file>${project.basedir}/license-header</file> -->
+              <file>${project.basedir}/license-header</file> --&gt;
             </licenseHeader>
-            <removeUnusedImports />
-            <formatAnnotations />
+            <removeUnusedImports/>
+            <formatAnnotations/>
           </java>
         </configuration>
         <executions>
