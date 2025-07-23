@@ -54,7 +54,7 @@ public final class JavaMavenProvider extends BaseJavaProvider {
   private static final String PROP_JAVA_HOME = "JAVA_HOME";
   private static final Logger log = LoggersFactory.getLogger(JavaMavenProvider.class.getName());
   private final String mvnExecutable;
-  private static final String MVN = "mvn";
+  private static final String MVN = Operations.isWindows() ? "mvn.cmd" : "mvn";
   private static final String ARG_VERSION = "-v";
 
   public JavaMavenProvider(Path manifest) {
@@ -65,7 +65,8 @@ public final class JavaMavenProvider extends BaseJavaProvider {
 
   @Override
   public Content provideStack() throws IOException {
-    var mvnCleanCmd = new String[] {mvnExecutable, "clean", "-f", manifest.toString()};
+    var mvnCleanCmd =
+        new String[] {mvnExecutable, "clean", "-f", manifest.toString(), "--batch-mode", "-q"};
     var mvnEnvs = getMvnExecEnvs();
     // execute the clean command
     Operations.runProcess(manifest.getParent(), mvnCleanCmd, mvnEnvs);
@@ -82,6 +83,8 @@ public final class JavaMavenProvider extends BaseJavaProvider {
             add(String.format("-DoutputFile=%s", tmpFile.toString()));
             add("-f");
             add(manifest.toString());
+            add("--batch-mode");
+            add("-q");
           }
         };
     // if we have dependencies marked as ignored, exclude them from the tree command
@@ -136,7 +139,9 @@ public final class JavaMavenProvider extends BaseJavaProvider {
           "help:effective-pom",
           String.format("-Doutput=%s", tmpEffPom.toString()),
           "-f",
-          manifest.toString()
+          manifest.toString(),
+          "--batch-mode",
+          "-q"
         };
     // execute the effective pom command
     Operations.runProcess(manifest.getParent(), mvnEffPomCmd, getMvnExecEnvs());
@@ -372,13 +377,13 @@ public final class JavaMavenProvider extends BaseJavaProvider {
   private String selectMvnRuntime(final Path manifestPath) {
     boolean preferWrapper = Operations.getWrapperPreference(MVN);
     if (preferWrapper) {
-      String wrapperName = isWindows() ? "mvnw.cmd" : "mvnw";
+      String wrapperName = Operations.isWindows() ? "mvnw.cmd" : "mvnw";
       String mvnw = traverseForMvnw(wrapperName, manifestPath.toString());
       if (mvnw != null) {
         try {
           // verify maven wrapper is accessible
           Operations.runProcess(manifest.getParent(), mvnw, ARG_VERSION);
-          log.fine("using maven wrapper from : " + mvnw);
+          log.fine(String.format("using maven wrapper from : %s", mvnw));
           return mvnw;
         } catch (Exception e) {
           log.warning(
@@ -388,7 +393,7 @@ public final class JavaMavenProvider extends BaseJavaProvider {
     }
     // If maven wrapper is not requested or not accessible, fall back to use mvn
     String mvn = Operations.getExecutable(MVN, ARG_VERSION);
-    log.fine("using mvn executable from : " + mvn);
+    log.fine(String.format("using mvn executable from : %s", mvn));
     return mvn;
   }
 
@@ -423,13 +428,9 @@ public final class JavaMavenProvider extends BaseJavaProvider {
   public static String normalizePath(String thePath) {
     Path normalized = Paths.get(thePath).toAbsolutePath().normalize();
     String result = normalized.toString();
-    if (isWindows()) {
+    if (Operations.isWindows()) {
       result = result.toLowerCase();
     }
     return result;
-  }
-
-  private static boolean isWindows() {
-    return System.getProperty("os.name").toLowerCase().contains("win");
   }
 }
