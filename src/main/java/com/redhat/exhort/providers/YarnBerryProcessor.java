@@ -87,6 +87,7 @@ public final class YarnBerryProcessor extends YarnProcessor {
     return name.endsWith("@workspace:.");
   }
 
+  @Override
   public String parseDepTreeOutput(String output) {
     return "[" + output.trim().replace(System.lineSeparator(), "").replace("}{", "},{") + "]";
   }
