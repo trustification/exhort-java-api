@@ -40,6 +40,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -381,23 +382,42 @@ public final class GoModulesProvider extends Provider {
   private TreeMap<String, String> getQualifiers(boolean includeOsAndArch) {
     if (includeOsAndArch) {
       String goEnvironmentVariables = Operations.runProcessGetOutput(null, goExecutable, "env");
-      String hostArch =
+      var qualifiers = new TreeMap<String, String>();
+      qualifiers.put("type", "module");
+      Optional<String> hostArch =
           getEnvironmentVariable(goEnvironmentVariables, GO_HOST_ARCHITECTURE_ENV_NAME);
-      String hostOS =
+      Optional<String> hostOS =
           getEnvironmentVariable(goEnvironmentVariables, GO_HOST_OPERATION_SYSTEM_ENV_NAME);
-      return new TreeMap<>(Map.of("type", "module", "goos", hostOS, "goarch", hostArch));
+      if (hostArch.isPresent()) {
+        qualifiers.put("goarch", hostArch.get());
+      }
+      if (hostOS.isPresent()) {
+        qualifiers.put("goos", hostOS.get());
+      }
+      return qualifiers;
     }
 
     return new TreeMap<>(Map.of("type", "module"));
   }
 
-  private static String getEnvironmentVariable(String goEnvironmentVariables, String envName) {
+  private static Optional<String> getEnvironmentVariable(
+      String goEnvironmentVariables, String envName) {
     int i = goEnvironmentVariables.indexOf(String.format("%s=", envName));
+    if (i == -1) {
+      return Optional.empty();
+    }
     int beginIndex = i + String.format("%s=", envName).length();
     int endOfLineIndex =
         goEnvironmentVariables.substring(beginIndex).indexOf(System.lineSeparator());
-    String envValue = goEnvironmentVariables.substring(beginIndex).substring(0, endOfLineIndex);
-    return envValue.replaceAll("\"", "");
+
+    String envValue;
+    if (endOfLineIndex == -1) {
+      envValue = goEnvironmentVariables.substring(beginIndex);
+    } else {
+      envValue = goEnvironmentVariables.substring(beginIndex).substring(0, endOfLineIndex);
+    }
+
+    return Optional.of(envValue.replaceAll("\"", ""));
   }
 
   private String buildGoModulesDependencies(Path manifestPath) {
