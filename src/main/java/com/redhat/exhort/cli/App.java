@@ -25,12 +25,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.redhat.exhort.Api;
 import com.redhat.exhort.api.v4.AnalysisReport;
 import com.redhat.exhort.api.v4.ProviderReport;
-import com.redhat.exhort.api.v4.Source;
+import com.redhat.exhort.api.v4.SourceSummary;
 import com.redhat.exhort.impl.ExhortApi;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
@@ -161,7 +163,8 @@ public class App {
     Api api = new ExhortApi();
     CompletableFuture<AnalysisReport> analysis = api.componentAnalysis(filePath);
     if (outputFormat.equals(OutputFormat.SUMMARY)) {
-      analysis = analysis.thenApply(App::extractSummary);
+      var summary = analysis.thenApply(App::extractSummary);
+      return summary.thenApply(App::toJsonString);
     }
     return analysis.thenApply(App::toJsonString);
   }
@@ -174,9 +177,8 @@ public class App {
     }
   }
 
-  private static AnalysisReport extractSummary(AnalysisReport report) {
-    AnalysisReport summary = new AnalysisReport();
-    summary.setScanned(report.getScanned());
+  private static Map<String, SourceSummary> extractSummary(AnalysisReport report) {
+    Map<String, SourceSummary> summary = new HashMap<>();
     if (report.getProviders() == null) {
       return summary;
     }
@@ -194,12 +196,11 @@ public class App {
                     .entrySet()
                     .forEach(
                         sourceEntry -> {
-                          var source = new Source();
-                          source.setSummary(sourceEntry.getValue().getSummary());
-                          provider.putSourcesItem(sourceEntry.getKey(), source);
+                          if (sourceEntry.getValue().getSummary() != null) {
+                            summary.put(sourceEntry.getKey(), sourceEntry.getValue().getSummary());
+                          }
                         });
               }
-              summary.putProvidersItem(entry.getKey(), provider);
             });
     return summary;
   }
