@@ -222,17 +222,10 @@ public abstract class JavaScriptProvider extends Provider {
     }
     var createPackageLock = updateLockFileCmd(manifestDir);
     // execute the clean command
-    Operations.runProcess(createPackageLock, getExecEnv());
-    String[] allDeps;
-    Path workDir = null;
-    if (!manifest.path.getParent().toString().trim().contains(" ")) {
-      allDeps = listDepsCmd(includeTransitive, manifestDir);
-    } else {
-      allDeps = listDepsCmd(includeTransitive, null);
-      workDir = manifest.path.getParent();
-    }
+    Operations.runProcess(manifestDir, createPackageLock, getExecEnv());
+    String[] allDeps = listDepsCmd(includeTransitive, manifestDir);
     // execute the clean command
-    String output = Operations.runProcessGetOutput(workDir, allDeps, getExecEnvAsArgs());
+    String output = Operations.runProcessGetOutput(manifestDir, allDeps, getExecEnvAsArgs());
     if (debugLoggingIsNeeded()) {
       log.info(
           String.format("Listed Install Packages in Json : %s %s", System.lineSeparator(), output));
