@@ -165,13 +165,13 @@ public final class Operations {
       }
 
       String stdout = new String(process.getInputStream().readAllBytes());
-      String stderr = new String(process.getErrorStream().readAllBytes());
 
-      // TODO: This should throw an exception if the process fails
-      if (!stderr.isBlank()) {
-        return stderr.trim();
+      if (!stdout.isBlank()) {
+        return stdout.trim();
       }
-      return stdout.trim();
+      // TODO: This should throw an exception if the process fails
+      String stderr = new String(process.getErrorStream().readAllBytes());
+      return stderr.trim();
     } catch (IOException e) {
       throw new RuntimeException(
           String.format("Failed to execute command '%s' ", join(" ", cmdList)), e);
