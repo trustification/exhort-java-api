@@ -18,6 +18,7 @@ package com.redhat.exhort.providers;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.redhat.exhort.tools.Ecosystem;
+import com.redhat.exhort.tools.Operations;
 import java.nio.file.Path;
 
 /**
@@ -27,7 +28,7 @@ import java.nio.file.Path;
 public final class JavaScriptPnpmProvider extends JavaScriptProvider {
 
   public static final String LOCK_FILE = "pnpm-lock.yaml";
-  public static final String CMD_NAME = "pnpm";
+  public static final String CMD_NAME = Operations.isWindows() ? "pnpm.cmd" : "pnpm";
 
   public JavaScriptPnpmProvider(Path manifest) {
     super(manifest, Ecosystem.Type.PNPM, CMD_NAME);
