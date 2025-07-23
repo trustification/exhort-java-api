@@ -377,7 +377,7 @@ public final class JavaMavenProvider extends BaseJavaProvider {
   private String selectMvnRuntime(final Path manifestPath) {
     boolean preferWrapper = Operations.getWrapperPreference(MVN);
     if (preferWrapper) {
-      String wrapperName = isWindows() ? "mvnw.cmd" : "mvnw";
+      String wrapperName = Operations.isWindows() ? "mvnw.cmd" : "mvnw";
       String mvnw = traverseForMvnw(wrapperName, manifestPath.toString());
       if (mvnw != null) {
         try {
@@ -428,13 +428,9 @@ public final class JavaMavenProvider extends BaseJavaProvider {
   public static String normalizePath(String thePath) {
     Path normalized = Paths.get(thePath).toAbsolutePath().normalize();
     String result = normalized.toString();
-    if (isWindows()) {
+    if (Operations.isWindows()) {
       result = result.toLowerCase();
     }
     return result;
-  }
-
-  private static boolean isWindows() {
-    return System.getProperty("os.name").toLowerCase().contains("win");
   }
 }
