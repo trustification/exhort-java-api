@@ -1,0 +1,20 @@
+---
+name: Integration
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  call-shared:
+    uses: trustification/exhort-integration-tests/.github/workflows/integration.yml@main
+    with:
+      language: java
+      repo-url: ${{ github.event.pull_request.head.repo.full_name || github.repository }}
+      commit-sha: ${{ github.event.pull_request.head.sha || github.sha }}
