@@ -17,6 +17,9 @@ package com.redhat.exhort.providers;
 
 import static com.redhat.exhort.impl.ExhortApi.debugLoggingIsNeeded;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.redhat.exhort.Api;
@@ -40,7 +43,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
@@ -69,7 +71,7 @@ public final class GoModulesProvider extends Provider {
   public GoModulesProvider(Path manifest) {
     super(Type.GOLANG, manifest);
     this.goExecutable = Operations.getExecutable("go", "version");
-    this.goEnvironmentVariableForPurl = getQualifiers(true);
+    this.goEnvironmentVariableForPurl = getQualifiers();
     this.mainModuleVersion = getDefaultMainModuleVersion();
   }
 
@@ -380,45 +382,38 @@ public final class GoModulesProvider extends Provider {
         .collect(Collectors.toList());
   }
 
-  private TreeMap<String, String> getQualifiers(boolean includeOsAndArch) {
-    if (includeOsAndArch) {
-      String goEnvironmentVariables = Operations.runProcessGetOutput(null, goExecutable, "env");
-      var qualifiers = new TreeMap<String, String>();
-      qualifiers.put("type", "module");
-      Optional<String> hostArch =
-          getEnvironmentVariable(goEnvironmentVariables, GO_HOST_ARCHITECTURE_ENV_NAME);
-      Optional<String> hostOS =
-          getEnvironmentVariable(goEnvironmentVariables, GO_HOST_OPERATION_SYSTEM_ENV_NAME);
-      if (hostArch.isPresent()) {
-        qualifiers.put("goarch", hostArch.get());
-      }
-      if (hostOS.isPresent()) {
-        qualifiers.put("goos", hostOS.get());
-      }
-      return qualifiers;
+  private TreeMap<String, String> getQualifiers() {
+    var goEnvironmentVariables = getGoEnvironmentVariables();
+    var qualifiers = new TreeMap<String, String>();
+    qualifiers.put("type", "module");
+    if (goEnvironmentVariables.containsKey(GO_HOST_ARCHITECTURE_ENV_NAME)) {
+      qualifiers.put("goarch", goEnvironmentVariables.get(GO_HOST_ARCHITECTURE_ENV_NAME));
+    }
+    if (goEnvironmentVariables.containsKey(GO_HOST_OPERATION_SYSTEM_ENV_NAME)) {
+      qualifiers.put("goos", goEnvironmentVariables.get(GO_HOST_OPERATION_SYSTEM_ENV_NAME));
     }
 
-    return new TreeMap<>(Map.of("type", "module"));
+    return qualifiers;
   }
 
-  private static Optional<String> getEnvironmentVariable(
-      String goEnvironmentVariables, String envName) {
-    int i = goEnvironmentVariables.indexOf(String.format("%s=", envName));
-    if (i == -1) {
-      return Optional.empty();
+  private Map<String, String> getGoEnvironmentVariables() {
+    String goEnvironmentVariables =
+        Operations.runProcessGetOutput(null, goExecutable, "env", "--json");
+    JsonNode tree;
+    try {
+      tree = new ObjectMapper().readTree(goEnvironmentVariables);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException("Failed to parse go environment variables: " + e.getMessage());
     }
-    int beginIndex = i + String.format("%s=", envName).length();
-    int endOfLineIndex =
-        goEnvironmentVariables.substring(beginIndex).indexOf(System.lineSeparator());
-
-    String envValue;
-    if (endOfLineIndex == -1) {
-      envValue = goEnvironmentVariables.substring(beginIndex);
-    } else {
-      envValue = goEnvironmentVariables.substring(beginIndex).substring(0, endOfLineIndex);
-    }
-
-    return Optional.of(envValue.replaceAll("\"", ""));
+    var envMap = new HashMap<String, String>();
+    tree.fields()
+        .forEachRemaining(
+            entry -> {
+              String key = entry.getKey();
+              String value = entry.getValue().asText();
+              envMap.put(key, value);
+            });
+    return envMap;
   }
 
   private String buildGoModulesDependencies(Path manifestPath) {
