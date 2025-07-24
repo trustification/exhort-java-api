@@ -138,7 +138,7 @@ public final class GoModulesProvider extends Provider {
     boolean matchManifestVersions =
         Environment.getBoolean(Provider.PROP_MATCH_MANIFEST_VERSIONS, false);
     if (matchManifestVersions) {
-      String[] goModGraphLines = goModulesResult.split(System.lineSeparator());
+      String[] goModGraphLines = goModulesResult.split(Operations.GENERIC_LINE_SEPARATOR);
       performManifestVersionsCheck(goModGraphLines, manifestPath);
     }
     if (!buildTree) {
@@ -152,7 +152,7 @@ public final class GoModulesProvider extends Provider {
   private void performManifestVersionsCheck(String[] goModGraphLines, Path manifestPath) {
     try {
       String goModLines = Files.readString(manifestPath);
-      String[] lines = goModLines.split(System.lineSeparator());
+      String[] lines = goModLines.split(Operations.GENERIC_LINE_SEPARATOR);
       String root = getParentVertex(goModGraphLines[0]);
       List<String> comparisonLines =
           Arrays.stream(goModGraphLines)
@@ -271,7 +271,8 @@ public final class GoModulesProvider extends Provider {
     // iterate over go mod graph line by line and create map , with each entry to contain module as
     // a key , and
     // value of list of that module' dependencies.
-    List<String> linesList = Arrays.asList(goModulesResult.split(System.lineSeparator()));
+    List<String> linesList =
+        Arrays.asList(goModulesResult.split(Operations.GENERIC_LINE_SEPARATOR));
 
     int startingIndex = 0;
     for (String line : linesList) {
@@ -325,7 +326,7 @@ public final class GoModulesProvider extends Provider {
     String finalVersionsForAllModules =
         Operations.runProcessGetOutput(manifestPath.getParent(), "go", "list", "-m", "all");
     Map<String, String> finalModulesVersions =
-        Arrays.stream(finalVersionsForAllModules.split(System.lineSeparator()))
+        Arrays.stream(finalVersionsForAllModules.split(Operations.GENERIC_LINE_SEPARATOR))
             .filter(string -> string.trim().split(" ").length == 2)
             .collect(
                 Collectors.toMap(
@@ -437,7 +438,7 @@ public final class GoModulesProvider extends Provider {
   }
 
   private Sbom buildSbomFromList(String golangDeps, List<PackageURL> ignoredDeps) {
-    String[] allModulesFlat = golangDeps.split(System.lineSeparator());
+    String[] allModulesFlat = golangDeps.split(Operations.GENERIC_LINE_SEPARATOR);
     String parentVertex = getParentVertex(allModulesFlat[0]);
     PackageURL root = toPurl(parentVertex, "@", this.goEnvironmentVariableForPurl);
     // Get only direct dependencies of root package/module, and that's it.

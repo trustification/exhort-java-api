@@ -35,6 +35,9 @@ import java.util.stream.Collectors;
 /** Utility class used for executing process on the operating system. * */
 public final class Operations {
 
+  // Some package providers might return Unix output in Windows, so we need to use a generic line
+  // separator
+  public static final String GENERIC_LINE_SEPARATOR = "\\r?\\n";
   private static final Logger log = LoggersFactory.getLogger(Operations.class.getName());
 
   private Operations() {
