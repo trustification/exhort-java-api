@@ -39,25 +39,11 @@ public final class JavaScriptNpmProvider extends JavaScriptProvider {
 
   @Override
   protected String[] updateLockFileCmd(Path manifestDir) {
-    return new String[] {
-      packageManager(), "i", "--package-lock-only", "--prefix", manifestDir.toString()
-    };
+    return new String[] {packageManager(), "i", "--package-lock-only"};
   }
 
   @Override
   protected String[] listDepsCmd(boolean includeTransitive, Path manifestDir) {
-    if (manifestDir != null) {
-      return new String[] {
-        packageManager(),
-        "ls",
-        includeTransitive ? "--all" : "--depth=0",
-        "--omit=dev",
-        "--package-lock-only",
-        "--json",
-        "--prefix",
-        manifestDir.toString()
-      };
-    }
     return new String[] {
       packageManager(),
       "ls",
