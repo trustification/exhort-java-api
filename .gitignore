@@ -41,8 +41,12 @@ dependency-reduced-pom.xml
 # Node
 node_modules
 
+# Python virtual envs
+.venv
+
 # project stuff
 http_requests
 json_responses
 **/.DS_Store
 .idea/
+

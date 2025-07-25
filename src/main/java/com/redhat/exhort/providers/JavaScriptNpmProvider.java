@@ -16,6 +16,7 @@
 package com.redhat.exhort.providers;
 
 import com.redhat.exhort.tools.Ecosystem;
+import com.redhat.exhort.tools.Operations;
 import java.nio.file.Path;
 
 /**
@@ -25,7 +26,7 @@ import java.nio.file.Path;
 public final class JavaScriptNpmProvider extends JavaScriptProvider {
 
   public static final String LOCK_FILE = "package-lock.json";
-  public static final String CMD_NAME = "npm";
+  public static final String CMD_NAME = Operations.isWindows() ? "npm.cmd" : "npm";
 
   public JavaScriptNpmProvider(Path manifest) {
     super(manifest, Ecosystem.Type.NPM, CMD_NAME);
@@ -38,25 +39,11 @@ public final class JavaScriptNpmProvider extends JavaScriptProvider {
 
   @Override
   protected String[] updateLockFileCmd(Path manifestDir) {
-    return new String[] {
-      packageManager(), "i", "--package-lock-only", "--prefix", manifestDir.toString()
-    };
+    return new String[] {packageManager(), "i", "--package-lock-only"};
   }
 
   @Override
   protected String[] listDepsCmd(boolean includeTransitive, Path manifestDir) {
-    if (manifestDir != null) {
-      return new String[] {
-        packageManager(),
-        "ls",
-        includeTransitive ? "--all" : "--depth=0",
-        "--omit=dev",
-        "--package-lock-only",
-        "--json",
-        "--prefix",
-        manifestDir.toString()
-      };
-    }
     return new String[] {
       packageManager(),
       "ls",

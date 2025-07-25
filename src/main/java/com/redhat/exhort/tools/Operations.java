@@ -35,6 +35,9 @@ import java.util.stream.Collectors;
 /** Utility class used for executing process on the operating system. * */
 public final class Operations {
 
+  // Some package providers might return Unix output in Windows, so we need to use a generic line
+  // separator
+  public static final String GENERIC_LINE_SEPARATOR = "\\r?\\n";
   private static final Logger log = LoggersFactory.getLogger(Operations.class.getName());
 
   private Operations() {
@@ -165,13 +168,13 @@ public final class Operations {
       }
 
       String stdout = new String(process.getInputStream().readAllBytes());
-      String stderr = new String(process.getErrorStream().readAllBytes());
 
-      // TODO: This should throw an exception if the process fails
-      if (!stderr.isBlank()) {
-        return stderr.trim();
+      if (!stdout.isBlank()) {
+        return stdout.trim();
       }
-      return stdout.trim();
+      // TODO: This should throw an exception if the process fails
+      String stderr = new String(process.getErrorStream().readAllBytes());
+      return stderr.trim();
     } catch (IOException e) {
       throw new RuntimeException(
           String.format("Failed to execute command '%s' ", join(" ", cmdList)), e);
@@ -348,5 +351,9 @@ public final class Operations {
       log.warning("Git command interrupted in directory " + cwd + ": " + e.getMessage());
     }
     return Optional.empty();
+  }
+
+  public static boolean isWindows() {
+    return System.getProperty("os.name").toLowerCase().contains("win");
   }
 }
