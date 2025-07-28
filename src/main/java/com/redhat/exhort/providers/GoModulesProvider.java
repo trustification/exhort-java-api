@@ -17,6 +17,9 @@ package com.redhat.exhort.providers;
 
 import static com.redhat.exhort.impl.ExhortApi.debugLoggingIsNeeded;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.redhat.exhort.Api;
@@ -68,7 +71,7 @@ public final class GoModulesProvider extends Provider {
   public GoModulesProvider(Path manifest) {
     super(Type.GOLANG, manifest);
     this.goExecutable = Operations.getExecutable("go", "version");
-    this.goEnvironmentVariableForPurl = getQualifiers(true);
+    this.goEnvironmentVariableForPurl = getQualifiers();
     this.mainModuleVersion = getDefaultMainModuleVersion();
   }
 
@@ -137,7 +140,7 @@ public final class GoModulesProvider extends Provider {
     boolean matchManifestVersions =
         Environment.getBoolean(Provider.PROP_MATCH_MANIFEST_VERSIONS, false);
     if (matchManifestVersions) {
-      String[] goModGraphLines = goModulesResult.split(System.lineSeparator());
+      String[] goModGraphLines = goModulesResult.split(Operations.GENERIC_LINE_SEPARATOR);
       performManifestVersionsCheck(goModGraphLines, manifestPath);
     }
     if (!buildTree) {
@@ -151,7 +154,7 @@ public final class GoModulesProvider extends Provider {
   private void performManifestVersionsCheck(String[] goModGraphLines, Path manifestPath) {
     try {
       String goModLines = Files.readString(manifestPath);
-      String[] lines = goModLines.split(System.lineSeparator());
+      String[] lines = goModLines.split(Operations.GENERIC_LINE_SEPARATOR);
       String root = getParentVertex(goModGraphLines[0]);
       List<String> comparisonLines =
           Arrays.stream(goModGraphLines)
@@ -270,7 +273,8 @@ public final class GoModulesProvider extends Provider {
     // iterate over go mod graph line by line and create map , with each entry to contain module as
     // a key , and
     // value of list of that module' dependencies.
-    List<String> linesList = Arrays.asList(goModulesResult.split(System.lineSeparator()));
+    List<String> linesList =
+        Arrays.asList(goModulesResult.split(Operations.GENERIC_LINE_SEPARATOR));
 
     int startingIndex = 0;
     for (String line : linesList) {
@@ -324,7 +328,7 @@ public final class GoModulesProvider extends Provider {
     String finalVersionsForAllModules =
         Operations.runProcessGetOutput(manifestPath.getParent(), "go", "list", "-m", "all");
     Map<String, String> finalModulesVersions =
-        Arrays.stream(finalVersionsForAllModules.split(System.lineSeparator()))
+        Arrays.stream(finalVersionsForAllModules.split(Operations.GENERIC_LINE_SEPARATOR))
             .filter(string -> string.trim().split(" ").length == 2)
             .collect(
                 Collectors.toMap(
@@ -378,26 +382,38 @@ public final class GoModulesProvider extends Provider {
         .collect(Collectors.toList());
   }
 
-  private TreeMap<String, String> getQualifiers(boolean includeOsAndArch) {
-    if (includeOsAndArch) {
-      String goEnvironmentVariables = Operations.runProcessGetOutput(null, goExecutable, "env");
-      String hostArch =
-          getEnvironmentVariable(goEnvironmentVariables, GO_HOST_ARCHITECTURE_ENV_NAME);
-      String hostOS =
-          getEnvironmentVariable(goEnvironmentVariables, GO_HOST_OPERATION_SYSTEM_ENV_NAME);
-      return new TreeMap<>(Map.of("type", "module", "goos", hostOS, "goarch", hostArch));
+  private TreeMap<String, String> getQualifiers() {
+    var goEnvironmentVariables = getGoEnvironmentVariables();
+    var qualifiers = new TreeMap<String, String>();
+    qualifiers.put("type", "module");
+    if (goEnvironmentVariables.containsKey(GO_HOST_ARCHITECTURE_ENV_NAME)) {
+      qualifiers.put("goarch", goEnvironmentVariables.get(GO_HOST_ARCHITECTURE_ENV_NAME));
+    }
+    if (goEnvironmentVariables.containsKey(GO_HOST_OPERATION_SYSTEM_ENV_NAME)) {
+      qualifiers.put("goos", goEnvironmentVariables.get(GO_HOST_OPERATION_SYSTEM_ENV_NAME));
     }
 
-    return new TreeMap<>(Map.of("type", "module"));
+    return qualifiers;
   }
 
-  private static String getEnvironmentVariable(String goEnvironmentVariables, String envName) {
-    int i = goEnvironmentVariables.indexOf(String.format("%s=", envName));
-    int beginIndex = i + String.format("%s=", envName).length();
-    int endOfLineIndex =
-        goEnvironmentVariables.substring(beginIndex).indexOf(System.lineSeparator());
-    String envValue = goEnvironmentVariables.substring(beginIndex).substring(0, endOfLineIndex);
-    return envValue.replaceAll("\"", "");
+  private Map<String, String> getGoEnvironmentVariables() {
+    String goEnvironmentVariables =
+        Operations.runProcessGetOutput(null, goExecutable, "env", "--json");
+    JsonNode tree;
+    try {
+      tree = new ObjectMapper().readTree(goEnvironmentVariables);
+    } catch (JsonProcessingException e) {
+      throw new RuntimeException("Failed to parse go environment variables: " + e.getMessage());
+    }
+    var envMap = new HashMap<String, String>();
+    tree.fields()
+        .forEachRemaining(
+            entry -> {
+              String key = entry.getKey();
+              String value = entry.getValue().asText();
+              envMap.put(key, value);
+            });
+    return envMap;
   }
 
   private String buildGoModulesDependencies(Path manifestPath) {
@@ -417,7 +433,7 @@ public final class GoModulesProvider extends Provider {
   }
 
   private Sbom buildSbomFromList(String golangDeps, List<PackageURL> ignoredDeps) {
-    String[] allModulesFlat = golangDeps.split(System.lineSeparator());
+    String[] allModulesFlat = golangDeps.split(Operations.GENERIC_LINE_SEPARATOR);
     String parentVertex = getParentVertex(allModulesFlat[0]);
     PackageURL root = toPurl(parentVertex, "@", this.goEnvironmentVariableForPurl);
     // Get only direct dependencies of root package/module, and that's it.

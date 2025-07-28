@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.github.packageurl.PackageURL;
 import com.redhat.exhort.providers.javascript.model.Manifest;
 import com.redhat.exhort.sbom.Sbom;
+import com.redhat.exhort.tools.Operations;
 import java.nio.file.Path;
 import java.util.Map;
 import java.util.TreeMap;
@@ -36,6 +37,7 @@ public final class YarnBerryProcessor extends YarnProcessor {
     super(packageManager, manifest);
   }
 
+  @Override
   public String[] installCmd(Path manifestDir) {
     if (manifestDir != null) {
       return new String[] {
@@ -87,8 +89,11 @@ public final class YarnBerryProcessor extends YarnProcessor {
     return name.endsWith("@workspace:.");
   }
 
+  @Override
   public String parseDepTreeOutput(String output) {
-    return "[" + output.trim().replace(System.lineSeparator(), "").replace("}{", "},{") + "]";
+    return "["
+        + output.trim().replaceAll(Operations.GENERIC_LINE_SEPARATOR, "").replace("}{", "},{")
+        + "]";
   }
 
   private PackageURL purlFromNode(String normalizedLocator, JsonNode node) {

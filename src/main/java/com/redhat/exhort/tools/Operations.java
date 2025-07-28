@@ -17,17 +17,29 @@ package com.redhat.exhort.tools;
 
 import static java.lang.String.join;
 
+import com.redhat.exhort.logging.LoggersFactory;
 import com.redhat.exhort.utils.Environment;
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 /** Utility class used for executing process on the operating system. * */
 public final class Operations {
+
+  // Some package providers might return Unix output in Windows, so we need to use a generic line
+  // separator
+  public static final String GENERIC_LINE_SEPARATOR = "\\r?\\n";
+  private static final Logger log = LoggersFactory.getLogger(Operations.class.getName());
+
   private Operations() {
     // constructor not required for a utility class
   }
@@ -56,12 +68,24 @@ public final class Operations {
    * @param cmdList list of command parts
    */
   public static void runProcess(final String... cmdList) {
-    runProcess(cmdList, null);
+    runProcess(null, cmdList, null);
+  }
+
+  public static void runProcess(final Path workingDirectory, final String... cmdList) {
+    runProcess(workingDirectory, cmdList, null);
   }
 
   public static void runProcess(final String[] cmdList, final Map<String, String> envMap) {
+    runProcess(null, cmdList, null);
+  }
+
+  public static void runProcess(
+      final Path workingDirectory, final String[] cmdList, final Map<String, String> envMap) {
     var processBuilder = new ProcessBuilder();
     processBuilder.command(cmdList);
+    if (workingDirectory != null) {
+      processBuilder.directory(workingDirectory.toFile());
+    }
     if (envMap != null) {
       processBuilder.environment().putAll(envMap);
     }
@@ -144,13 +168,13 @@ public final class Operations {
       }
 
       String stdout = new String(process.getInputStream().readAllBytes());
-      String stderr = new String(process.getErrorStream().readAllBytes());
 
-      // TODO: This should throw an exception if the process fails
-      if (!stderr.isBlank()) {
-        return stderr.trim();
+      if (!stdout.isBlank()) {
+        return stdout.trim();
       }
-      return stdout.trim();
+      // TODO: This should throw an exception if the process fails
+      String stderr = new String(process.getErrorStream().readAllBytes());
+      return stderr.trim();
     } catch (IOException e) {
       throw new RuntimeException(
           String.format("Failed to execute command '%s' ", join(" ", cmdList)), e);
@@ -275,5 +299,61 @@ public final class Operations {
 
   public static String getExecutable(String command, String args) {
     return getExecutable(command, args, null);
+  }
+
+  /**
+   * Checks whether a wrapper preference is set for a given tool name.
+   *
+   * <p>This method looks for an environment variable with the name {@code
+   * EXHORT_PREFER_<TOOLNAME>W}, where {@code <TOOLNAME>} is the uppercase form of the provided
+   * {@code name} parameter. If the environment variable is present (i.e., not {@code null}), the
+   * method returns {@code true}.
+   *
+   * @param name the tool name for which to check the wrapper preference (e.g., "maven", "gradle")
+   * @return {@code true} if the corresponding environment variable is set; {@code false} otherwise
+   */
+  public static boolean getWrapperPreference(String name) {
+    return Environment.get("EXHORT_PREFER_" + name.toUpperCase() + "W") != null;
+  }
+
+  /**
+   * Attempts to retrieve the root directory of a Git repository for the given working directory.
+   *
+   * <p>This method runs the command {@code git rev-parse --show-toplevel} in the specified
+   * directory, which returns the absolute path to the root of the current Git working tree. If the
+   * command executes successfully and produces output, the trimmed result is returned as an {@link
+   * Optional}. If the command fails or the output is empty, an empty {@code Optional} is returned.
+   *
+   * @param cwd the working directory in which to execute the Git command
+   * @return an {@code Optional} containing the Git root directory path if found, otherwise {@code
+   *     Optional.empty()}
+   */
+  public static Optional<String> getGitRootDir(String cwd) {
+    List<String> command = Arrays.asList("git", "rev-parse", "--show-toplevel");
+    ProcessBuilder builder =
+        new ProcessBuilder(command).directory(new File(cwd)).redirectErrorStream(true);
+    try {
+      Process process = builder.start();
+      try (BufferedReader reader =
+          new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+        String line = reader.readLine();
+        int exitCode = process.waitFor();
+        if (exitCode == 0) {
+          return Optional.ofNullable(line).map(String::trim);
+        } else {
+          log.warning("Git command exited with code " + exitCode + " in directory " + cwd);
+        }
+      }
+    } catch (IOException e) {
+      log.warning("I/O error executing git in " + cwd + ": " + e.getMessage());
+    } catch (InterruptedException e) {
+      Thread.currentThread().interrupt();
+      log.warning("Git command interrupted in directory " + cwd + ": " + e.getMessage());
+    }
+    return Optional.empty();
+  }
+
+  public static boolean isWindows() {
+    return System.getProperty("os.name").toLowerCase().contains("win");
   }
 }

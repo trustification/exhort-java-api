@@ -197,7 +197,7 @@ Requires:
 Required-by: anyio, requests
 ---
 Name: immutables
-Version: 0.19
+Version: 0.21
 Summary: Immutable Collections
 Home-page: https://github.com/MagicStack/immutables
 Author: MagicStack Inc

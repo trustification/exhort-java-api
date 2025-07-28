@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 public final class JavaScriptYarnProvider extends JavaScriptProvider {
 
   public static final String LOCK_FILE = "yarn.lock";
-  public static final String CMD_NAME = "yarn";
+  public static final String CMD_NAME = Operations.isWindows() ? "yarn.cmd" : "yarn";
 
   private static final Pattern versionPattern = Pattern.compile("^([0-9]+)\\.");
 

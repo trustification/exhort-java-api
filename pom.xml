@@ -16,7 +16,7 @@
     <code.coverage.threshold>81%</code.coverage.threshold>
     <mutation.coverage.threshold>50</mutation.coverage.threshold>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.compiler.release>11</maven.compiler.release>
+    <maven.compiler.release>17</maven.compiler.release>
     <!-- Dependencies -->
     <exhort-api.version>1.0.6</exhort-api.version>
     <jackson.version>2.15.0</jackson.version>
@@ -30,7 +30,7 @@
     <mockito.version>5.17.0</mockito.version>
     <!-- Plugins -->
     <maven-clean-plugin.version>3.2.0</maven-clean-plugin.version>
-    <maven-compiler-plugin.version>3.11.0</maven-compiler-plugin.version>
+    <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
     <maven-dependency-plugin.version>3.6.0</maven-dependency-plugin.version>
     <maven-deploy-plugin.version>3.1.1</maven-deploy-plugin.version>
     <maven-enforcer-plugin.version>3.3.0</maven-enforcer-plugin.version>
@@ -44,6 +44,7 @@
     <maven-site-plugin.version>4.0.0-M6</maven-site-plugin.version>
     <maven-source-plugin.version>3.2.1</maven-source-plugin.version>
     <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
+    <maven-shade-plugin.version>3.4.1</maven-shade-plugin.version>
     <build-helper-maven-plugin.version>3.4.0</build-helper-maven-plugin.version>
     <extra-enforcer-rules.version>1.6.2</extra-enforcer-rules.version>
     <flatten-maven-plugin.version>1.4.1</flatten-maven-plugin.version>
@@ -454,6 +455,11 @@ limitations under the License.]]>
           <artifactId>spotless-maven-plugin</artifactId>
           <version>${spotless-maven-plugin.version}</version>
         </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-shade-plugin</artifactId>
+          <version>${maven-shade-plugin.version}</version>
+        </plugin>
       </plugins>
     </pluginManagement>
 
@@ -652,6 +658,87 @@ limitations under the License.]]>
         </executions>
       </plugin>
       <plugin>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <mainClass>com.redhat.exhort.cli.App</mainClass>
+            </manifest>
+          </archive>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <shadedArtifactAttached>true</shadedArtifactAttached>
+              <shadedClassifierName>cli</shadedClassifierName>
+              
+              <!-- Filters to exclude problematic files -->
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <!-- Exclude module-info.class files to avoid strong encapsulation warnings -->
+                    <exclude>module-info.class</exclude>
+                    <exclude>META-INF/versions/*/module-info.class</exclude>
+                    <!-- Exclude signature files -->
+                    <exclude>META-INF/*.SF</exclude>
+                    <exclude>META-INF/*.DSA</exclude>
+                    <exclude>META-INF/*.RSA</exclude>
+                    <!-- Exclude duplicate MANIFEST.MF files (will be recreated) -->
+                    <exclude>META-INF/MANIFEST.MF</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+              
+              <!-- Transformers to handle overlapping resources -->
+              <transformers>
+                <!-- Main class transformer -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                  <mainClass>com.redhat.exhort.cli.App</mainClass>
+                </transformer>
+                
+                <!-- Service files transformer for Jackson and other services -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
+                
+                <!-- Append NOTICE files -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/NOTICE</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/NOTICE.txt</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/NOTICE.md</resource>
+                </transformer>
+                
+                <!-- Append LICENSE files -->
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/LICENSE</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/LICENSE.txt</resource>
+                </transformer>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.AppendingTransformer">
+                  <resource>META-INF/LICENSE.md</resource>
+                </transformer>
+
+              </transformers>
+              
+              <!-- Create non-verbose output -->
+              <createDependencyReducedPom>false</createDependencyReducedPom>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
         <configuration>
@@ -813,9 +900,6 @@ limitations under the License.]]>
           <plugin>
             <groupId>de.sormuras.junit</groupId>
             <artifactId>junit-platform-maven-plugin</artifactId>
-            <version>${junit-platform-maven-plugin.version}</version>
-            <configuration>
-            </configuration>
           </plugin>
         </plugins>
       </build>
