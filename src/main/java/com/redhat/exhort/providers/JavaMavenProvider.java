@@ -172,6 +172,7 @@ public final class JavaMavenProvider extends BaseJavaProvider {
         .filter(dep -> ignored.stream().noneMatch(artifact -> artifact.isCoordinatesEquals(dep)))
         .forEach(d -> sbom.addDependency(sbom.getRoot(), d, null));
 
+    String sbomString = sbom.getAsJsonString();
     // build and return content for constructing request to the backend
     return new Content(sbom.getAsJsonString().getBytes(), Api.CYCLONEDX_MEDIA_TYPE);
   }
@@ -238,11 +239,47 @@ public final class JavaMavenProvider extends BaseJavaProvider {
       // when a "dependency" tag starts, it will be initiated,
       // when a "dependency" tag ends, it will be parsed, act upon, and reset
       DependencyAggregator dependencyAggregator = null;
+      boolean insideDependencyManagement = false;
+      boolean insideExclusions = false;
+      boolean insidePlugins = false;
       while (reader.hasNext()) {
         reader.next(); // get the next event
+        if (reader.isStartElement() && "dependencyManagement".equals(reader.getLocalName())) {
+          // entering dependencyManagement section
+          insideDependencyManagement = true;
+          continue;
+        }
+        if (reader.isEndElement() && "dependencyManagement".equals(reader.getLocalName())) {
+          // exiting dependencyManagement section
+          insideDependencyManagement = false;
+          continue;
+        }
+        if (reader.isStartElement() && "plugins".equals(reader.getLocalName())) {
+          // entering plugins section
+          insidePlugins = true;
+          continue;
+        }
+        if (reader.isEndElement() && "plugins".equals(reader.getLocalName())) {
+          // exiting plugins section
+          insidePlugins = false;
+          continue;
+        }
+        if (reader.isStartElement() && "exclusions".equals(reader.getLocalName())) {
+          // entering exclusions section
+          insideExclusions = true;
+          continue;
+        }
+        if (reader.isEndElement() && "exclusions".equals(reader.getLocalName())) {
+          // exiting exclusions section
+          insideExclusions = false;
+          continue;
+        }
         if (reader.isStartElement() && "dependency".equals(reader.getLocalName())) {
-          // starting "dependency" tag, initiate aggregator
-          dependencyAggregator = new DependencyAggregator();
+          // starting "dependency" tag, initiate aggregator only if not inside dependencyManagement
+          // or plugins
+          if (!insideDependencyManagement && !insidePlugins) {
+            dependencyAggregator = new DependencyAggregator();
+          }
           continue;
         }
 
@@ -256,9 +293,10 @@ public final class JavaMavenProvider extends BaseJavaProvider {
             continue;
           }
 
-          if (reader.isStartElement()) {
+          if (reader.isStartElement() && !insideExclusions) {
             // NOTE if we want to include "scope" tags in ignore,
             // add a case here and a property in DependencyIgnore
+            // Only process these elements if we're not inside exclusions
             switch (reader.getLocalName()) {
               case "groupId": // starting "groupId" tag, get next event and set to aggregator
                 reader.next();
@@ -282,8 +320,11 @@ public final class JavaMavenProvider extends BaseJavaProvider {
           }
 
           if (reader.isEndElement() && "dependency".equals(reader.getLocalName())) {
-            // add object to list and reset dependency aggregator
-            deps.add(dependencyAggregator);
+            // add object to list and reset dependency aggregator only if not inside
+            // dependencyManagement or plugins
+            if (!insideDependencyManagement && !insidePlugins && dependencyAggregator != null) {
+              deps.add(dependencyAggregator);
+            }
             dependencyAggregator = null;
           }
         }
