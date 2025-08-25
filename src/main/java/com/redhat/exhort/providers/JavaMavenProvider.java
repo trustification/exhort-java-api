@@ -172,7 +172,6 @@ public final class JavaMavenProvider extends BaseJavaProvider {
         .filter(dep -> ignored.stream().noneMatch(artifact -> artifact.isCoordinatesEquals(dep)))
         .forEach(d -> sbom.addDependency(sbom.getRoot(), d, null));
 
-    String sbomString = sbom.getAsJsonString();
     // build and return content for constructing request to the backend
     return new Content(sbom.getAsJsonString().getBytes(), Api.CYCLONEDX_MEDIA_TYPE);
   }
@@ -245,32 +244,26 @@ public final class JavaMavenProvider extends BaseJavaProvider {
       while (reader.hasNext()) {
         reader.next(); // get the next event
         if (reader.isStartElement() && "dependencyManagement".equals(reader.getLocalName())) {
-          // entering dependencyManagement section
           insideDependencyManagement = true;
           continue;
         }
         if (reader.isEndElement() && "dependencyManagement".equals(reader.getLocalName())) {
-          // exiting dependencyManagement section
           insideDependencyManagement = false;
           continue;
         }
         if (reader.isStartElement() && "plugins".equals(reader.getLocalName())) {
-          // entering plugins section
           insidePlugins = true;
           continue;
         }
         if (reader.isEndElement() && "plugins".equals(reader.getLocalName())) {
-          // exiting plugins section
           insidePlugins = false;
           continue;
         }
         if (reader.isStartElement() && "exclusions".equals(reader.getLocalName())) {
-          // entering exclusions section
           insideExclusions = true;
           continue;
         }
         if (reader.isEndElement() && "exclusions".equals(reader.getLocalName())) {
-          // exiting exclusions section
           insideExclusions = false;
           continue;
         }
