@@ -5,7 +5,7 @@
 
   <groupId>com.redhat.exhort</groupId>
   <artifactId>exhort-java-api</artifactId>
-  <version>0.0.8</version>
+  <version>0.0.9-SNAPSHOT</version>
   <name>Exhort Java API</name>
   <description>Exhort Java API</description>
   <url>https://github.com/trustification/exhort-java-api#readme</url>
@@ -94,7 +94,7 @@
     <url>https://github.com/trustification/exhort-java-api</url>
     <connection>scm:git:git@github.com:trustification/exhort-java-api.git</connection>
     <developerConnection>scm:git:git@github.com:trustification/exhort-java-api.git</developerConnection>
-    <tag>v0.0.8</tag>
+    <tag>HEAD</tag>
   </scm>
 
   <ciManagement>
