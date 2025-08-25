@@ -383,7 +383,9 @@ public final class JavaMavenProvider extends BaseJavaProvider {
         try {
           // verify maven wrapper is accessible
           Operations.runProcess(manifest.getParent(), mvnw, ARG_VERSION);
-          log.fine(String.format("using maven wrapper from : %s", mvnw));
+          if (debugLoggingIsNeeded()) {
+            log.info(String.format("using maven wrapper from : %s", mvnw));
+          }
           return mvnw;
         } catch (Exception e) {
           log.warning(
@@ -393,7 +395,9 @@ public final class JavaMavenProvider extends BaseJavaProvider {
     }
     // If maven wrapper is not requested or not accessible, fall back to use mvn
     String mvn = Operations.getExecutable(MVN, ARG_VERSION);
-    log.fine(String.format("using mvn executable from : %s", mvn));
+    if (debugLoggingIsNeeded()) {
+      log.info(String.format("using mvn executable from : %s", mvn));
+    }
     return mvn;
   }
 
