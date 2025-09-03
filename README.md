@@ -104,7 +104,7 @@ repositories {
 <dependency>
     <groupId>com.redhat.exhort</groupId>
     <artifactId>exhort-java-api</artifactId>
-    <version>0.0.8-SNAPSHOT</version>
+    <version>0.0.9-SNAPSHOT</version>
 </dependency>
 ```
 </li>
@@ -188,7 +188,7 @@ Excluding a package from any analysis can be achieved by marking the package for
 <dependency> <!--exhortignore-->
   <groupId>...</groupId>
   <artifactId>...</artifactId>
-  <version>0.0.8-SNAPSHOT</version>
+  <version>0.0.9-SNAPSHOT</version>
 </dependency>
 ```
 </li>
