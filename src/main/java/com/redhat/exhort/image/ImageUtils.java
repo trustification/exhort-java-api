@@ -131,8 +131,8 @@ public class ImageUtils {
 
   static Operations.ProcessExecOutput execSyft(ImageRef imageRef) {
     var syft = Operations.getExecutable(SYFT, ARG_VERSION);
-    var docker = Operations.getExecutable(DOCKER, ARG_VERSION);
-    var podman = Operations.getExecutable(PODMAN, ARG_VERSION);
+    var docker = Operations.getCustomPathOrElse(DOCKER);
+    var podman = Operations.getCustomPathOrElse(PODMAN);
 
     var syftConfigPath = Environment.get(EXHORT_SYFT_CONFIG_PATH, "");
     var imageSource = Environment.get(EXHORT_SYFT_IMAGE_SOURCE, "");
@@ -238,7 +238,7 @@ public class ImageUtils {
   }
 
   static String hostInfo(String engine, String info) {
-    var exec = Operations.getExecutable(engine, ARG_VERSION);
+    var exec = Operations.getCustomPathOrElse(engine);
     var cmd = new String[] {exec, "info"};
 
     var output = Operations.runProcessGetFullOutput(null, cmd, null);
