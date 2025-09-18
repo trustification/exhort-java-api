@@ -317,6 +317,17 @@ public final class Operations {
   }
 
   /**
+   * Retrieves a Maven configuration value from an environment variable.
+   *
+   * @param configName the configuration name (e.g., "USER_SETTINGS_FILE", "LOCAL_REPOSITORY")
+   * @return the configuration value if set and not blank, null otherwise
+   */
+  public static String getMavenConfig(String configName) {
+    String configValue = Environment.get("EXHORT_MVN_" + configName);
+    return (configValue != null && !configValue.isBlank()) ? configValue : null;
+  }
+
+  /**
    * Attempts to retrieve the root directory of a Git repository for the given working directory.
    *
    * <p>This method runs the command {@code git rev-parse --show-toplevel} in the specified
