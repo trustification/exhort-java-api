@@ -61,7 +61,7 @@
   <repositories>
     <repository>
       <id>github</id>
-      <url>https://maven.pkg.github.com/trustification/exhort-api-spec</url>
+      <url>https://maven.pkg.github.com/guacsec/trustify-da-api-spec</url>
     </repository>
   </repositories>
 
