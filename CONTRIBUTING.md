@@ -114,7 +114,7 @@ contribution. See the [DCO](DCO) file for details.
 
 <!-- Real links -->
 [0]: https://www.conventionalcommits.org/en/v1.0.0/
-[1]: https://github.com/trustification/exhort-api-spec/blob/main/api/v4/openapi.yaml
+[1]: https://github.com/guacsec/trustify-da-api-spec/blob/main/api/v4/openapi.yaml
 
 <!-- Badge links -->
 [10]: https://badgen.net/badge/Java%20Version/11/5382a1
