@@ -328,6 +328,9 @@ System.setProperty("EXHORT_PYTHON_PATH", "/path/to/python");
 System.setProperty("EXHORT_PIP_PATH", "/path/to/pip");
 // Configure proxy for all requests
 System.setProperty("EXHORT_PROXY_URL", "http://proxy.example.com:8080");
+// Configure Maven settings and repository
+System.setProperty("EXHORT_MVN_USER_SETTINGS", "/path/to/custom/settings.xml");
+System.setProperty("EXHORT_MVN_LOCAL_REPO", "/path/to/custom/local/repository");
 ```
 
 > Environment variables takes precedence.
@@ -435,6 +438,47 @@ following keys for setting custom paths for the said executables.
 </tr>
 
 </table>
+
+#### Maven Configuration
+
+You can customize Maven behavior by setting additional environment variables or Java properties:
+
+<table>
+<tr>
+<th>Configuration</th>
+<th>Environment Variable</th>
+<th>Description</th>
+<th>Default</th>
+</tr>
+<tr>
+<td>Maven User Settings</td>
+<td>EXHORT_MVN_USER_SETTINGS</td>
+<td>Path to custom Maven settings.xml file</td>
+<td><em>Uses Maven's default settings</em></td>
+</tr>
+<tr>
+<td>Maven Local Repository</td>
+<td>EXHORT_MVN_LOCAL_REPO</td>
+<td>Path to custom Maven local repository directory</td>
+<td><em>Uses Maven's default local repository</em></td>
+</tr>
+</table>
+
+**Examples:**
+
+Using environment variables:
+```bash
+export EXHORT_MVN_USER_SETTINGS=/home/user/.m2/custom-settings.xml
+export EXHORT_MVN_LOCAL_REPO=/home/user/custom-maven-repo
+```
+
+Using Java properties:
+```java
+System.setProperty("EXHORT_MVN_USER_SETTINGS", "/home/user/.m2/custom-settings.xml");
+System.setProperty("EXHORT_MVN_LOCAL_REPO", "/home/user/custom-maven-repo");
+```
+
+> Environment variables take precedence over Java properties.
 
 #### Match Manifest Versions Feature
 

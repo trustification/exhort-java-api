@@ -65,28 +65,23 @@ public final class JavaMavenProvider extends BaseJavaProvider {
 
   @Override
   public Content provideStack() throws IOException {
-    var mvnCleanCmd =
-        new String[] {mvnExecutable, "clean", "-f", manifest.toString(), "--batch-mode", "-q"};
+    var mvnCleanCmd = buildMvnCommandArgs("clean", "-f", manifest.toString(), "--batch-mode", "-q");
     var mvnEnvs = getMvnExecEnvs();
     // execute the clean command
-    Operations.runProcess(manifest.getParent(), mvnCleanCmd, mvnEnvs);
+    Operations.runProcess(manifest.getParent(), mvnCleanCmd.toArray(String[]::new), mvnEnvs);
     // create a temp file for storing the dependency tree in
     var tmpFile = Files.createTempFile("exhort_dot_graph_", null);
     // the tree command will build the project and create the dependency tree in the temp file
     var mvnTreeCmd =
-        new ArrayList<String>() {
-          {
-            add(mvnExecutable);
-            add("org.apache.maven.plugins:maven-dependency-plugin:3.6.0:tree");
-            add("-Dverbose");
-            add("-DoutputType=text");
-            add(String.format("-DoutputFile=%s", tmpFile.toString()));
-            add("-f");
-            add(manifest.toString());
-            add("--batch-mode");
-            add("-q");
-          }
-        };
+        buildMvnCommandArgs(
+            "org.apache.maven.plugins:maven-dependency-plugin:3.6.0:tree",
+            "-Dverbose",
+            "-DoutputType=text",
+            String.format("-DoutputFile=%s", tmpFile.toString()),
+            "-f",
+            manifest.toString(),
+            "--batch-mode",
+            "-q");
     // if we have dependencies marked as ignored, exclude them from the tree command
     var ignored =
         getDependencies(manifest).stream()
@@ -133,18 +128,17 @@ public final class JavaMavenProvider extends BaseJavaProvider {
   private Content generateSbomFromEffectivePom() throws IOException {
     var tmpEffPom = Files.createTempFile("exhort_eff_pom_", ".xml");
     var mvnEffPomCmd =
-        new String[] {
-          mvnExecutable,
-          "clean",
-          "help:effective-pom",
-          String.format("-Doutput=%s", tmpEffPom.toString()),
-          "-f",
-          manifest.toString(),
-          "--batch-mode",
-          "-q"
-        };
+        buildMvnCommandArgs(
+            "clean",
+            "help:effective-pom",
+            String.format("-Doutput=%s", tmpEffPom.toString()),
+            "-f",
+            manifest.toString(),
+            "--batch-mode",
+            "-q");
     // execute the effective pom command
-    Operations.runProcess(manifest.getParent(), mvnEffPomCmd, getMvnExecEnvs());
+    Operations.runProcess(
+        manifest.getParent(), mvnEffPomCmd.toArray(String[]::new), getMvnExecEnvs());
     if (debugLoggingIsNeeded()) {
       String CaEffectivePoM = Files.readString(tmpEffPom);
       log.info(
@@ -343,6 +337,28 @@ public final class JavaMavenProvider extends BaseJavaProvider {
       return Collections.singletonMap(PROP_JAVA_HOME, javaHome);
     }
     return null;
+  }
+
+  private List<String> buildMvnCommandArgs(String... baseArgs) {
+    List<String> args = new ArrayList<>();
+    args.add(mvnExecutable);
+
+    var userSettingsFile = Operations.getMavenConfig("USER_SETTINGS");
+    if (userSettingsFile != null) {
+      args.add("-s");
+      args.add(userSettingsFile);
+    }
+
+    var localRepository = Operations.getMavenConfig("LOCAL_REPO");
+    if (localRepository != null) {
+      args.add("-Dmaven.repo.local=" + localRepository);
+    }
+
+    for (String arg : baseArgs) {
+      args.add(arg);
+    }
+
+    return args;
   }
 
   // NOTE if we want to include "scope" tags in ignore,
