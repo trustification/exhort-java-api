@@ -343,13 +343,13 @@ public final class JavaMavenProvider extends BaseJavaProvider {
     List<String> args = new ArrayList<>();
     args.add(mvnExecutable);
 
-    var userSettingsFile = Operations.getMavenConfig("USER_SETTINGS_FILE");
+    var userSettingsFile = Operations.getMavenConfig("USER_SETTINGS");
     if (userSettingsFile != null) {
       args.add("-s");
       args.add(userSettingsFile);
     }
 
-    var localRepository = Operations.getMavenConfig("LOCAL_REPOSITORY");
+    var localRepository = Operations.getMavenConfig("LOCAL_REPO");
     if (localRepository != null) {
       args.add("-Dmaven.repo.local=" + localRepository);
     }

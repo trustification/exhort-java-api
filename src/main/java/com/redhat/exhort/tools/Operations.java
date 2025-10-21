@@ -319,7 +319,7 @@ public final class Operations {
   /**
    * Retrieves a Maven configuration value from an environment variable.
    *
-   * @param configName the configuration name (e.g., "USER_SETTINGS_FILE", "LOCAL_REPOSITORY")
+   * @param configName the configuration name (e.g., "USER_SETTINGS", "LOCAL_REPO")
    * @return the configuration value if set and not blank, null otherwise
    */
   public static String getMavenConfig(String configName) {
