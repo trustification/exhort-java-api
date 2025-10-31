@@ -9,7 +9,7 @@
       "group" : "github.com/sample",
       "name" : "demo-app",
       "version" : "v0.0.0",
-      "purl" : "pkg:golang/github.com/sample/demo-app@v0.0.0?goarch=amd64&goos=linux&type=module"
+      "purl" : "pkg:golang/github.com/sample/demo-app@v0.0.0"
     }
   },
   "components" : [
@@ -19,7 +19,7 @@
       "group" : "github.com/sample",
       "name" : "demo-app",
       "version" : "v0.0.0",
-      "purl" : "pkg:golang/github.com/sample/demo-app@v0.0.0?goarch=amd64&goos=linux&type=module"
+      "purl" : "pkg:golang/github.com/sample/demo-app@v0.0.0"
     },
     {
       "type" : "library",
@@ -27,7 +27,7 @@
       "group" : "github.com/gin-gonic",
       "name" : "gin",
       "version" : "v1.6.0",
-      "purl" : "pkg:golang/github.com/gin-gonic/gin@v1.6.0?goarch=amd64&goos=linux&type=module"
+      "purl" : "pkg:golang/github.com/gin-gonic/gin@v1.6.0"
     },
     {
       "type" : "library",
@@ -35,7 +35,7 @@
       "group" : "github.com/go-logr",
       "name" : "zapr",
       "version" : "v1.2.0",
-      "purl" : "pkg:golang/github.com/go-logr/zapr@v1.2.0?goarch=amd64&goos=linux&type=module"
+      "purl" : "pkg:golang/github.com/go-logr/zapr@v1.2.0"
     },
     {
       "type" : "library",
@@ -43,7 +43,7 @@
       "group" : "github.com/google",
       "name" : "uuid",
       "version" : "v1.1.1",
-      "purl" : "pkg:golang/github.com/google/uuid@v1.1.1?goarch=amd64&goos=linux&type=module"
+      "purl" : "pkg:golang/github.com/google/uuid@v1.1.1"
     },
     {
       "type" : "library",
@@ -51,7 +51,7 @@
       "group" : "github.com/ipld",
       "name" : "go-car",
       "version" : "v0.3.0",
-      "purl" : "pkg:golang/github.com/ipld/go-car@v0.3.0?goarch=amd64&goos=linux&type=module"
+      "purl" : "pkg:golang/github.com/ipld/go-car@v0.3.0"
     },
     {
       "type" : "library",
@@ -59,7 +59,7 @@
       "group" : "github.com/json-iterator",
       "name" : "go",
       "version" : "v1.1.12",
-      "purl" : "pkg:golang/github.com/json-iterator/go@v1.1.12?goarch=amd64&goos=linux&type=module"
+      "purl" : "pkg:golang/github.com/json-iterator/go@v1.1.12"
     },
     {
       "type" : "library",
@@ -67,7 +67,7 @@
       "group" : "github.com/labstack/echo",
       "name" : "v4",
       "version" : "v4.1.18-0.20201215153152-4422e3b66b9f",
-      "purl" : "pkg:golang/github.com/labstack/echo/v4@v4.1.18-0.20201215153152-4422e3b66b9f?goarch=amd64&goos=linux&type=module"
+      "purl" : "pkg:golang/github.com/labstack/echo/v4@v4.1.18-0.20201215153152-4422e3b66b9f"
     },
     {
       "type" : "library",
@@ -75,7 +75,7 @@
       "group" : "github.com/russellhaering",
       "name" : "goxmldsig",
       "version" : "v1.1.0",
-      "purl" : "pkg:golang/github.com/russellhaering/goxmldsig@v1.1.0?goarch=amd64&goos=linux&type=module"
+      "purl" : "pkg:golang/github.com/russellhaering/goxmldsig@v1.1.0"
     },
     {
       "type" : "library",
@@ -83,7 +83,7 @@
       "group" : "go.elastic.co",
       "name" : "apm",
       "version" : "v1.11.0",
-      "purl" : "pkg:golang/go.elastic.co/apm@v1.11.0?goarch=amd64&goos=linux&type=module"
+      "purl" : "pkg:golang/go.elastic.co/apm@v1.11.0"
     }
   ],
   "dependencies" : [

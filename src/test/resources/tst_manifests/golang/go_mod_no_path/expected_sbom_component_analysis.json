@@ -9,7 +9,7 @@
       "bom-ref" : "pkg:golang/rhda-test@v0.0.0",
       "name" : "rhda-test",
       "version" : "v0.0.0",
-      "purl" : "pkg:golang/rhda-test@v0.0.0?goarch=amd64&goos=linux&type=module"
+      "purl" : "pkg:golang/rhda-test@v0.0.0"
     }
   },
   "components" : [
@@ -18,7 +18,7 @@
       "bom-ref" : "pkg:golang/rhda-test@v0.0.0",
       "name" : "rhda-test",
       "version" : "v0.0.0",
-      "purl" : "pkg:golang/rhda-test@v0.0.0?goarch=amd64&goos=linux&type=module"
+      "purl" : "pkg:golang/rhda-test@v0.0.0"
     },
     {
       "type" : "library",
@@ -26,7 +26,7 @@
       "group" : "github.com/emicklei/go-restful",
       "name" : "v3",
       "version" : "v3.0.0",
-      "purl" : "pkg:golang/github.com/emicklei/go-restful/v3@v3.0.0?goarch=amd64&goos=linux&type=module"
+      "purl" : "pkg:golang/github.com/emicklei/go-restful/v3@v3.0.0"
     },
     {
       "type" : "library",
@@ -34,7 +34,7 @@
       "group" : "github.com/gin-gonic",
       "name" : "gin",
       "version" : "v1.7.7",
-      "purl" : "pkg:golang/github.com/gin-gonic/gin@v1.7.7?goarch=amd64&goos=linux&type=module"
+      "purl" : "pkg:golang/github.com/gin-gonic/gin@v1.7.7"
     }
   ],
   "dependencies" : [
