@@ -41,7 +41,10 @@ public class Javascript_Envs_Test {
   @SetSystemProperty(key = "NODE_HOME", value = "test-node-home")
   @SetSystemProperty(key = "PATH", value = "test-path")
   void test_javascript_get_envs() {
-    try (MockedStatic<Operations> mockedOperations = mockStatic(Operations.class)) {
+    try (MockedStatic<Operations> mockedOperations = mockStatic(Operations.class);
+        MockedStatic<Environment> mockEnv =
+            Mockito.mockStatic(Environment.class, Mockito.CALLS_REAL_METHODS)) {
+      mockEnv.when(() -> Environment.get("PATH")).thenReturn("test-path");
       // Configure the mock to return "npm" when getExecutable is called
       mockedOperations
           .when(() -> Operations.getExecutable(anyString(), anyString(), anyMap()))

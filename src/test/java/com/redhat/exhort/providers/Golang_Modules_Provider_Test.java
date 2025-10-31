@@ -23,6 +23,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.redhat.exhort.Api;
 import com.redhat.exhort.ExhortTest;
 import java.io.IOException;
@@ -38,6 +42,9 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 @ExtendWith(HelperExtension.class)
 class Golang_Modules_Provider_Test extends ExhortTest {
+  private static final ObjectMapper JSON_MAPPER =
+      new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
+
   // test folder are located at src/test/resources/tst_manifests/npm
   // each folder should contain:
   // - package.json: the target manifest for testing
@@ -78,7 +85,8 @@ class Golang_Modules_Provider_Test extends ExhortTest {
     Files.deleteIfExists(tmpGolangFile);
     // verify expected SBOM is returned
     assertThat(content.type).isEqualTo(Api.CYCLONEDX_MEDIA_TYPE);
-    assertThat(dropIgnored(new String(content.buffer))).isEqualTo(dropIgnored(expectedSbom));
+    assertThat(prettyJson(dropIgnoredKeepFormat(new String(content.buffer))))
+        .isEqualTo(prettyJson(dropIgnoredKeepFormat(expectedSbom)));
   }
 
   @ParameterizedTest
@@ -107,7 +115,8 @@ class Golang_Modules_Provider_Test extends ExhortTest {
     Files.deleteIfExists(tmpGolangFile);
     // verify expected SBOM is returned
     assertThat(content.type).isEqualTo(Api.CYCLONEDX_MEDIA_TYPE);
-    assertThat(dropIgnored(new String(content.buffer))).isEqualTo(dropIgnored(expectedSbom));
+    assertThat(prettyJson(dropIgnoredKeepFormat(new String(content.buffer))))
+        .isEqualTo(prettyJson(dropIgnoredKeepFormat(expectedSbom)));
   }
 
   @Test
@@ -149,14 +158,15 @@ class Golang_Modules_Provider_Test extends ExhortTest {
       String actualSbomWithTSStripped = dropIgnoredKeepFormat(sbomString);
 
       assertEquals(
-          dropIgnored(getStringFromFile("msc/golang/expected_sbom_ca.json")).trim(),
-          dropIgnored(actualSbomWithTSStripped));
+          prettyJson(
+              dropIgnoredKeepFormat(getStringFromFile("msc/golang/expected_sbom_ca.json").trim())),
+          prettyJson(actualSbomWithTSStripped));
     }
   }
 
   @Test
-  void Test_Golang_MvS_Logic_Enabled() throws IOException {
-    System.setProperty(GoModulesProvider.PROP_EXHORT_GO_MVS_LOGIC_ENABLED, "true");
+  void Test_Golang_MvS_Logic_Disabled() throws IOException {
+    System.setProperty(GoModulesProvider.PROP_EXHORT_GO_MVS_LOGIC_ENABLED, "false");
     String goModPath = getFileFromResource("go.mod", "msc/golang/mvs_logic/go.mod");
     Path manifest = Path.of(goModPath);
     GoModulesProvider goModulesProvider = new GoModulesProvider(manifest);
@@ -165,12 +175,10 @@ class Golang_Modules_Provider_Test extends ExhortTest {
             goModulesProvider.getDependenciesSbom(manifest, true).getAsJsonString());
     String expectedSbom =
         getStringFromFile("msc/golang/mvs_logic/expected_sbom_stack_analysis.json").trim();
-    assertEquals(dropIgnored(expectedSbom), dropIgnored(resultSbom));
+    assertEquals(prettyJson(dropIgnoredKeepFormat(expectedSbom)), prettyJson(resultSbom));
 
-    // check that only one version of package golang/go.opencensus.io is in sbom for
-    // EXHORT_GO_MVS_LOGIC_ENABLED=true
     assertEquals(
-        1,
+        5,
         Arrays.stream(resultSbom.split(System.lineSeparator()))
             .filter(str -> str.contains("\"ref\" : \"pkg:golang/go.opencensus.io@"))
             .count());
@@ -186,17 +194,20 @@ class Golang_Modules_Provider_Test extends ExhortTest {
         Arrays.stream(resultSbom.split(System.lineSeparator()))
                 .filter(str -> str.contains("\"ref\" : \"pkg:golang/go.opencensus.io@"))
                 .count()
-            > 1);
-  }
-
-  private String dropIgnored(String s) {
-    return s.replaceAll("goarch=\\w+&goos=\\w+&", "")
-        .replaceAll("\\s+", "")
-        .replaceAll("\"timestamp\":\"[a-zA-Z0-9\\-\\:]+\",", "");
+            == 1);
   }
 
   private String dropIgnoredKeepFormat(String s) {
     return s.replaceAll("goarch=\\w+&goos=\\w+&", "")
         .replaceAll("\"timestamp\" : \"[a-zA-Z0-9\\-\\:]+\",\n    ", "");
+  }
+
+  private String prettyJson(String s) {
+    try {
+      JsonNode node = JSON_MAPPER.readTree(s);
+      return JSON_MAPPER.writerWithDefaultPrettyPrinter().writeValueAsString(node);
+    } catch (JsonProcessingException e) {
+      return s; // Fallback if not valid JSON after sanitization
+    }
   }
 }

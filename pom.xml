@@ -492,6 +492,7 @@ limitations under the License.]]>
             <additionalOptions>
               <!--suppress UnresolvedMavenProperty -->
               <jacoco>${jacoco.java.option}</jacoco>
+              <option>-XX:+EnableDynamicAgentLoading</option>
             </additionalOptions>
           </javaOptions>
           <tags>
@@ -531,7 +532,7 @@ limitations under the License.]]>
               **/*ImageUtilsTest.java
             </exclude>
           </excludes>
-          <argLine>@{surefire.argLine}</argLine>
+          <argLine>@{surefire.argLine} -XX:+EnableDynamicAgentLoading</argLine>
         </configuration>
         <dependencies>
           <!-- https://mvnrepository.com/artifact/me.fabriciorby/maven-surefire-junit5-tree-reporter -->

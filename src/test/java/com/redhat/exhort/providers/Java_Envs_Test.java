@@ -30,8 +30,12 @@ public class Java_Envs_Test {
   @Test
   @SetSystemProperty(key = "JAVA_HOME", value = "test-java-home")
   void test_java_get_envs() {
-    var envs = new JavaMavenProvider(null).getMvnExecEnvs();
-    assertEquals(Collections.singletonMap("JAVA_HOME", "test-java-home"), envs);
+    try (MockedStatic<Environment> mockEnv =
+        Mockito.mockStatic(Environment.class, Mockito.CALLS_REAL_METHODS)) {
+      mockEnv.when(() -> Environment.get("JAVA_HOME")).thenReturn("test-java-home");
+      var envs = new JavaMavenProvider(null).getMvnExecEnvs();
+      assertEquals(Collections.singletonMap("JAVA_HOME", "test-java-home"), envs);
+    }
   }
 
   @Test

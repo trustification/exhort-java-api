@@ -506,22 +506,23 @@ Two possible values for this setting:
 
 #### Golang Support
 
-By default, all go.mod' packages' transitive modules will be taken to analysis with their original package version, that is,
-if go.mod has 2 modules, `a` and `b`, and each one of them has the same package c with same major version v1, but different minor versions:
-- namespace/c/v1@v1.1
-- namespace/c/v1@v1.2
+By default, Golang dependency resolution follows the [Minimal Version Selection (MVS) Algorithm](https://go.dev/ref/mod#minimal-version-selection).  
+This means that when analyzing a project, only the module versions that would actually be included in the final executable are considered.
 
+For example, if your `go.mod` file declares two modules, `a` and `b`, and both depend on the same package `c` (same major version `v1`) but with different minor versions:
 
-Then both of these packages will be entered to the generated sbom and will be included in analysis returned to client.
-In golang, in an actual build of an application into an actual application executable binary, only one of the minor versions will be included in the executable, as only packages with same name but different major versions considered different packages ,
-hence can co-exist together in the application executable.
+- `namespace/c/v1@v1.1`
+- `namespace/c/v1@v1.2`
 
-Go ecosystem knows how to select one minor version among all the minor versions of the same major version of a given package, using the [MVS Algorithm](https://go.dev/ref/mod#minimal-version-selection).
+Only one of these versions — the minimal version selected by MVS — will be included in the generated SBOM and analysis results.  
+This mirrors the behavior of a real Go build, where only one minor version of a given major version can be present in the executable (since Go treats packages with the same name and major version as identical).
 
-In order to enable this behavior, that only shows in analysis modules versions that are actually built into the application executable, please set
-system property/environment variable - `EXHORT_GO_MVS_LOGIC_ENABLED=true`(Default is false)
+The MVS-based resolution is **enabled by default**.  
+If you want to disable this behavior and instead include **all transitive module versions** (as listed in `go.mod` dependencies), set the system property or environment variable:
 
-
+```bash
+EXHORT_GO_MVS_LOGIC_ENABLED=false
+```
 
 ####  Python Support
 

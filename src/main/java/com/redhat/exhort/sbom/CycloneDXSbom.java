@@ -23,6 +23,7 @@ import com.redhat.exhort.logging.LoggersFactory;
 import com.redhat.exhort.utils.Environment;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -288,18 +289,19 @@ public class CycloneDXSbom implements Sbom {
     if (comp.isPresent()) {
       Dependency targetComponent = comp.get();
       List<Dependency> deps = targetComponent.getDependencies();
-      List<PackageURL> allDirectDeps =
-          deps.stream()
-              .map(
-                  dep -> {
-                    try {
-                      return new PackageURL(dep.getRef());
-                    } catch (MalformedPackageURLException e) {
-                      throw new RuntimeException(e);
-                    }
-                  })
-              .collect(Collectors.toList());
-
+      List<PackageURL> allDirectDeps = Collections.emptyList();
+      if (deps != null) {
+        deps.stream()
+            .map(
+                dep -> {
+                  try {
+                    return new PackageURL(dep.getRef());
+                  } catch (MalformedPackageURLException e) {
+                    throw new RuntimeException(e);
+                  }
+                })
+            .collect(Collectors.toList());
+      }
       result = allDirectDeps.stream().anyMatch(dep -> dep.getName().equals(name));
     }
     return result;

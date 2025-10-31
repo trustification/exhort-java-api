@@ -56,9 +56,19 @@ public final class Operations {
    * @return the custom path from the relevant environment variable or the original argument.
    */
   public static String getCustomPathOrElse(String defaultExecutable) {
-    var target = defaultExecutable.toUpperCase().replaceAll(" ", "_").replaceAll("-", "_");
-    var executableKey = String.format("EXHORT_%s_PATH", target);
-    return Environment.get(executableKey, defaultExecutable);
+    String normalized = defaultExecutable;
+    int dotIndex = normalized.indexOf('.');
+    if (dotIndex > 0) {
+      normalized = normalized.substring(0, dotIndex);
+    }
+
+    var target = normalized.toUpperCase().replaceAll(" ", "_").replaceAll("-", "_");
+    var primaryKey = String.format("EXHORT_%s_PATH", target);
+    String primary = Environment.get(primaryKey);
+    if (primary != null) {
+      return primary;
+    }
+    return defaultExecutable;
   }
 
   /**

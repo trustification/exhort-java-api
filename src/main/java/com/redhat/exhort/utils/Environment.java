@@ -22,8 +22,8 @@ public final class Environment {
   private Environment() {}
 
   public static String get(String name, String defaultValue) {
-    return Optional.ofNullable(System.getProperty(name))
-        .or(() -> Optional.ofNullable(System.getenv(name)))
+    return Optional.ofNullable(System.getenv(name))
+        .or(() -> Optional.ofNullable(System.getProperty(name)))
         .orElse(defaultValue);
   }
 
