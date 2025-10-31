@@ -703,6 +703,14 @@
     },
     {
       "type": "library",
+      "bom-ref": "pkg:golang/github.com/libp2p/go-stream-muxer@v0.0.1",
+      "group": "github.com/libp2p",
+      "name": "go-stream-muxer",
+      "version": "v0.0.1",
+      "purl": "pkg:golang/github.com/libp2p/go-stream-muxer@v0.0.1"
+    },
+    {
+      "type": "library",
       "bom-ref": "pkg:golang/howett.net/plist@v0.0.0-20181124034731-591f970eefbb",
       "group": "howett.net",
       "name": "plist",
@@ -2307,8 +2315,13 @@
       "ref": "pkg:golang/github.com/libp2p/go-mplex@v0.1.0",
       "dependsOn": [
         "pkg:golang/github.com/ipfs/go-log@v0.0.1",
-        "pkg:golang/github.com/libp2p/go-buffer-pool@v0.0.2"
+        "pkg:golang/github.com/libp2p/go-buffer-pool@v0.0.2",
+        "pkg:golang/github.com/libp2p/go-stream-muxer@v0.0.1"
       ]
+    },
+    {
+      "ref": "pkg:golang/github.com/libp2p/go-stream-muxer@v0.0.1",
+      "dependsOn": []
     },
     {
       "ref": "pkg:golang/howett.net/plist@v0.0.0-20181124034731-591f970eefbb",

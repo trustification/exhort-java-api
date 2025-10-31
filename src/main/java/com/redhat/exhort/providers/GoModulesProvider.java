@@ -271,8 +271,7 @@ public final class GoModulesProvider extends Provider {
       if (!edges.containsKey(getParentVertex(line))) {
         // Collect all direct dependencies of the current module into a list.
         List<String> deps =
-            collectAllDirectDependencies(
-                linesList.subList(startingIndex, linesList.size() - 1), line);
+            collectAllDirectDependencies(linesList.subList(startingIndex, linesList.size()), line);
         edges.put(getParentVertex(line), deps);
         startingIndex += deps.size();
       }
