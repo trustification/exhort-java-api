@@ -17,9 +17,6 @@ package com.redhat.exhort.providers;
 
 import static com.redhat.exhort.impl.ExhortApi.debugLoggingIsNeeded;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.packageurl.MalformedPackageURLException;
 import com.github.packageurl.PackageURL;
 import com.redhat.exhort.Api;
@@ -43,7 +40,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.TreeMap;
 import java.util.logging.Logger;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -56,10 +52,7 @@ public final class GoModulesProvider extends Provider {
 
   public static final String PROP_EXHORT_GO_MVS_LOGIC_ENABLED = "EXHORT_GO_MVS_LOGIC_ENABLED";
   private static final Logger log = LoggersFactory.getLogger(GoModulesProvider.class.getName());
-  private static final String GO_HOST_ARCHITECTURE_ENV_NAME = "GOHOSTARCH";
-  private static final String GO_HOST_OPERATION_SYSTEM_ENV_NAME = "GOHOSTOS";
   public static final String DEFAULT_MAIN_VERSION = "v0.0.0";
-  private final TreeMap<String, String> goEnvironmentVariableForPurl;
   private final String goExecutable;
 
   public String getMainModuleVersion() {
@@ -71,7 +64,6 @@ public final class GoModulesProvider extends Provider {
   public GoModulesProvider(Path manifest) {
     super(Type.GOLANG, manifest);
     this.goExecutable = Operations.getExecutable("go", "version");
-    this.goEnvironmentVariableForPurl = getQualifiers();
     this.mainModuleVersion = getDefaultMainModuleVersion();
   }
 
@@ -97,8 +89,7 @@ public final class GoModulesProvider extends Provider {
         sbom.getAsJsonString().getBytes(StandardCharsets.UTF_8), Api.CYCLONEDX_MEDIA_TYPE);
   }
 
-  private PackageURL toPurl(
-      String dependency, String delimiter, TreeMap<String, String> qualifiers) {
+  private PackageURL toPurl(String dependency, String delimiter) {
     try {
       int lastSlashIndex = dependency.lastIndexOf("/");
       // there is no '/' char in module/package, so there is no namespace, only name
@@ -106,10 +97,10 @@ public final class GoModulesProvider extends Provider {
         String[] splitParts = dependency.split(delimiter);
         if (splitParts.length == 2) {
           return new PackageURL(
-              Type.GOLANG.getType(), null, splitParts[0], splitParts[1], qualifiers, null);
+              Type.GOLANG.getType(), null, splitParts[0], splitParts[1], null, null);
         } else {
           return new PackageURL(
-              Type.GOLANG.getType(), null, splitParts[0], this.mainModuleVersion, qualifiers, null);
+              Type.GOLANG.getType(), null, splitParts[0], this.mainModuleVersion, null, null);
         }
       }
       String namespace = dependency.substring(0, lastSlashIndex);
@@ -117,14 +108,13 @@ public final class GoModulesProvider extends Provider {
       String[] parts = dependencyAndVersion.split(delimiter);
 
       if (parts.length == 2) {
-        return new PackageURL(
-            Type.GOLANG.getType(), namespace, parts[0], parts[1], qualifiers, null);
+        return new PackageURL(Type.GOLANG.getType(), namespace, parts[0], parts[1], null, null);
         // in this case, there is no version (happens with main module), thus need to take it from
         // precalculated
         // main module version.
       } else {
         return new PackageURL(
-            Type.GOLANG.getType(), namespace, parts[0], this.mainModuleVersion, qualifiers, null);
+            Type.GOLANG.getType(), namespace, parts[0], this.mainModuleVersion, null, null);
       }
     } catch (MalformedPackageURLException e) {
       throw new IllegalArgumentException(
@@ -294,17 +284,19 @@ public final class GoModulesProvider extends Provider {
     //    Build Sbom
     String rootPackage = getParentVertex(linesList.get(0));
 
-    PackageURL root = toPurl(rootPackage, "@", this.goEnvironmentVariableForPurl);
+    PackageURL root = toPurl(rootPackage, "@");
     Sbom sbom = SbomFactory.newInstance(Sbom.BelongingCondition.PURL, "sensitive");
     sbom.addRoot(root);
     edges.forEach(
         (key, value) -> {
-          PackageURL source = toPurl(key, "@", this.goEnvironmentVariableForPurl);
-          value.forEach(
-              dep -> {
-                PackageURL targetPurl = toPurl(dep, "@", this.goEnvironmentVariableForPurl);
-                sbom.addDependency(source, targetPurl, null);
-              });
+          PackageURL source = toPurl(key, "@");
+          value.stream()
+              .filter(dep -> !isGoToolchainEntry(dep))
+              .forEach(
+                  dep -> {
+                    PackageURL targetPurl = toPurl(dep, "@");
+                    sbom.addDependency(source, targetPurl, null);
+                  });
         });
     List<String> ignoredDepsPurl =
         ignoredDeps.stream().map(PackageURL::getCoordinates).collect(Collectors.toList());
@@ -379,41 +371,14 @@ public final class GoModulesProvider extends Provider {
     return targetLines.stream()
         .filter(line -> getParentVertex(line).equals(getParentVertex(edge)))
         .map(GoModulesProvider::getChildVertex)
+        .filter(dep -> !isGoToolchainEntry(dep))
         .collect(Collectors.toList());
   }
 
-  private TreeMap<String, String> getQualifiers() {
-    var goEnvironmentVariables = getGoEnvironmentVariables();
-    var qualifiers = new TreeMap<String, String>();
-    qualifiers.put("type", "module");
-    if (goEnvironmentVariables.containsKey(GO_HOST_ARCHITECTURE_ENV_NAME)) {
-      qualifiers.put("goarch", goEnvironmentVariables.get(GO_HOST_ARCHITECTURE_ENV_NAME));
-    }
-    if (goEnvironmentVariables.containsKey(GO_HOST_OPERATION_SYSTEM_ENV_NAME)) {
-      qualifiers.put("goos", goEnvironmentVariables.get(GO_HOST_OPERATION_SYSTEM_ENV_NAME));
-    }
-
-    return qualifiers;
-  }
-
-  private Map<String, String> getGoEnvironmentVariables() {
-    String goEnvironmentVariables =
-        Operations.runProcessGetOutput(null, goExecutable, "env", "--json");
-    JsonNode tree;
-    try {
-      tree = new ObjectMapper().readTree(goEnvironmentVariables);
-    } catch (JsonProcessingException e) {
-      throw new RuntimeException("Failed to parse go environment variables: " + e.getMessage());
-    }
-    var envMap = new HashMap<String, String>();
-    tree.fields()
-        .forEachRemaining(
-            entry -> {
-              String key = entry.getKey();
-              String value = entry.getValue().asText();
-              envMap.put(key, value);
-            });
-    return envMap;
+  private static boolean isGoToolchainEntry(String dependency) {
+    // Filter out Go toolchain entries like "go@1.18", "go@1.19", etc.
+    // These are not actual dependencies but the Go toolchain itself
+    return dependency.startsWith("go@");
   }
 
   private String buildGoModulesDependencies(Path manifestPath) {
@@ -435,19 +400,21 @@ public final class GoModulesProvider extends Provider {
   private Sbom buildSbomFromList(String golangDeps, List<PackageURL> ignoredDeps) {
     String[] allModulesFlat = golangDeps.split(Operations.GENERIC_LINE_SEPARATOR);
     String parentVertex = getParentVertex(allModulesFlat[0]);
-    PackageURL root = toPurl(parentVertex, "@", this.goEnvironmentVariableForPurl);
+    PackageURL root = toPurl(parentVertex, "@");
     // Get only direct dependencies of root package/module, and that's it.
     List<String> deps = collectAllDirectDependencies(Arrays.asList(allModulesFlat), parentVertex);
 
     Sbom sbom = SbomFactory.newInstance(Sbom.BelongingCondition.PURL, "sensitive");
     sbom.addRoot(root);
-    deps.forEach(
-        dep -> {
-          PackageURL targetPurl = toPurl(dep, "@", this.goEnvironmentVariableForPurl);
-          if (dependencyNotToBeIgnored(ignoredDeps, targetPurl)) {
-            sbom.addDependency(root, targetPurl, null);
-          }
-        });
+    deps.stream()
+        .filter(dep -> !isGoToolchainEntry(dep))
+        .forEach(
+            dep -> {
+              PackageURL targetPurl = toPurl(dep, "@");
+              if (dependencyNotToBeIgnored(ignoredDeps, targetPurl)) {
+                sbom.addDependency(root, targetPurl, null);
+              }
+            });
     List<String> ignoredDepsByName = new ArrayList<>();
     ignoredDeps.forEach(
         purl -> {
@@ -467,7 +434,7 @@ public final class GoModulesProvider extends Provider {
         goModlines.stream()
             .filter(this::IgnoredLine)
             .map(this::extractPackageName)
-            .map(dep -> toPurl(dep, "\\s{1,3}", this.goEnvironmentVariableForPurl))
+            .map(dep -> toPurl(dep, "\\s{1,3}"))
             .collect(Collectors.toList());
     return ignored;
   }

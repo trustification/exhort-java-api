@@ -121,7 +121,8 @@ public class GitVersionControlSystemImpl implements VersionControlSystem {
   }
 
   public String getPseudoVersion(TagInfo tagInfo, String newTagVersion) {
-    String stringTS = tagInfo.getCommitTimestamp().toString().replaceAll("[:-]|T", "");
+    String stringTS =
+        tagInfo.getCommitTimestamp().format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
     String commitHash12 = tagInfo.getCurrentCommitDigest().substring(0, 12);
     return String.format("%s.%s-%s", newTagVersion, stringTS, commitHash12);
   }
