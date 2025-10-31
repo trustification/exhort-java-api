@@ -271,13 +271,12 @@ public final class GoModulesProvider extends Provider {
       if (!edges.containsKey(getParentVertex(line))) {
         // Collect all direct dependencies of the current module into a list.
         List<String> deps =
-            collectAllDirectDependencies(
-                linesList.subList(startingIndex, linesList.size() - 1), line);
+            collectAllDirectDependencies(linesList.subList(startingIndex, linesList.size()), line);
         edges.put(getParentVertex(line), deps);
         startingIndex += deps.size();
       }
     }
-    boolean goMvsLogicEnabled = Environment.getBoolean(PROP_EXHORT_GO_MVS_LOGIC_ENABLED, false);
+    boolean goMvsLogicEnabled = Environment.getBoolean(PROP_EXHORT_GO_MVS_LOGIC_ENABLED, true);
     if (goMvsLogicEnabled) {
       edges = getFinalPackagesVersionsForModule(edges, manifestPath);
     }
@@ -326,24 +325,35 @@ public final class GoModulesProvider extends Provider {
                 Collectors.toMap(
                     t -> t.split(" ")[0], t -> t.split(" ")[1], (first, second) -> second));
     Map<String, List<String>> listWithModifiedVersions = new HashMap<>();
-    edges.entrySet().stream()
-        .filter(string -> string.getKey().trim().split("@").length == 2)
-        .collect(Collectors.toList())
-        .forEach(
-            (entry) -> {
-              String packageWithSelectedVersion =
-                  getPackageWithFinalVersion(finalModulesVersions, entry.getKey());
-              List<String> packagesWithFinalVersions =
-                  getListOfPackagesWithFinalVersions(finalModulesVersions, entry);
-              listWithModifiedVersions.put(packageWithSelectedVersion, packagesWithFinalVersions);
-            });
+    // Process all entries, including those without versions (like the root module)
+    edges.forEach(
+        (key, value) -> {
+          // Handle both cases: module with version (module@version) and without (just module name)
+          String packageWithSelectedVersion;
+          if (key.contains("@")) {
+            packageWithSelectedVersion = getPackageWithFinalVersion(finalModulesVersions, key);
+          } else {
+            // For root module or modules without version, get version from finalModulesVersions
+            // or use default version
+            String version = finalModulesVersions.get(key);
+            if (version != null) {
+              packageWithSelectedVersion = String.format("%s@%s", key, version);
+            } else {
+              // If not found, keep original key and append default version
+              packageWithSelectedVersion = String.format("%s@%s", key, this.mainModuleVersion);
+            }
+          }
+          List<String> packagesWithFinalVersions =
+              getListOfPackagesWithFinalVersions(finalModulesVersions, value);
+          listWithModifiedVersions.put(packageWithSelectedVersion, packagesWithFinalVersions);
+        });
 
     return listWithModifiedVersions;
   }
 
   private List<String> getListOfPackagesWithFinalVersions(
-      Map<String, String> finalModulesVersions, Map.Entry<String, List<String>> entry) {
-    return entry.getValue().stream()
+      Map<String, String> finalModulesVersions, List<String> packages) {
+    return packages.stream()
         .map(
             (packageWithVersion) ->
                 getPackageWithFinalVersion(finalModulesVersions, packageWithVersion))

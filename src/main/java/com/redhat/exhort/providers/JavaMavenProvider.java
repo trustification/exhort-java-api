@@ -37,6 +37,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.TreeMap;
+import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
 import javax.xml.stream.XMLInputFactory;
@@ -426,7 +427,7 @@ public final class JavaMavenProvider extends BaseJavaProvider {
 
   private String selectMvnRuntime(final Path manifestPath) {
     boolean preferWrapper = Operations.getWrapperPreference(MVN);
-    if (preferWrapper) {
+    if (preferWrapper && manifestPath != null) {
       String wrapperName = Operations.isWindows() ? "mvnw.cmd" : "mvnw";
       String mvnw = traverseForMvnw(wrapperName, manifestPath.toString());
       if (mvnw != null) {
@@ -438,8 +439,10 @@ public final class JavaMavenProvider extends BaseJavaProvider {
           }
           return mvnw;
         } catch (Exception e) {
-          log.warning(
-              "Failed to check for mvnw due to: " + e.getMessage() + " Fall back to use mvn");
+          log.log(
+              Level.WARNING,
+              "Failed to check for mvnw due to: {0} Fall back to use mvn",
+              e.getMessage());
         }
       }
     }

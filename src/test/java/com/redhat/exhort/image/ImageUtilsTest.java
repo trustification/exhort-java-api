@@ -496,8 +496,12 @@ class ImageUtilsTest extends ExhortTest {
   @Test
   @SetSystemProperty(key = "PATH", value = mockPath)
   void test_update_PATH_env() {
-    var path = ImageUtils.updatePATHEnv("test-exec-path");
-    assertEquals("PATH=test-path" + File.pathSeparator + "test-exec-path", path);
+    try (MockedStatic<Environment> mockEnv =
+        Mockito.mockStatic(Environment.class, Mockito.CALLS_REAL_METHODS)) {
+      mockEnv.when(() -> Environment.get("PATH")).thenReturn("test-path");
+      var path = ImageUtils.updatePATHEnv("test-exec-path");
+      assertEquals("PATH=test-path" + File.pathSeparator + "test-exec-path", path);
+    }
   }
 
   @Test
